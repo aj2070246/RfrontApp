@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import ChatPage from './pages/ChatPage'; // صفحه چت
 import SearchPage from './pages/SearchPage'; // صفحه جستجو (اگر هنوز ایجاد نکردید)
+import RegisterUser from "./pages/RegisterUser"; // مسیر را متناسب با پروژه تغییر دهید
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             </li>
             <li>
               <Link to="/search">به صفحه جستجو برو</Link>
+              <Link to="/RegisterForm">ثبت نام</Link>
             </li>
           </ul>
         </nav>
@@ -23,9 +25,11 @@ function App() {
         {/* تعریف مسیرهای اپلیکیشن */}
         <Routes>
         <Route path="/chat/:userId" element={<ChatPage />} />
-          <Route path="/search" element={<SearchPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/registerForm" element={<RegisterUser />} />
           {/* می‌توانید مسیرهای دیگه رو هم اینجا اضافه کنید */}
         </Routes>
+
       </div>
     </Router>
   );

@@ -50,6 +50,12 @@ export const sendMessage = (senderUserId, receiverUserId, messageText) => {
   });
 };
 
+
+
+export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
+
+export const registerUser = (formData) => api.post('/PublicData/register', formData);
+
 export const getUserInfo = (stringId) => {
   return api.post('/Connection/GetUserInfo', { StringId: stringId });
 };
