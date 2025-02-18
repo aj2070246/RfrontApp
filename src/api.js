@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 // ایجاد یک نمونه axios با آدرس پایه
@@ -51,4 +52,9 @@ export const sendMessage = (senderUserId, receiverUserId, messageText) => {
 
 export const getUserInfo = (stringId) => {
   return api.post('/Connection/GetUserInfo', { StringId: stringId });
+};
+
+export const deleteMessage = (stringId) => {
+console.log('deleteMessage=>   2' + stringId);
+return api.post('/Connection/deleteMessage', { StringId: stringId });
 };

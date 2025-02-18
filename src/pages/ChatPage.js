@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getMessages, sendMessage, getUserInfo } from '../api';
+import { useParams } from 'react-router-dom'; // اضافه کردن این خط
+import { getMessages, sendMessage, getUserInfo, deleteMessage } from '../api';
 
 const ChatPage = () => {
-  const { userId } = useParams();
+  const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
   const senderUserId = 'u1';
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userInfo, setUserInfo] = useState(null);
@@ -19,15 +18,6 @@ const ChatPage = () => {
       fetchMessages();
     }
   }, [userId]);
-
-  useLayoutEffect(() => {
-    // اطمینان از اینکه چت بعد از رندر شدن کامل اسکرول شود
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100); // تاخیر کوتاه برای اطمینان از اینکه پیام‌ها لود شده‌اند
-    });
-  }, [messages]);
 
   const fetchMessages = async () => {
     try {
@@ -62,8 +52,8 @@ const ChatPage = () => {
     }
   };
 
-  const handleMouseEnter = (messageStatusId) => {
-    setShowStatusText(messageStatusId);
+  const handleMouseEnter = (statusId) => {
+    setShowStatusText(statusId);
   };
 
   const handleMouseLeave = () => {
@@ -71,7 +61,21 @@ const ChatPage = () => {
   };
 
   const handleClick = () => {
-    setShowStatusText((prevState) => !prevState);
+    // می‌توانید هر عملکرد دلخواهی برای کلیک پیام‌ها قرار دهید
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      const response = await deleteMessage(messageId);
+      if (response.data.isSuccess) {
+        // بعد از حذف پیام، لیست پیام‌ها را به‌روزرسانی کنید
+        setMessages(messages.filter(msg => msg.id !== messageId));
+      fetchMessages();
+
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+    }
   };
 
   return (
@@ -98,41 +102,51 @@ const ChatPage = () => {
         </div>
       )}
 
-      <div style={styles.chatBox}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            onMouseEnter={() => handleMouseEnter(msg.messageStatusId)}
-            onMouseLeave={handleMouseLeave}
-            onClick={handleClick}
-            style={{
-              ...styles.message,
-              backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
-              alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start',
-            }}
-          >
-            <p style={styles.text}>{msg.messageText}</p>
-            <span style={styles.time}>{new Date(msg.sendDate).toLocaleDateString()}</span>
+<div style={styles.chatBox}>
+  {messages.map((msg, index) => (
+    <div
+      key={index}
+      onMouseEnter={() => msg.senderUserId === senderUserId && handleMouseEnter(msg.messageStatusId)} // هاور فقط برای پیام‌های ارسالی
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      style={{
+        ...styles.message,
+        backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
+        alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start',
+      }}
+    >
+      <p style={styles.text}>{msg.messageText}</p>
+      <span style={styles.time}>{new Date(msg.sendDate).toLocaleDateString()}</span>
 
-            {/* نمایش تیک‌ها فقط برای پیام‌های ارسالی */}
-            {msg.senderUserId === senderUserId && (
-              <span style={styles.text}>
-                {msg.messageStatusId === 1 ? '✔️' :
-                 msg.messageStatusId === 2 ? '✔️✔️' : 
-                 msg.messageStatusId === 3 ? '✅' : ''}
-              </span>
-            )}
+      {/* نمایش تیک‌ها فقط برای پیام‌های ارسالی */}
+      {msg.senderUserId === senderUserId && (
+        <span style={styles.text}>
+          {msg.messageStatusId === 1 ? '✔️' :
+           msg.messageStatusId === 2 ? '✔️✔️' : 
+           msg.messageStatusId === 3 ? '✅' : ''}
+        </span>
+      )}
 
-            {/* نمایش متن وضعیت پیام زمانی که موس روی آن می‌رود یا کلیک می‌شود */}
-            {showStatusText === msg.messageStatusId && (
-              <div style={styles.statusText}>
-                {msg.messageStatus} {/* یا متن مربوط به messageStatusText */}
-              </div>
-            )}
-          </div>
-        ))}
-        <div ref={messagesEndRef} /> {/* نقطه اسکرول به آخر چت */}
-      </div>
+      {/* نمایش متن وضعیت پیام زمانی که موس روی آن می‌رود یا کلیک می‌شود (فقط برای پیام‌های ارسالی) */}
+      {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
+        <div style={styles.statusText}>
+          <span style={{ color: '#000' }}>{msg.messageStatus}</span> {/* متن وضعیت سیاه */}
+        </div>
+      )}
+
+      {/* علامت سطل آشغال برای حذف پیام */}
+      {msg.senderUserId === senderUserId && (
+        <button 
+          onClick={() => handleDeleteMessage(msg.id)} 
+          style={styles.deleteButton}
+        >
+          🗑️
+        </button>
+      )}
+    </div>
+  ))}
+  <div ref={messagesEndRef} /> {/* نقطه اسکرول به آخر چت */}
+</div>
 
       <div style={styles.inputContainer}>
         <input
@@ -149,6 +163,24 @@ const ChatPage = () => {
 };
 
 const styles = {
+  
+  statusText: {
+    marginTop: '5px',
+    fontSize: '14px',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // می‌توانید برای پس‌زمینه از رنگ نیمه شفاف استفاده کنید
+    borderRadius: '5px',
+    padding: '5px',
+  },
+
+  deleteButton: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#ff5722', // رنگ سطل آشغال
+    fontSize: '16px',
+    marginLeft: '10px',
+  },
+
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -211,12 +243,6 @@ const styles = {
     textAlign: 'right',
     marginTop: '5px',
   },
-  statusText: {
-    fontSize: '14px',
-    color: '#f1f1f1',
-    marginTop: '5px',
-    fontStyle: 'italic',
-  },
   inputContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -236,6 +262,19 @@ const styles = {
     color: 'white',
     border: 'none',
     cursor: 'pointer',
+  },
+  statusText: {
+    fontSize: '12px',
+    color: '#888',
+    marginTop: '5px',
+  },
+  deleteButton: {
+    background: 'none',
+    border: 'none',
+    color: '#f44336',
+    fontSize: '18px',
+    cursor: 'pointer',
+    marginLeft: '10px',
   },
 };
 
