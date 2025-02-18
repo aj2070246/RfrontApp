@@ -30,3 +30,25 @@ export const searchUsers = async (requestData) => {
     throw new Error('خطا در ارسال درخواست به سرور');
   }
 };
+
+
+// دریافت پیام‌های بین دو کاربر
+export const getMessages = (senderUserId, receiverUserId) => {
+  return api.post('/Connection/GetMessagesWithOneUser', {
+    senderUserId,
+    receiverUserId
+  });
+};
+
+// ارسال پیام جدید
+export const sendMessage = (senderUserId, receiverUserId, messageText) => {
+  return api.post('/Connection/SendMessage', {
+    senderUserId,
+    receiverUserId,
+    messageText
+  });
+};
+
+export const getUserInfo = (stringId) => {
+  return api.post('/Connection/GetUserInfo', { StringId: stringId });
+};

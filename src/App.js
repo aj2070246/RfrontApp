@@ -12,7 +12,7 @@ function App() {
         <nav>
           <ul>
             <li>
-              <Link to="/chat">به صفحه چت برو</Link>
+              <Link to="/chatPage">به صفحه چت برو</Link>
             </li>
             <li>
               <Link to="/search">به صفحه جستجو برو</Link>
@@ -22,7 +22,7 @@ function App() {
 
         {/* تعریف مسیرهای اپلیکیشن */}
         <Routes>
-          <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat/:userId" element={<ChatPage />} />
           <Route path="/search" element={<SearchPage />} />
           {/* می‌توانید مسیرهای دیگه رو هم اینجا اضافه کنید */}
         </Routes>
