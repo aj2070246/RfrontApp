@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import RefreshIcon from "@mui/icons-material/Refresh";
+
 import { getDropdownItems, getCaptcha, registerUser } from "../api";
+
 import {
   TextField,
   Button,
@@ -36,7 +37,8 @@ const RegisterForm = () => {
   const [dropdownData, setDropdownData] = useState({
     genders: [],
     provinces: [],
-    healthStatus: [],
+    healthStatus: [], // مقدار پیش‌فرض به آرایه خالی تغییر داده شد
+
     liveTypes: [],
     marriageStatus: [],
     ages: [],
@@ -176,12 +178,14 @@ const RegisterForm = () => {
           <FormControl fullWidth>
             <InputLabel>وضعیت سلامت</InputLabel>
             <Select name="healthStatus" value={formData.healthStatus} onChange={handleChange}>
-              {dropdownData.healthStatus.map((statusItem) => (
-                <MenuItem key={statusItem.id} value={statusItem.id}>
-                  {statusItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
+  {dropdownData.healthStatus?.map((statusItem) => (
+    <MenuItem key={statusItem.id} value={statusItem.id}>
+      {statusItem.itemValue}
+    </MenuItem>
+  ))}
+</Select>
+
+
           </FormControl>
         </Grid>
 
@@ -239,22 +243,59 @@ const RegisterForm = () => {
         </Grid>
 
         {/* کپچا */}
-        <Grid item xs={12} style={{ textAlign: "center" }}>
-          <img src={captcha.image} alt="کد امنیتی" style={{ width: "200px", height: "50px" }} />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="کد امنیتی"
-            name="captchaValue"
-            value={formData.captchaValue}
-            onChange={handleChange}
-            required
-          />
-          <IconButton onClick={refreshCaptcha} style={{ position: "absolute", top: "50%", right: "10px", transform: "translateY(-50%)" }}>
-            <RefreshIcon />
-          </IconButton>
-        </Grid>
+   
+        <Grid container alignItems="center" justifyContent="center" spacing={2}>
+  <Grid item xs="auto">
+    <img src={captcha.image} alt="کد امنیتی" style={{ width: "200px", height: "50px" }} />
+  </Grid>
+  <Grid item xs="auto" style={{ position: "relative" }}>
+    <button 
+      onClick={refreshCaptcha} 
+      style={{ 
+        position: "absolute", 
+        top: "50%", 
+        right: "-30px", // تغییر موقعیت دکمه
+        transform: "translateY(-50%)", 
+        background: "none", 
+        border: "none", 
+        cursor: "pointer", 
+        color: "white",  
+        padding: "5px",
+        borderRadius: "50%",
+        backgroundColor: "green", 
+        transition: "background-color 0.3s ease"
+      }}
+      onMouseEnter={(e) => e.target.style.backgroundColor = "red"}  
+      onMouseLeave={(e) => e.target.style.backgroundColor = "green"}  
+    >
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" 
+        height="24" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+      >
+        <path d="M23 4v6h-6" />
+        <path d="M21 12a9 9 0 1 1-3-7.7l3 2.7" />
+      </svg>
+    </button>
+  </Grid>
+  <Grid item xs={12} sm={4}>
+    <TextField
+      fullWidth
+      label="کد امنیتی"
+      name="captchaValue"
+      value={formData.captchaValue}
+      onChange={handleChange}
+      required
+    />
+  </Grid>
+</Grid>
+
 
         {/* دکمه ارسال */}
         <Grid item xs={12}>

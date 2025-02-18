@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // ایجاد یک نمونه axios با آدرس پایه
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:5207', // آدرس پایه API
+  baseURL: 'http://127.0.0.1:5000', // آدرس پایه API
   // baseURL: 'http://93.118.140.133:2060', // آدرس پایه API
   timeout: 10000, // زمان تایم‌اوت برای درخواست‌ها
   headers: {
@@ -54,7 +54,7 @@ export const sendMessage = (senderUserId, receiverUserId, messageText) => {
 
 export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
 
-export const registerUser = (formData) => api.post('/PublicData/register', formData);
+export const registerUser = (formData) => api.post('/PublicData/RegisterUser', formData);
 
 export const getUserInfo = (stringId) => {
   return api.post('/Connection/GetUserInfo', { StringId: stringId });
