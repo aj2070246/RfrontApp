@@ -4,7 +4,7 @@ import { getMessages, sendMessage, getUserInfo, deleteMessage } from '../api';
 
 const ChatPage = () => {
   const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
-  const senderUserId = 'u1';
+  const senderUserId = '1';
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userInfo, setUserInfo] = useState(null);
