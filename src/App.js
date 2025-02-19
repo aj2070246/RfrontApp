@@ -1,35 +1,34 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import ChatPage from './pages/ChatPage'; // صفحه چت
-import SearchPage from './pages/SearchPage'; // صفحه جستجو (اگر هنوز ایجاد نکردید)
-import RegisterUser from "./pages/RegisterUser"; // مسیر را متناسب با پروژه تغییر دهید
+import ChatPage from './pages/ChatPage';
+import SearchPage from './pages/SearchPage';
+import RegisterForm from "./pages/registerPage/RegisterForm"; // مسیر صحیح کامپوننت ثبت‌نام
 
 function App() {
   return (
     <Router>
       <div>
-        {/* push test لینک به صفحه چت و جستجو */}
+        {/* منو لینک‌ها */}
         <nav>
           <ul>
             <li>
-              <Link to="/chatPage">به صفحه چت برو</Link>
+              <Link to="/chat/123">به صفحه چت برو</Link>
             </li>
             <li>
               <Link to="/search">به صفحه جستجو برو</Link>
-              <Link to="/RegisterForm">ثبت نام</Link>
+            </li>
+            <li>
+              <Link to="/registerForm">ثبت نام</Link>
             </li>
           </ul>
         </nav>
 
         {/* تعریف مسیرهای اپلیکیشن */}
         <Routes>
-        <Route path="/chat/:userId" element={<ChatPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/registerForm" element={<RegisterUser />} />
-          {/* می‌توانید مسیرهای دیگه رو هم اینجا اضافه کنید */}
+          <Route path="/chat/:userId" element={<ChatPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/registerForm" element={<RegisterForm />} /> {/* استفاده‌ی صحیح از کامپوننت */}
         </Routes>
-
       </div>
     </Router>
   );
