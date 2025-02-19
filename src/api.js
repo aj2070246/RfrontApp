@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // ایجاد یک نمونه axios با آدرس پایه
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:5207', // آدرس پایه API
+  baseURL: 'http://127.0.0.1:5000', // آدرس پایه API
   // baseURL: 'http://93.118.140.133:2060', // آدرس پایه API
   timeout: 10000, // زمان تایم‌اوت برای درخواست‌ها
   headers: {
@@ -63,4 +63,17 @@ export const getUserInfo = (stringId) => {
 export const deleteMessage = (stringId) => {
 console.log('deleteMessage=>   2' + stringId);
 return api.post('/Connection/deleteMessage', { StringId: stringId });
+};
+
+
+
+
+export const login = async (formData) => {
+  try {
+    const response = await api.post('/PublicData/login', formData);
+    return response.data;
+  } catch (error) {
+    console.error("Login error:", error);
+    return { isSuccess: false, message: "خطایی در ورود به سیستم رخ داده است." };
+  }
 };

@@ -1,78 +1,97 @@
-import React, { useState, useEffect } from "react";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import { getDropdownItems, getCaptcha, registerUser } from "../api";
-import {
-  TextField,
-  Button,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-} from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { Grid, Button, Container, Paper, TextField } from '@mui/material';
+import { getCaptcha, registerUser, getDropdownItems } from '../../api';
+import { 
+  GenderDropdown, AgeRangeDropdown, ProvinceDropdown, 
+  HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown 
+} from './Dropdowns';
 
 const RegisterForm = () => {
-  const [formData, setFormData] = useState({
-    captchaId: "",
-    captchaValue: "",
-    firstName: "",
-    lastName: "",
-    userName: "",
-    password: "",
-    mobile: "",
-    myDescription: "",
-    rDescription: "",
-    birthDate: "",
-    gender: "",
-    healthStatus: "",
-    liveType: "",
-    marriageStatus: "",
-    province: "",
-    ageRange: "",
-  });
-
-  const [captcha, setCaptcha] = useState({ image: "", id: "" });
+  const [captcha, setCaptcha] = useState({ id: null, image: '' });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCaptchaLoading, setIsCaptchaLoading] = useState(true); // وضعیت بارگذاری کپچا
   const [dropdownData, setDropdownData] = useState({
+    ages: [],
     genders: [],
-    provinces: [],
-    healthStatus: [],
+    healtStatus: [],
     liveTypes: [],
     marriageStatus: [],
-    ages: [],
+    provinces: [],
   });
 
-  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    userName: '',
+    password: '',
+    mobile: '',
+    captchaValue: '',
+    captchaId: null, 
+    gender: '',
+    ageRange: '',
+    province: '',
+    healtStatus: '',
+    liveType: '',
+    marriageStatus: '',
+    rDescription: '',
+    myDescription: ''
+  });
 
+  // دریافت کپچا از سرور
+  const fetchCaptcha = async () => {
+    setIsCaptchaLoading(true); // شروع بارگذاری کپچا
+    try {
+      console.log("🔄 Fetching Captcha...");
+      const captchaResponse = await getCaptcha();
+      console.log("📩 Captcha Response:", captchaResponse.data);
+
+      if (captchaResponse.data && captchaResponse.data.id && captchaResponse.data.image) {
+        setCaptcha({ id: captchaResponse.data.id, image: captchaResponse.data.image });
+        setFormData(prevData => ({
+          ...prevData,
+          captchaId: captchaResponse.data.id
+        }));
+        console.log("✅ Captcha ID fetched:", captchaResponse.data.id);
+      } else {
+        console.error("⚠️ Error: Captcha data is incomplete", captchaResponse.data);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching captcha:', error);
+    } finally {
+      setIsCaptchaLoading(false); // پایان بارگذاری کپچا
+    }
+  };
+
+  // دریافت اطلاعات فرم و کپچا
   useEffect(() => {
-    const fetchDropdownData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getDropdownItems();
-        if (response.data.isSuccess) {
-          setDropdownData(response.data.model);
+        console.log("🔄 Fetching dropdown data...");
+        const dropdownResponse = await getDropdownItems();
+        if (dropdownResponse.data.isSuccess) {
+          setDropdownData({
+            ages: dropdownResponse.data.model.ages || [],
+            genders: dropdownResponse.data.model.genders || [],
+            healtStatus: dropdownResponse.data.model.healtStatus || [],
+            liveTypes: dropdownResponse.data.model.liveTypes || [],
+            marriageStatus: dropdownResponse.data.model.marriageStatus || [],
+            provinces: dropdownResponse.data.model.provinces || [],
+          });
+          console.log("✅ Dropdown data fetched.");
         } else {
-          throw new Error(response.data.message);
+          console.error('⚠️ Error: API returned unsuccessful response for dropdowns');
         }
-      } catch (err) {
-        setError("خطایی در دریافت داده‌ها رخ داده است");
-      }
-    };
 
-    fetchDropdownData();
-  }, []);
-
-  useEffect(() => {
-    const fetchCaptcha = async () => {
-      try {
-        const response = await getCaptcha();
-        setCaptcha({ image: response.data.image, id: response.data.guid });
-        setFormData((prev) => ({ ...prev, captchaId: response.data.guid }));
+        await fetchCaptcha(); // دریافت کپچا و صبر تا مقدار بیاد
+        
       } catch (error) {
-        console.error("خطا در دریافت کپچا", error);
+        console.error('❌ Error fetching dropdown data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchCaptcha();
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -81,189 +100,88 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    console.log("🚀 Submitting Captcha ID:", formData.captchaId);
+
+    if (!formData.captchaId) {
+      console.error("❌ Captcha ID is missing! Registration aborted.");
+      return;
+    }
+
     try {
       const response = await registerUser(formData);
-      if (response.data.isSuccess) {
-        alert("ثبت‌نام با موفقیت انجام شد!");
-      } else {
-        alert("خطا: " + response.data.message);
-      }
+      console.log('✅ Form submitted successfully:', response.data);
     } catch (error) {
-      console.error("خطا در ثبت‌نام", error);
+      console.error('❌ Error submitting form:', error);
     }
   };
 
   const refreshCaptcha = async () => {
-    try {
-      const response = await getCaptcha();
-      setCaptcha({ image: response.data.image, id: response.data.guid });
-      setFormData((prev) => ({ ...prev, captchaId: response.data.guid, captchaValue: "" }));
-    } catch (error) {
-      console.error("خطا در دریافت کپچا", error);
-    }
+    await fetchCaptcha(); // دریافت مجدد کپچا
   };
 
+  if (isLoading) {
+    return <div>⏳ لطفاً صبر کنید، در حال بارگیری اطلاعات...</div>;
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
-        {error && (
-          <Grid item xs={12}>
-            <p style={{ color: "red" }}>{error}</p>
+    <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
+            <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
+            <TextField label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
+            <TextField label="رمز عبور" name="password" value={formData.password} onChange={handleChange} type="password" fullWidth />
+            <TextField label="شماره موبایل" name="mobile" value={formData.mobile} onChange={handleChange} fullWidth />
+            <TextField label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
+            <TextField label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
+
+            {/* دراپ‌دان‌ها */}
+            <GenderDropdown gender={formData.gender} handleChange={handleChange} genders={dropdownData.genders} />
+            <AgeRangeDropdown ageRange={formData.ageRange} handleChange={handleChange} ages={dropdownData.ages} />
+            <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
+            <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
+            <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
+            <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
+
+            {/* کپچا */}
+            <Grid item xs={12} container spacing={2} alignItems="center">
+              <Grid item xs={6}>
+                {isCaptchaLoading ? ( // بررسی وضعیت بارگذاری کپچا
+                  <div>⏳ در حال بارگیری کپچا...</div>
+                ) : (
+                  captcha.image ? (
+                    <img src={captcha.image} alt="Captcha" style={{ width: '100%' }} />
+                  ) : (
+                    <div>⚠️ تصویر کپچا بارگذاری نشد!</div>
+                  )
+                )}
+              </Grid>
+              <Grid item xs={6}>
+                <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  label="کد امنیتی" 
+                  name="captchaValue" 
+                  value={formData.captchaValue} 
+                  onChange={handleChange} 
+                  fullWidth 
+                />
+              </Grid>
+            </Grid>
+
+            {/* دکمه ثبت‌نام */}
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" fullWidth>
+                ثبت‌نام
+              </Button>
+            </Grid>
           </Grid>
-        )}
-
-        {/* فیلدهای متنی */}
-        <Grid item xs={12}>
-          <TextField fullWidth label="نام" name="firstName" value={formData.firstName} onChange={handleChange} required />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField fullWidth label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} required />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField fullWidth label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} required />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField fullWidth type="password" label="رمز عبور" name="password" value={formData.password} onChange={handleChange} required />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField fullWidth label="شماره موبایل" name="mobile" value={formData.mobile} onChange={handleChange} required />
-        </Grid>
-
-        {/* دراپ‌داون جنسیت */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>جنسیت</InputLabel>
-            <Select name="gender" value={formData.gender} onChange={handleChange}>
-              {dropdownData.genders.map((genderItem) => (
-                <MenuItem key={genderItem.id} value={genderItem.id}>
-                  {genderItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* دراپ‌داون گروه سنی */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>گروه سنی</InputLabel>
-            <Select name="ageRange" value={formData.ageRange} onChange={handleChange}>
-              {dropdownData.ages.map((ageItem) => (
-                <MenuItem key={ageItem.id} value={ageItem.id}>
-                  {ageItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* دراپ‌داون شهر */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>شهر</InputLabel>
-            <Select name="province" value={formData.province} onChange={handleChange}>
-              {dropdownData.provinces.map((provinceItem) => (
-                <MenuItem key={provinceItem.id} value={provinceItem.id}>
-                  {provinceItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* دراپ‌داون وضعیت سلامت */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>وضعیت سلامت</InputLabel>
-            <Select name="healthStatus" value={formData.healthStatus} onChange={handleChange}>
-              {dropdownData.healthStatus.map((statusItem) => (
-                <MenuItem key={statusItem.id} value={statusItem.id}>
-                  {statusItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* دراپ‌داون نوع زندگی */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>نوع زندگی</InputLabel>
-            <Select name="liveType" value={formData.liveType} onChange={handleChange}>
-              {dropdownData.liveTypes.map((typeItem) => (
-                <MenuItem key={typeItem.id} value={typeItem.id}>
-                  {typeItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* دراپ‌داون وضعیت تاهل */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>وضعیت تاهل</InputLabel>
-            <Select name="marriageStatus" value={formData.marriageStatus} onChange={handleChange}>
-              {dropdownData.marriageStatus.map((statusItem) => (
-                <MenuItem key={statusItem.id} value={statusItem.id}>
-                  {statusItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* تکست‌باکس‌های توضیحات */}
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="توضیحات من"
-            name="myDescription"
-            value={formData.myDescription}
-            onChange={handleChange}
-            multiline
-            rows={4}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="توضیحات رفرال"
-            name="rDescription"
-            value={formData.rDescription}
-            onChange={handleChange}
-            multiline
-            rows={4}
-          />
-        </Grid>
-
-        {/* کپچا */}
-        <Grid item xs={12} style={{ textAlign: "center" }}>
-          <img src={captcha.image} alt="کد امنیتی" style={{ width: "200px", height: "50px" }} />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="کد امنیتی"
-            name="captchaValue"
-            value={formData.captchaValue}
-            onChange={handleChange}
-            required
-          />
-          <IconButton onClick={refreshCaptcha} style={{ position: "absolute", top: "50%", right: "10px", transform: "translateY(-50%)" }}>
-            <RefreshIcon />
-          </IconButton>
-        </Grid>
-
-        {/* دکمه ارسال */}
-        <Grid item xs={12}>
-          <Button type="submit" variant="contained" fullWidth>
-            ثبت‌نام
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 

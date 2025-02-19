@@ -4,7 +4,7 @@ import { Grid, TextField } from '@mui/material';
 
 const TextFields = ({ label, name, value, onChange, type = "text", multiline = false, rows = 1 }) => {
   return (
-    <Grid item xs={12}>
+        <Grid item xs={12}>
       <TextField
         fullWidth
         label={label}
@@ -14,8 +14,10 @@ const TextFields = ({ label, name, value, onChange, type = "text", multiline = f
         type={type}
         multiline={multiline}
         rows={rows}
-        required
+        sx={{ marginTop: 10 ,  marginBottom: 10 }} // تنظیم فاصله پایین
+
       />
+      <br/>
     </Grid>
   );
 };
