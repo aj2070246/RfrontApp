@@ -3,7 +3,12 @@ import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui
 import { getCaptcha, registerUser, getDropdownItems } from '../../api';
 import { 
   GenderDropdown, AgeRangeDropdown, ProvinceDropdown, 
-  HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown 
+  HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown ,
+  CarValuesDropdown,
+  HomeValueDropDown,
+  IncomeAmountDropDown,
+  OnlineStatusDropDown,
+  ProfilePhotoStatusDropDown
 } from './Dropdowns';
 import BirthdaySelector from './BirthdaySelector'; // این را اضافه کردم
 import { toGregorian } from 'jalaali-js';
@@ -19,6 +24,10 @@ const RegisterForm = () => {
     liveTypes: [],
     marriageStatus: [],
     provinces: [],
+    incomeAmount: [],
+    homeValue: [],
+    carValue: [],
+   
   });
 
   const [formData, setFormData] = useState({
@@ -38,7 +47,11 @@ const RegisterForm = () => {
     rDescription: '',
     myDescription: '',
     birthDate:'',
-    emailAddress:''
+    emailAddress:'',
+    incomeAmount:'',
+    homeValue:'',
+    carValue:'',
+   
   });
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -73,6 +86,9 @@ const RegisterForm = () => {
             liveTypes: dropdownResponse.data.model.liveTypes || [],
             marriageStatus: dropdownResponse.data.model.marriageStatus || [],
             provinces: dropdownResponse.data.model.provinces || [],
+            incomeAmount: dropdownResponse.data.model.incomeAmount || [],
+            carValue: dropdownResponse.data.model.carValue || [],
+            homeValue: dropdownResponse.data.model.homeValue || [], 
           });
         }
         await fetchCaptcha();
@@ -150,7 +166,11 @@ const RegisterForm = () => {
             <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
             <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
             <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
-
+           
+            <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
+            <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
+            <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
+           
             <Grid item xs={12} container spacing={2} alignItems="center">
               <Grid item xs={6}>
                 {isCaptchaLoading ? (

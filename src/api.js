@@ -1,17 +1,52 @@
-
 import axios from 'axios';
 
-// ایجاد یک نمونه axios با آدرس پایه
+// ایجاد نمونه axios
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:5000', // آدرس پایه API
-  // baseURL: 'http://93.118.140.133:2060', // آدرس پایه API
-  timeout: 10000, // زمان تایم‌اوت برای درخواست‌ها
+  baseURL: 'http://127.0.0.1:5000', // آدرس API
+  timeout: 10000, // زمان تایم‌اوت
   headers: {
-    'accept': 'application/json',   'Content-Type': 'application/json',
-  
-}, 
-
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
 });
+
+// لیست مسیرهایی که نیاز به توکن ندارند
+const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login','/PublicData/RegisterUser'];
+
+// **بررسی مقدار توکن در هر درخواست**
+api.interceptors.request.use(
+  (config) => {
+    // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
+    if (!noAuthRoutes.includes(config.url)) {
+      const token = localStorage.getItem('amirToken'); // دریافت توکن
+      if (!token) {
+        window.location.href = '/login'; // **اگر توکن خالی بود، به صفحه لاگین هدایت شود**
+        return Promise.reject('No token found');
+      }
+      config.headers['theAmirToken'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// **بررسی مقدار statusCode در هر پاسخ**
+api.interceptors.response.use(
+  (response) => {
+    if (response.data.statusCode === 999 && !noAuthRoutes.includes(response.config.url)) {
+      window.location.href = '/login'; // **اگر statusCode = 999 بود و جزو لیست نبود، ریدایرکت شود**
+    }
+    return response;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+
 
 export const getDropdownItems = () => {
 console.log('api called => GetAllDropDownsItems 12');
@@ -56,10 +91,15 @@ export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
 
 export const registerUser = (formData) => api.post('/PublicData/RegisterUser', formData);
 
-export const getUserInfo = (stringId) => {
-  return api.post('/Connection/GetUserInfo', { StringId: stringId });
+export const getUserInfo = async (stringId) => {
+  try {
+    const response = await api.post("/Connection/GetUserInfo", { StringId: stringId });
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
 };
-
 export const deleteMessage = (stringId) => {
 console.log('deleteMessage=>   2' + stringId);
 return api.post('/Connection/deleteMessage', { StringId: stringId });
@@ -77,3 +117,7 @@ export const login = async (formData) => {
     return { isSuccess: false, message: "خطایی در ورود به سیستم رخ داده است." };
   }
 };
+
+
+
+

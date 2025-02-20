@@ -82,11 +82,62 @@ const MarriageStatusDropdown = ({ marriageStatus, handleChange, marriageStatusOp
   />
 );
 
+const CarValuesDropdown = ({ carValue, handleChange, carValueOptions }) => (
+  <Dropdowns
+    label="ارزش خودرو"
+    name="carValue"
+    value={carValue}
+    onChange={handleChange}
+    options={carValueOptions}
+  />
+);
+const IncomeAmountDropDown = ({ incomeAmount, handleChange, incomeAmounts }) => (
+  <Dropdowns
+    label="میزان درآمد ماهانه"
+    name="incomeAmount"
+    value={incomeAmount}
+    onChange={handleChange}
+    options={incomeAmounts}
+  />
+);
+
+const OnlineStatusDropDown = ({ onlineStatus, handleChange, onlineStatuss }) => (
+  <Dropdowns
+    label="وضعیت آنلاین"
+    name="onlineStatus"
+    value={onlineStatus}
+    onChange={handleChange}
+    options={onlineStatuss}
+  />
+);
+const ProfilePhotoStatusDropDown = ({ profilePhotoStatus, handleChange, profilePhotoStatuss }) => (
+  <Dropdowns
+    label="تصویر پروفایل"
+    name="profilePhoto"
+    value={profilePhotoStatus}
+    onChange={handleChange}
+    options={profilePhotoStatuss}
+  />
+);
+const HomeValueDropDown = ({ homeValue, handleChange, homeValues }) => (
+  <Dropdowns
+    label="ارزش خانه"
+    name="homeValue"
+    value={homeValue}
+    onChange={handleChange}
+    options={homeValues}
+  />
+); 
 export {
   GenderDropdown,
   AgeRangeDropdown,
   ProvinceDropdown,
   HealtStatusDropdown,
   LiveTypeDropdown,
-  MarriageStatusDropdown
+  MarriageStatusDropdown,
+  CarValuesDropdown,
+  HomeValueDropDown,
+  IncomeAmountDropDown,
+  OnlineStatusDropDown,
+  ProfilePhotoStatusDropDown
 };

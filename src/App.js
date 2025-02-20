@@ -4,6 +4,7 @@ import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
 import RegisterForm from "./pages/registerPage/RegisterForm"; // مسیر صحیح کامپوننت ثبت‌نام
 import Login_Form from './pages/Login_Form';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -24,7 +25,9 @@ function App() {
             <li>
               <Link to="/login">loginnnn</Link>
             </li>
-
+            <li>
+              <Link to={`/profile/172aeb93-c607-4e69-86ba-a4fb0bcc03c7`}>به پروفایل کاربر برو</Link>
+            </li>
           </ul>
         </nav>
 
@@ -32,9 +35,10 @@ function App() {
         <Routes>
           <Route path="/chat/:userId" element={<ChatPage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/profile/:stringId" element={<Profile />} />
           <Route path="/registerForm" element={<RegisterForm />} /> {/* استفاده‌ی صحیح از کامپوننت */}
           <Route path="/login" element={<Login_Form />} /> {/* استفاده‌ی صحیح از کامپوننت */}
-        {/* سایر مسیرها */}
+          {/* سایر مسیرها */}
 
         </Routes>
       </div>

@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
-import { Card, CardContent, CardMedia, Typography, Alert } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { searchUsers, getDropdownItems } from '../api'; // اضافه کردن متد جدید
-
+import {
+  GenderDropdown, AgeRangeDropdown, ProvinceDropdown,
+  HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
+  CarValuesDropdown,
+  HomeValueDropDown,
+  IncomeAmountDropDown,
+  OnlineStatusDropDown,
+  ProfilePhotoStatusDropDown
+} from './registerPage/Dropdowns';
 const SearchPage = () => {
   const [gender, setGender] = useState('');
   const [ageRange, setAgeRange] = useState('');
@@ -14,220 +22,178 @@ const SearchPage = () => {
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
 
+  const [incomeAmount, setIncomeAmount] = useState('');
+  const [homeValue, setHomeValue] = useState('');
+  const [carValue, setCarValue] = useState('');
+  const [onlineStatus, setOnlineStatus] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState('');
+
+  const [formData, setFormData] = useState({
+    gender: '',
+    ageRange: '',
+    province: '',
+    healtStatus: '',
+    liveType: '',
+    marriageStatus: '',
+    incomeAmount: '',
+    homeValue: '',
+    carValue: '',
+    onlineStatus: '',
+    profilePhoto: ''
+  });
+
   // اضافه کردن state برای ذخیره داده‌های دراپ‌داون‌ها
   const [dropdownData, setDropdownData] = useState({
     ages: [],
     genders: [],
-    provinces: [],
     healtStatus: [],
     liveTypes: [],
-    marriageStatus: []
+    marriageStatus: [],
+    provinces: [],
+    incomeAmount: [],
+    homeValue: [],
+    carValue: [],
+    onlineStatus: [],
+    profilePhoto: []
   });
 
-  // بارگذاری داده‌های دراپ‌داون‌ها از API
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getDropdownItems();
-        if (response.data.isSuccess) {
-          setDropdownData(response.data.model); // ذخیره داده‌ها در state
-        } else {
-          throw new Error(response.data.message);
+        const dropdownResponse = await getDropdownItems();
+        if (dropdownResponse.data.isSuccess) {
+          setDropdownData({
+            ages: dropdownResponse.data.model.ages || [],
+            genders: dropdownResponse.data.model.genders || [],
+            healtStatus: dropdownResponse.data.model.healtStatus || [],
+            liveTypes: dropdownResponse.data.model.liveTypes || [],
+            marriageStatus: dropdownResponse.data.model.marriageStatus || [],
+            provinces: dropdownResponse.data.model.provinces || [],
+            incomeAmount: dropdownResponse.data.model.incomeAmount || [],
+            carValue: dropdownResponse.data.model.carValue || [],
+            homeValue: dropdownResponse.data.model.homeValue || [],
+            onlineStatus: dropdownResponse.data.model.onlineStatus || [],
+            profilePhoto: dropdownResponse.data.model.profilePhoto || [],
+          });
         }
-      } catch (err) {
-        setError('خطایی در دریافت داده‌ها رخ داده است');
+      } catch (error) {
+        console.error('❌ Error fetching dropdown data:', error);
+      } finally {
       }
     };
 
     fetchData();
   }, []);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
 
-  
   const handleSearch = async () => {
     try {
       setError(null); // پاک کردن خطا قبل از جستجو
-  
+
       // ساخت داده‌ها بر اساس مقادیر انتخابی و تبدیل رشته به id
       const requestData = {
         pageIndex: 0,
-        pageItemsCount: 10, // می‌تونی این مقدار رو به دلخواه تغییر بدی
-        ageIdFrom: ageRange ? parseInt(ageRange) : 0, // اگر خالی بود 0 می‌فرسته
-        ageIdTo: ageRange ? parseInt(ageRange) : 0,   // اگر خالی بود 0 می‌فرسته
-        genderId: gender ? parseInt(gender) : 0,      // اگر خالی بود 0 می‌فرسته
-        healthStatusId: healthStatus ? parseInt(healthStatus) : 0,  // اگر خالی بود 0 می‌فرسته
-        liveTypeId: liveType ? parseInt(liveType) : 0,    // اگر خالی بود 0 می‌فرسته
-        marriageStatusId: marriageStatus ? parseInt(marriageStatus) : 0, // اگر خالی بود 0 می‌فرسته
-        provinceId: location ? parseInt(location) : 0,  // اگر خالی بود 0 می‌فرسته
-        isOnline: true // فرض بر آنلاین بودن
+        pageItemsCount: 10,
+        ageIdFrom: formData.ageRange ? parseInt(formData.ageRange) : 0,
+        ageIdTo: formData.ageRange ? parseInt(formData.ageRange) : 0,
+        genderId: formData.gender ? parseInt(formData.gender) : 0,
+        healthStatusId: formData.healtStatus ? parseInt(formData.healtStatus) : 0,
+        liveTypeId: formData.liveType ? parseInt(formData.liveType) : 0,
+        marriageStatusId: formData.marriageStatus ? parseInt(formData.marriageStatus) : 0,
+        provinceId: formData.province ? parseInt(formData.province) : 0,
+        incomeId: formData.incomeAmount ? parseInt(formData.incomeAmount) : 0,
+        carValueId: formData.carValue ? parseInt(formData.carValue) : 0,
+        homeValueId: formData.homeValue ? parseInt(formData.homeValue) : 0,
+        profilePhotoId: formData.profilePhoto ? parseInt(formData.profilePhoto) : 0,
+        onlineStatusId: formData.onlineStatus ? parseInt(formData.onlineStatus) : 0,
       };
-  
+
       // فراخوانی تابع searchUsers با ارسال requestData
       const response = await searchUsers(requestData);
-  
+
       if (response.data.statusCode !== 200) {
         throw new Error(response.data.message || 'خطایی رخ داده است');
       }
-  
+
       setResults(response.data.model || []); // ذخیره داده‌ها
     } catch (err) {
       setError(err.message);
     }
   };
-  
+
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
-  
+
       <Grid container spacing={2}>
-        {/* دراپ‌داون جنسیت */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>جنسیت</InputLabel>
-            <Select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}  // فقط مقدار id ذخیره می‌شود
-              label="جنسیت"
-            >
-              {dropdownData.genders.map((genderItem) => (
-                <MenuItem key={genderItem.id} value={genderItem.id}>  {/* ارسال id به جای itemValue */}
-                  {genderItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-  
-        {/* دراپ‌داون گروه سنی */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>گروه سنی</InputLabel>
-            <Select
-              value={ageRange}
-              onChange={(e) => setAgeRange(e.target.value)}  // فقط مقدار id ذخیره می‌شود
-              label="گروه سنی"
-            >
-              {dropdownData.ages.map((ageItem) => (
-                <MenuItem key={ageItem.id} value={ageItem.id}>  {/* ارسال id به جای itemValue */}
-                  {ageItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-  
-        {/* دراپ‌داون شهر */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>شهر</InputLabel>
-            <Select
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}  // فقط مقدار id ذخیره می‌شود
-              label="مکان"
-            >
-              {dropdownData.provinces.map((provinceItem) => (
-                <MenuItem key={provinceItem.id} value={provinceItem.id}>  {/* ارسال id به جای itemValue */}
-                  {provinceItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-  
-        {/* دراپ‌داون وضعیت سلامت */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>وضعیت سلامت</InputLabel>
-            <Select
-              value={healthStatus}
-              onChange={(e) => setHealthStatus(e.target.value)}  // فقط مقدار id ذخیره می‌شود
-              label="وضعیت سلامت"
-            >
-              {dropdownData.healtStatus.map((statusItem) => (
-                <MenuItem key={statusItem.id} value={statusItem.id}>  {/* ارسال id به جای itemValue */}
-                  {statusItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-  
-        {/* دراپ‌داون نوع زندگی */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>نوع زندگی</InputLabel>
-            <Select
-              value={liveType}
-              onChange={(e) => setLiveType(e.target.value)}  // فقط مقدار id ذخیره می‌شود
-              label="نوع زندگی"
-            >
-              {dropdownData.liveTypes.map((typeItem) => (
-                <MenuItem key={typeItem.id} value={typeItem.id}>  {/* ارسال id به جای itemValue */}
-                  {typeItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-  
-        {/* دراپ‌داون وضعیت تاهل */}
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>وضعیت تاهل</InputLabel>
-            <Select
-              value={marriageStatus}
-              onChange={(e) => setMarriageStatus(e.target.value)}  // فقط مقدار id ذخیره می‌شود
-              label="وضعیت تاهل"
-            >
-              {dropdownData.marriageStatus.map((statusItem) => (
-                <MenuItem key={statusItem.id} value={statusItem.id}>  {/* ارسال id به جای itemValue */}
-                  {statusItem.itemValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-  
+        <GenderDropdown gender={formData.gender} handleChange={handleChange} genders={dropdownData.genders} />
+        <AgeRangeDropdown ageRange={formData.ageRange} handleChange={handleChange} ages={dropdownData.ages} />
+        <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
+        <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
+        <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
+        <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
+
+        <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
+        <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
+        <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
+        <ProfilePhotoStatusDropDown profilePhotoStatus={formData.profilePhoto} handleChange={handleChange} profilePhotoStatuss={dropdownData.profilePhoto} />
+        <OnlineStatusDropDown onlineStatus={formData.onlineStatus} handleChange={handleChange} onlineStatuss={dropdownData.onlineStatus} />
+
+
         {/* دکمه جستجو */}
         <Grid item xs={12}>
           <Button variant="contained" color="primary" fullWidth onClick={handleSearch}>
             جستجو
           </Button>
         </Grid>
-  
+
         {/* نمایش خطا */}
         {error && (
           <Grid item xs={12}>
             <Alert severity="error">{error}</Alert>
           </Grid>
         )}
-  
+
         {/* نمایش نتایج جستجو */}
         <Grid container spacing={2} style={{ marginTop: '20px' }}>
           {results.length > 0 ? (
             results.map((user) => (
               <Grid item xs={12} sm={6} md={3} key={user.id}>
+
                 <Card>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`} // آواتار تصادفی
-                    alt="User Avatar"
-                  />
+                  <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }}>
+                    <CardActionArea>
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        image={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
+                        alt="User Avatar"
+                      />
+                    </CardActionArea>
+                  </Link>
                   <CardContent>
-                    <Typography variant="h6">
-                      {user.firstName} {user.lastName}
-                    </Typography>
+                    <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blankx'>
+                      <Typography variant="h6">
+                        {user.firstName} {user.lastName}
+                      </Typography>
+                    </Link>
+
                     <Typography variant="body2" color="textSecondary">
                       {user.myDescription}
                     </Typography>
                     <Link to={`/chat/${user.id}`}>
-                      <Button size="small" color="primary">
-                        شروع چت
+                      <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
+                        شروع گفتگو
                       </Button>
                     </Link>
+
                   </CardContent>
                 </Card>
+
               </Grid>
             ))
           ) : (
@@ -241,7 +207,7 @@ const SearchPage = () => {
       </Grid>
     </Box>
   );
-  
+
 
 
 };

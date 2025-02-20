@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
 import { getCaptcha, login } from '../api';
+import {   Container, Paper,  Snackbar, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Login_Form = () => {
 
-  const fetchCaptcha = async () => {
+const navigate = useNavigate();
+
+const fetchCaptcha = async () => {
     setIsCaptchaLoading(true);
     try {
       const captchaResponse = await getCaptcha();
@@ -42,13 +46,18 @@ const Login_Form = () => {
     setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
+  const refreshCaptcha = async () => {
+    await fetchCaptcha();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await login(formData); // فرض می‌کنیم تابع login در api.js قرار دارد
     if (response.isSuccess) {
       // ذخیره‌سازی اطلاعات در localStorage
-      localStorage.setItem('token', response.model.token);
-      // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
+      localStorage.setItem('amirToken', response.model.token);
+      navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
+        // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
       setMessage(response.message);
       setFormData(prevData => ({ ...prevData, password: '', captchaValue: '' }));
@@ -57,6 +66,9 @@ const Login_Form = () => {
   };
 
   return (
+    
+    <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
     <Grid container spacing={2} className="login-form">
       <Grid item xs={12}>
         <Typography variant="h4">ورود به حساب کاربری</Typography>
@@ -82,10 +94,16 @@ const Login_Form = () => {
           required
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={6}>
         <img src={captcha.image} alt="Captcha" />
-        {isCaptchaLoading && <CircularProgress />}
-        <TextField
+      
+        </Grid>
+        <Grid item xs={6}>
+                       <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
+                     </Grid> 
+                     
+                     {isCaptchaLoading && <CircularProgress />}
+                       <TextField
           label="کپچا"
           name="captchaValue"
           value={formData.captchaValue}
@@ -93,7 +111,6 @@ const Login_Form = () => {
           fullWidth
           required
         />
-      </Grid>
       {message && (
         <Grid item xs={12}>
           <Typography color="error">{message}</Typography>
@@ -108,6 +125,8 @@ const Login_Form = () => {
         <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
       </Grid>
     </Grid>
+    </Paper>
+    </Container>
   );
 };
 
