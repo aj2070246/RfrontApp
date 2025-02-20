@@ -38,6 +38,9 @@ const fetchCaptcha = async () => {
   const [message, setMessage] = useState('');
   
   useEffect(() => {
+    localStorage.removeItem('token'); // حذف توکن از localStorage
+    localStorage.removeItem('userId'); // حذف توکن از localStorage
+    
     fetchCaptcha();
   }, []);
 
@@ -51,11 +54,13 @@ const fetchCaptcha = async () => {
   };
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
     const response = await login(formData); // فرض می‌کنیم تابع login در api.js قرار دارد
     if (response.isSuccess) {
       // ذخیره‌سازی اطلاعات در localStorage
-      localStorage.setItem('amirToken', response.model.token);
+      localStorage.setItem('token', response.model.token);
+      localStorage.setItem('userId', response.model.id);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
         // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
@@ -69,7 +74,15 @@ const fetchCaptcha = async () => {
     
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-    <Grid container spacing={2} className="login-form">
+    
+      <div class="banner2">
+        <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
+        <p class="banner-text2">   سامانه دوست یابی</p>
+      </div>
+       <Grid container spacing={2} className="login-form">
+
+    
+
       <Grid item xs={12}>
         <Typography variant="h4">ورود به حساب کاربری</Typography>
       </Grid>
@@ -120,7 +133,7 @@ const fetchCaptcha = async () => {
         <Button variant="contained" onClick={handleSubmit}>ورود</Button>
       </Grid>
       <Grid item xs={12}>
-        <Link href="/register" variant="body2">ثبت نام</Link>
+        <Link href="/registerForm" variant="body2">ثبت نام</Link>
         <br />
         <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
       </Grid>

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui/material';
 import { getCaptcha, registerUser, getDropdownItems } from '../../api';
+import { Link } from '@mui/material';
+
 import { 
   GenderDropdown, AgeRangeDropdown, ProvinceDropdown, 
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown ,
   CarValuesDropdown,
   HomeValueDropDown,
   IncomeAmountDropDown,
-  OnlineStatusDropDown,
-  ProfilePhotoStatusDropDown
+  RelationTypeDropDown
 } from './Dropdowns';
 import BirthdaySelector from './BirthdaySelector'; // این را اضافه کردم
-import { toGregorian } from 'jalaali-js';
 
 const RegisterForm = () => {
   const [captcha, setCaptcha] = useState({ id: null, image: '' });
@@ -27,6 +27,7 @@ const RegisterForm = () => {
     incomeAmount: [],
     homeValue: [],
     carValue: [],
+    relationType: [],
    
   });
 
@@ -51,6 +52,7 @@ const RegisterForm = () => {
     incomeAmount:'',
     homeValue:'',
     carValue:'',
+    relationType:''
    
   });
 
@@ -89,6 +91,7 @@ const RegisterForm = () => {
             incomeAmount: dropdownResponse.data.model.incomeAmount || [],
             carValue: dropdownResponse.data.model.carValue || [],
             homeValue: dropdownResponse.data.model.homeValue || [], 
+            relationType: dropdownResponse.data.model.relationType || [], 
           });
         }
         await fetchCaptcha();
@@ -144,6 +147,11 @@ const RegisterForm = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <form onSubmit={handleSubmit}>
+          
+      <div class="banner2">
+        <p class="banner-text2">بمنظور استفاده از امکانات سایت ابتدا ثبت نام کنید</p>
+      </div>
+      
           <Grid container spacing={2}>
             <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
             <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
@@ -170,7 +178,8 @@ const RegisterForm = () => {
             <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
             <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
             <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
-           
+            <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} relationTypes={dropdownData.relationType} />
+            
             <Grid item xs={12} container spacing={2} alignItems="center">
               <Grid item xs={6}>
                 {isCaptchaLoading ? (
@@ -202,6 +211,14 @@ const RegisterForm = () => {
                 ثبت‌نام
               </Button>
             </Grid>
+           
+           <Grid item xs={12}>
+                   <Link href="/login" variant="body2">بازگشت به صفحه ورود به سامانه</Link>
+                   <br />
+                   <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
+                 </Grid>
+
+
           </Grid>
         </form>
       </Paper>

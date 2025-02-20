@@ -4,7 +4,8 @@ import { getMessages, sendMessage, getUserInfo, deleteMessage } from '../api';
 
 const ChatPage = () => {
   const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
-  const senderUserId = '1';
+  const senderUserId =localStorage.getItem('userId');
+  ;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userInfo, setUserInfo] = useState(null);
@@ -19,6 +20,13 @@ const ChatPage = () => {
     }
   }, [userId]);
 
+  useEffect(() => {
+    if (messages.length > 0) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+
   const fetchMessages = async () => {
     try {
       const response = await getMessages(senderUserId, userId);
@@ -29,17 +37,20 @@ const ChatPage = () => {
       console.error('Error fetching messages:', error);
     }
   };
-
   const fetchUserInfo = async () => {
     try {
-      const response = await getUserInfo(userId);
-      if (response.data.isSuccess) {
-        setUserInfo(response.data.model);
-      }
+        const response = await getUserInfo(userId);
+        console.log(response); // بررسی پاسخ دریافتی
+        if (response.isSuccess) { // بررسی مستقیم isSuccess
+            setUserInfo(response.model); // دسترسی به model
+        } else {
+            console.error('API response indicates failure:', response);
+        }
     } catch (error) {
-      console.error('Error fetching user info:', error);
+        console.error('Error fetching user info:', error);
     }
-  };
+};
+
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -145,7 +156,7 @@ const ChatPage = () => {
       )}
     </div>
   ))}
-  <div ref={messagesEndRef} /> {/* نقطه اسکرول به آخر چت */}
+    <div ref={messagesEndRef} style={{ height: '0' }} /> {/* این div باعث می‌شود که به انتها اسکرول کند */}
 </div>
 
       <div style={styles.inputContainer}>
@@ -225,6 +236,8 @@ const styles = {
     padding: '10px',
     borderRadius: '10px',
     backgroundColor: '#fff',
+    overflowY: 'auto', // این خط برای قابلیت اسکرول به پایین است
+
   },
   message: {
     maxWidth: '60%',
@@ -253,6 +266,8 @@ const styles = {
     padding: '10px',
     borderRadius: '5px',
     border: '1px solid #ccc',
+    fontFamily: 'inherit', // این خط را اضافه کنید
+    fontSize: 'inherit', // این خط را اضافه کنید
   },
   button: {
     marginLeft: '10px',
@@ -262,6 +277,8 @@ const styles = {
     color: 'white',
     border: 'none',
     cursor: 'pointer',
+    fontFamily: 'inherit', // این خط را اضافه کنید
+    fontSize: 'inherit', // این خط را اضافه کنید
   },
   statusText: {
     fontSize: '12px',

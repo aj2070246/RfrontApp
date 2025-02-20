@@ -1,48 +1,83 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import { FaHome, FaSearch, FaUserPlus, FaSignInAlt, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
-import RegisterForm from "./pages/registerPage/RegisterForm"; // مسیر صحیح کامپوننت ثبت‌نام
+import RegisterForm from "./pages/registerPage/RegisterForm";
 import Login_Form from './pages/Login_Form';
 import Profile from './pages/Profile';
+import './App.css'; // اضافه کردن فایل CSS
 
 function App() {
   return (
     <Router>
-      <div>
-        {/* منو لینک‌ها */}
-        <nav>
-          <ul>
+      <Main />
+    </Router>
+  );
+}
+
+function Main() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // حذف توکن از localStorage
+    localStorage.removeItem('userId'); // حذف توکن از localStorage
+    navigate('/login'); // هدایت کاربر به صفحه لاگین
+  };
+
+  // بررسی اینکه آیا در صفحه لاگین هستیم یا نه
+  const isLoginPage = window.location.pathname === '/login';
+  const registerPage = window.location.pathname === '/registerForm';
+
+  return (
+    <div className="app-container">
+      {/* دکمه همبرگری */}
+      <div className="hamburger" onClick={toggleMenu}>
+        <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
+        <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
+        <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
+      </div>
+      <div class="banner">
+        <p class="banner-text"> به یاریاب خوش آمدید </p>
+      </div>
+
+      {/* منو لینک‌ها */}
+      {!isLoginPage && !registerPage && (
+        <nav className={`navbar ${isMenuOpen ? 'open' : ''}`}>
+          <ul className="nav-links">
+           
             <li>
-              <Link to="/chat/123">به صفحه چت برو</Link>
+              <Link to="/search" className="nav-button">
+              جستجوی کاربران
+                <FaSearch />
+              </Link>
             </li>
+           
             <li>
-              <Link to="/search">به صفحه جستجو برو</Link>
-            </li>
-            <li>
-              <Link to="/registerForm">ثبت نام</Link>
-            </li>
-            <li>
-              <Link to="/login">loginnnn</Link>
-            </li>
-            <li>
-              <Link to={`/profile/172aeb93-c607-4e69-86ba-a4fb0bcc03c7`}>به پروفایل کاربر برو</Link>
+              <button className="nav-button" onClick={handleLogout}>
+                خروج
+                <FaSignOutAlt />
+              </button>
             </li>
           </ul>
         </nav>
+      )}
 
-        {/* تعریف مسیرهای اپلیکیشن */}
-        <Routes>
-          <Route path="/chat/:userId" element={<ChatPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/profile/:stringId" element={<Profile />} />
-          <Route path="/registerForm" element={<RegisterForm />} /> {/* استفاده‌ی صحیح از کامپوننت */}
-          <Route path="/login" element={<Login_Form />} /> {/* استفاده‌ی صحیح از کامپوننت */}
-          {/* سایر مسیرها */}
 
-        </Routes>
-      </div>
-    </Router>
+      {/* تعریف مسیرهای اپلیکیشن */}
+      <Routes>
+        <Route path="/chat/:userId" element={<ChatPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/profile/:stringId" element={<Profile />} />
+        <Route path="/registerForm" element={<RegisterForm />} />
+        <Route path="/login" element={<Login_Form />} />
+      </Routes>
+    </div>
   );
 }
 

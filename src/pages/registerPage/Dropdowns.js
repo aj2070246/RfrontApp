@@ -128,6 +128,15 @@ const HomeValueDropDown = ({ homeValue, handleChange, homeValues }) => (
     options={homeValues}
   />
 ); 
+const RelationTypeDropDown = ({ relationType, handleChange,relationTypes }) => (
+  <Dropdowns
+    label="نوع ارتباط مورد نظر"
+    name="relationType"
+    value={relationType}
+    onChange={handleChange}
+    options={relationTypes}
+  />
+); 
 export {
   GenderDropdown,
   AgeRangeDropdown,
@@ -139,5 +148,6 @@ export {
   HomeValueDropDown,
   IncomeAmountDropDown,
   OnlineStatusDropDown,
-  ProfilePhotoStatusDropDown
+  ProfilePhotoStatusDropDown,
+  RelationTypeDropDown
 };

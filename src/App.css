@@ -1,4 +1,9 @@
-
+@font-face {
+  font-family: 'Vazir';
+  src: url('./fonts/Vazir-Light.woff') format('woff'); /* مسیر صحیح فونت */
+  font-weight: 300; /* وزن فونت */
+  font-style: normal; /* سبک فونت */
+}
 .App {
   text-align: center;
 }
@@ -26,14 +31,6 @@ body {
   font-size: calc(10px + 2vmin);
   color: white;
 }
-@font-face {
-  font-family: 'Vazir';
-  src: url('/fonts/Vazir-Light.woff2') format('woff2'),
-       url('/fonts/Vazir-Light.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
 .App-link {
   color: #61dafb;
 }
@@ -47,3 +44,83 @@ body {
   }
 }
 
+
+
+.nav-links {
+  list-style-type: none; /* حذف لیست نقاط */
+  padding: 0; /* حذف فضای داخلی */
+  display: flex; /* نمایش افقی */
+  justify-content: space-around; /* توزیع فضای بین دکمه‌ها */
+}
+
+.nav-button {
+  background-color: white; /* رنگ پس‌زمینه دکمه */
+  border: 2px solid pink; /* مرز دکمه */
+  border-radius: 5px; /* گرد کردن گوشه‌ها */
+  padding: 10px 15px; /* فضای داخلی دکمه */
+  text-decoration: none; /* حذف زیرخط */
+  color: pink; /* رنگ متن */
+  transition: background-color 0.3s; /* انیمیشن تغییر رنگ */
+}
+
+.nav-button:hover {
+  background-color: pink; /* تغییر رنگ در حالت هاور */
+  color: white; /* تغییر رنگ متن در حالت هاور */
+}
+
+
+/* App.css */
+
+.navbar {
+  background-color: pink; /* رنگ پس‌زمینه */
+  padding: 10px; /* فضای داخلی */
+  transition: opacity 0.5s ease; /* انیمیشن محو شدن */
+  opacity: 1; /* مقدار اولیه */
+}
+
+.navbar.hide {
+  opacity: 0; /* محو شدن */
+  pointer-events: none; /* غیرفعال کردن تعامل */
+}
+
+.navbar.show {
+  opacity: 1; /* نمایش */
+  pointer-events: auto; /* فعال کردن تعامل */
+}
+
+.toggle-button {
+  margin: 10px; /* حاشیه */
+  padding: 5px 10px; /* فضای داخلی */
+  background-color: white; /* رنگ پس‌زمینه دکمه */
+  border: 2px solid pink; /* مرز دکمه */
+  border-radius: 5px; /* گرد کردن گوشه‌ها */
+  cursor: pointer; /* نشانگر ماوس */
+}
+.banner {
+  background-color: rgb(255, 0, 251); /* رنگ پس‌زمینه قرمز */
+  border: 2px solid black; /* کادر دور بنر */
+  text-align: center; /* تراز کردن متن در وسط */
+  margin: 20px; /* فاصله از سایر عناصر */
+  border-radius: 10px; /* گوشه‌های گرد */
+}
+
+.banner-text {
+  color: white; /* رنگ متن سفید */
+  font-size: 24px; /* اندازه متن */
+  font-weight: bold; /* ضخامت متن */
+}
+
+
+.banner2 {
+  background-color: rgb(255, 0, 251); /* رنگ پس‌زمینه قرمز */
+  border: 2px solid black; /* کادر دور بنر */
+  text-align: center; /* تراز کردن متن در وسط */
+  margin: 20px; /* فاصله از سایر عناصر */
+  border-radius: 10px; /* گوشه‌های گرد */
+}
+
+.banner-text2 {
+  color: white; /* رنگ متن سفید */
+  font-size: 24px; /* اندازه متن */
+  font-weight: bold; /* ضخامت متن */
+}

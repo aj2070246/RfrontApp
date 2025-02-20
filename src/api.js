@@ -16,14 +16,17 @@ const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login','/PublicData
 // **بررسی مقدار توکن در هر درخواست**
 api.interceptors.request.use(
   (config) => {
+    console.log("111111111111");
     // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
     if (!noAuthRoutes.includes(config.url)) {
-      const token = localStorage.getItem('amirToken'); // دریافت توکن
-      if (!token) {
+      const token = localStorage.getItem('token'); // دریافت توکن
+      const currentUserId = localStorage.getItem('userId'); // دریافت توکن
+      if (!token && window.location.pathname !== '/registerForm') {
         window.location.href = '/login'; // **اگر توکن خالی بود، به صفحه لاگین هدایت شود**
         return Promise.reject('No token found');
       }
-      config.headers['theAmirToken'] = `Bearer ${token}`;
+      config.headers['token'] = `Bearer ${token}`;
+      config.headers['currentUserId'] = currentUserId;
     }
     return config;
   },

@@ -10,7 +10,8 @@ import {
   HomeValueDropDown,
   IncomeAmountDropDown,
   OnlineStatusDropDown,
-  ProfilePhotoStatusDropDown
+  ProfilePhotoStatusDropDown,
+  RelationTypeDropDown
 } from './registerPage/Dropdowns';
 const SearchPage = () => {
   const [gender, setGender] = useState('');
@@ -27,6 +28,7 @@ const SearchPage = () => {
   const [carValue, setCarValue] = useState('');
   const [onlineStatus, setOnlineStatus] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
+  const [relationType,setRelationType] = useState('');
 
   const [formData, setFormData] = useState({
     gender: '',
@@ -39,7 +41,8 @@ const SearchPage = () => {
     homeValue: '',
     carValue: '',
     onlineStatus: '',
-    profilePhoto: ''
+    profilePhoto: '',
+    relationType:''
   });
 
   // اضافه کردن state برای ذخیره داده‌های دراپ‌داون‌ها
@@ -54,7 +57,8 @@ const SearchPage = () => {
     homeValue: [],
     carValue: [],
     onlineStatus: [],
-    profilePhoto: []
+    profilePhoto: [],
+    relationType:[]
   });
 
 
@@ -75,6 +79,7 @@ const SearchPage = () => {
             homeValue: dropdownResponse.data.model.homeValue || [],
             onlineStatus: dropdownResponse.data.model.onlineStatus || [],
             profilePhoto: dropdownResponse.data.model.profilePhoto || [],
+            relationType: dropdownResponse.data.model.relationType || [],
           });
         }
       } catch (error) {
@@ -110,6 +115,7 @@ const SearchPage = () => {
         homeValueId: formData.homeValue ? parseInt(formData.homeValue) : 0,
         profilePhotoId: formData.profilePhoto ? parseInt(formData.profilePhoto) : 0,
         onlineStatusId: formData.onlineStatus ? parseInt(formData.onlineStatus) : 0,
+        relationTypeId: formData.relationType ? parseInt(formData.relationType) : 0,
       };
 
       // فراخوانی تابع searchUsers با ارسال requestData
@@ -136,6 +142,7 @@ const SearchPage = () => {
         <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
         <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
         <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
+        <RelationTypeDropDown  onlineStatus={formData.relationType} handleChange={handleChange} onlineStatuss={dropdownData.relationType} />
 
         <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
         <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
@@ -165,7 +172,7 @@ const SearchPage = () => {
               <Grid item xs={12} sm={6} md={3} key={user.id}>
 
                 <Card>
-                  <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }}>
+                  <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }}  target='_blank'>
                     <CardActionArea>
                       <CardMedia
                         component="img"
@@ -176,7 +183,7 @@ const SearchPage = () => {
                     </CardActionArea>
                   </Link>
                   <CardContent>
-                    <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blankx'>
+                    <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                       <Typography variant="h6">
                         {user.firstName} {user.lastName}
                       </Typography>
