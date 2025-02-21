@@ -47,7 +47,7 @@ const Profile = () => {
                 <Typography variant="h4" fontWeight="bold">
                   {user.firstName} {user.lastName}
                 </Typography>
-               
+
                 {/* درباره من */}
                 <Box
                   sx={{
@@ -87,11 +87,17 @@ const Profile = () => {
                 <Typography>🏡 نوع زندگی: {user.liveType}</Typography>
                 <Typography>❤️ وضعیت تأهل: {user.marriageStatus}</Typography>
                 <Typography>📍 استان: {user.province}</Typography>
+                <Typography>💰 درآمد: {user.incomeAmount}  </Typography>
+                <Typography>🚗 ارزش خودرو: {user.carValue}  </Typography>
+                <Typography>🏠 ارزش خانه: {user.homeValue}  </Typography>
+                <Typography>🕒 آخرین فعالیت: {user.lastActivityDate.split("T")[0]}</Typography>
+                <Typography>🤝 نوع رابطه مورد نظر: {user.relationType}</Typography>
+
 
                 <Link to={`/chat/${user.id}`}>
-                <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
-                  شروع گفتگو
-                </Button>
+                  <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
+                    شروع گفتگو
+                  </Button>
                 </Link>
 
               </CardContent>

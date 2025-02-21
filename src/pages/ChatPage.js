@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { useParams } from 'react-router-dom'; // اضافه کردن این خط
+import { useParams, Link } from 'react-router-dom'; // اضافه کردن این خط
 import { getMessages, sendMessage, getUserInfo, deleteMessage } from '../api';
 
 const ChatPage = () => {
   const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
-  const senderUserId =localStorage.getItem('userId');
+  const senderUserId = localStorage.getItem('userId');
   ;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -39,17 +39,17 @@ const ChatPage = () => {
   };
   const fetchUserInfo = async () => {
     try {
-        const response = await getUserInfo(userId);
-        console.log(response); // بررسی پاسخ دریافتی
-        if (response.isSuccess) { // بررسی مستقیم isSuccess
-            setUserInfo(response.model); // دسترسی به model
-        } else {
-            console.error('API response indicates failure:', response);
-        }
+      const response = await getUserInfo(userId);
+      console.log(response); // بررسی پاسخ دریافتی
+      if (response.isSuccess) { // بررسی مستقیم isSuccess
+        setUserInfo(response.model); // دسترسی به model
+      } else {
+        console.error('API response indicates failure:', response);
+      }
     } catch (error) {
-        console.error('Error fetching user info:', error);
+      console.error('Error fetching user info:', error);
     }
-};
+  };
 
 
   const handleSendMessage = async () => {
@@ -81,7 +81,7 @@ const ChatPage = () => {
       if (response.data.isSuccess) {
         // بعد از حذف پیام، لیست پیام‌ها را به‌روزرسانی کنید
         setMessages(messages.filter(msg => msg.id !== messageId));
-      fetchMessages();
+        fetchMessages();
 
       }
     } catch (error) {
@@ -92,72 +92,82 @@ const ChatPage = () => {
   return (
     <div style={styles.container}>
       {userInfo && (
-        <div style={styles.userInfoContainer}>
-          <div style={styles.userDetails}>
-            <p style={styles.userName}>
-              پیام شخصی با <br />
-              {userInfo.firstName} {userInfo.lastName}
-            </p>
-            <p style={styles.userInfo}>
-              - شهر {userInfo.province}
-            </p>
-            <p style={styles.userInfo}>
-              {userInfo.marriageStatus} | {userInfo.liveType}
-            </p>
+        <Link to={`/profile/${userInfo.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+          <div style={styles.userInfoContainer}>
+            <div style={styles.userDetails}>
+              <p style={styles.userName}>
+
+                پیام شخصی با <br />
+                {userInfo.firstName} {userInfo.lastName}
+              </p>
+              <p style={styles.userInfo}>
+                 شهر {" "}{userInfo.province}
+              </p>
+              <p style={styles.userInfo}>
+                آخرین فعالیت {" "}{userInfo.lastActivityDate}
+              </p>
+              <p style={styles.userInfo}>
+                رابطه مورد نظر {" "}{userInfo.relationType}
+              </p>
+              <p style={styles.userInfo}>
+                {userInfo.marriageStatus} | {userInfo.liveType}
+              </p>
+            </div>
+            <img
+              src={`https://i.pravatar.cc/40?img=${userId}`}
+              alt="Profile"
+              style={styles.profileImage}
+            />
           </div>
-          <img 
-            src={`https://i.pravatar.cc/40?img=${userId}`} 
-            alt="Profile" 
-            style={styles.profileImage} 
-          />
-        </div>
+        </Link>
+
       )}
 
-<div style={styles.chatBox}>
-  {messages.map((msg, index) => (
-    <div
-      key={index}
-      onMouseEnter={() => msg.senderUserId === senderUserId && handleMouseEnter(msg.messageStatusId)} // هاور فقط برای پیام‌های ارسالی
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-      style={{
-        ...styles.message,
-        backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
-        alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start',
-      }}
-    >
-      <p style={styles.text}>{msg.messageText}</p>
-      <span style={styles.time}>{new Date(msg.sendDate).toLocaleDateString()}</span>
+      <div style={styles.chatBox}>
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            onMouseEnter={() => msg.senderUserId === senderUserId && handleMouseEnter(msg.messageStatusId)} // هاور فقط برای پیام‌های ارسالی
+            onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
+            style={{
+              ...styles.message,
+              backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
+              alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <p style={styles.text}>{msg.messageText}</p>
+            <span style={styles.time}>{new Date(msg.sendDate).toLocaleDateString()}</span>
 
-      {/* نمایش تیک‌ها فقط برای پیام‌های ارسالی */}
-      {msg.senderUserId === senderUserId && (
-        <span style={styles.text}>
-          {msg.messageStatusId === 1 ? '✔️' :
-           msg.messageStatusId === 2 ? '✔️✔️' : 
-           msg.messageStatusId === 3 ? '✅' : ''}
-        </span>
-      )}
+            {/* نمایش تیک‌ها فقط برای پیام‌های ارسالی */}
+            {msg.senderUserId === senderUserId && (
+              <span style={styles.text}>
+                {msg.messageStatusId === 1 ? '✔️' :
+                  msg.messageStatusId === 2 ? '✔️✔️' :
+                    msg.messageStatusId === 3 ? '✅' : ''}
+              </span>
+            )}
 
-      {/* نمایش متن وضعیت پیام زمانی که موس روی آن می‌رود یا کلیک می‌شود (فقط برای پیام‌های ارسالی) */}
-      {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
-        <div style={styles.statusText}>
-          <span style={{ color: '#000' }}>{msg.messageStatus}</span> {/* متن وضعیت سیاه */}
-        </div>
-      )}
+            {/* نمایش متن وضعیت پیام زمانی که موس روی آن می‌رود یا کلیک می‌شود (فقط برای پیام‌های ارسالی) */}
+            {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
+              <div style={styles.statusText}>
+                <span style={{ color: '#000' }}>{msg.messageStatus}</span> {/* متن وضعیت سیاه */}
+              </div>
+            )}
 
-      {/* علامت سطل آشغال برای حذف پیام */}
-      {msg.senderUserId === senderUserId && (
-        <button 
-          onClick={() => handleDeleteMessage(msg.id)} 
-          style={styles.deleteButton}
-        >
-          🗑️
-        </button>
-      )}
-    </div>
-  ))}
-    <div ref={messagesEndRef} style={{ height: '0' }} /> {/* این div باعث می‌شود که به انتها اسکرول کند */}
-</div>
+            {/* علامت سطل آشغال برای حذف پیام */}
+            {msg.senderUserId === senderUserId && (
+              <button
+                onClick={() => handleDeleteMessage(msg.id)}
+                style={styles.deleteButton}
+              >
+                🗑️
+              </button>
+            )}
+          </div>
+        ))}
+        <div ref={messagesEndRef} style={{ height: '0' }} /> {/* این div باعث می‌شود که به انتها اسکرول کند */}
+      </div>
 
       <div style={styles.inputContainer}>
         <input
@@ -174,7 +184,7 @@ const ChatPage = () => {
 };
 
 const styles = {
-  
+
   statusText: {
     marginTop: '5px',
     fontSize: '14px',
@@ -209,8 +219,8 @@ const styles = {
     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
   },
   profileImage: {
-    width: '40px',
-    height: '40px',
+    width: '150px',
+    height: '150px',
     borderRadius: '50%',
     marginRight: '10px',
   },

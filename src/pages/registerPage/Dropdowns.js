@@ -32,10 +32,28 @@ const GenderDropdown = ({ gender, handleChange, genders }) => (
   />
 );
 
+const AgeFromDropdown = ({ ageRange, handleChange, ages }) => (
+  <Dropdowns
+    label="سن از"
+    name="ageFrom"
+    value={ageRange}
+    onChange={handleChange}
+    options={ages}
+  />
+);
 const AgeRangeDropdown = ({ ageRange, handleChange, ages }) => (
   <Dropdowns
-    label="گروه سنی"
+    label="سن"
     name="ageRange"
+    value={ageRange}
+    onChange={handleChange}
+    options={ages}
+  />
+);
+const AgeToDropdown = ({ ageRange, handleChange, ages }) => (
+  <Dropdowns
+    label="سن تا"
+    name="ageTo"
     value={ageRange}
     onChange={handleChange}
     options={ages}
@@ -139,7 +157,8 @@ const RelationTypeDropDown = ({ relationType, handleChange,relationTypes }) => (
 ); 
 export {
   GenderDropdown,
-  AgeRangeDropdown,
+  AgeFromDropdown,
+  AgeToDropdown,
   ProvinceDropdown,
   HealtStatusDropdown,
   LiveTypeDropdown,
@@ -149,5 +168,6 @@ export {
   IncomeAmountDropDown,
   OnlineStatusDropDown,
   ProfilePhotoStatusDropDown,
-  RelationTypeDropDown
+  RelationTypeDropDown,
+  AgeRangeDropdown
 };

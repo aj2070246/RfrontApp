@@ -3,9 +3,9 @@ import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui
 import { getCaptcha, registerUser, getDropdownItems } from '../../api';
 import { Link } from '@mui/material';
 
-import { 
-  GenderDropdown, AgeRangeDropdown, ProvinceDropdown, 
-  HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown ,
+import {
+  GenderDropdown,  ProvinceDropdown,
+  HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
   CarValuesDropdown,
   HomeValueDropDown,
   IncomeAmountDropDown,
@@ -18,7 +18,6 @@ const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(true);
   const [dropdownData, setDropdownData] = useState({
-    ages: [],
     genders: [],
     healtStatus: [],
     liveTypes: [],
@@ -28,7 +27,7 @@ const RegisterForm = () => {
     homeValue: [],
     carValue: [],
     relationType: [],
-   
+
   });
 
   const [formData, setFormData] = useState({
@@ -38,22 +37,19 @@ const RegisterForm = () => {
     password: '',
     mobile: '',
     captchaValue: '',
-    captchaId: null, 
-    gender: '',
-    ageRange: '',
-    province: '',
+    captchaId: null,  province: '',
     healtStatus: '',
     liveType: '',
     marriageStatus: '',
     rDescription: '',
     myDescription: '',
-    birthDate:'',
-    emailAddress:'',
-    incomeAmount:'',
-    homeValue:'',
-    carValue:'',
-    relationType:''
-   
+    birthDate: '',
+    emailAddress: '',
+    incomeAmount: '',
+    homeValue: '',
+    carValue: '',
+    relationType: ''
+
   });
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -82,7 +78,6 @@ const RegisterForm = () => {
         const dropdownResponse = await getDropdownItems();
         if (dropdownResponse.data.isSuccess) {
           setDropdownData({
-            ages: dropdownResponse.data.model.ages || [],
             genders: dropdownResponse.data.model.genders || [],
             healtStatus: dropdownResponse.data.model.healtStatus || [],
             liveTypes: dropdownResponse.data.model.liveTypes || [],
@@ -90,8 +85,8 @@ const RegisterForm = () => {
             provinces: dropdownResponse.data.model.provinces || [],
             incomeAmount: dropdownResponse.data.model.incomeAmount || [],
             carValue: dropdownResponse.data.model.carValue || [],
-            homeValue: dropdownResponse.data.model.homeValue || [], 
-            relationType: dropdownResponse.data.model.relationType || [], 
+            homeValue: dropdownResponse.data.model.homeValue || [],
+            relationType: dropdownResponse.data.model.relationType || [],
           });
         }
         await fetchCaptcha();
@@ -147,12 +142,12 @@ const RegisterForm = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <form onSubmit={handleSubmit}>
-          
-      <div class="banner2">
-        <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
-        <p class="banner-text2"> ابتدا ثبت نام کنید</p>
-      </div>
-      
+
+          <div class="banner2">
+            <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
+            <p class="banner-text2"> ابتدا ثبت نام کنید</p>
+          </div>
+
           <Grid container spacing={2}>
             <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
             <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
@@ -163,24 +158,23 @@ const RegisterForm = () => {
             <TextField label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
             <TextField label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
 
-<Grid item xs={12}>
-              <BirthdaySelector 
-                value={formData.birthDate} 
-                onChange={(date) => setFormData({ ...formData, birthDate: date })} 
+            <Grid item xs={12}>
+              <BirthdaySelector
+                value={formData.birthDate}
+                onChange={(date) => setFormData({ ...formData, birthDate: date })}
               />
             </Grid>
             <GenderDropdown gender={formData.gender} handleChange={handleChange} genders={dropdownData.genders} />
-            <AgeRangeDropdown ageRange={formData.ageRange} handleChange={handleChange} ages={dropdownData.ages} />
             <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
             <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
             <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
             <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
-           
+
             <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
             <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
             <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
             <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} relationTypes={dropdownData.relationType} />
-            
+
             <Grid item xs={12} container spacing={2} alignItems="center">
               <Grid item xs={6}>
                 {isCaptchaLoading ? (
@@ -197,12 +191,12 @@ const RegisterForm = () => {
                 <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
               </Grid>
               <Grid item xs={12}>
-                <TextField 
-                  label="کد امنیتی" 
-                  name="captchaValue" 
-                  value={formData.captchaValue} 
-                  onChange={handleChange} 
-                  fullWidth 
+                <TextField
+                  label="کد امنیتی"
+                  name="captchaValue"
+                  value={formData.captchaValue}
+                  onChange={handleChange}
+                  fullWidth
                 />
               </Grid>
             </Grid>
@@ -212,22 +206,22 @@ const RegisterForm = () => {
                 ثبت‌نام
               </Button>
             </Grid>
-           
-           <Grid item xs={12}>
-                   <Link href="/login" variant="body2">بازگشت به صفحه ورود به سامانه</Link>
-                   <br />
-                   <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
-                 </Grid>
+
+            <Grid item xs={12}>
+              <Link href="/login" variant="body2">بازگشت به صفحه ورود به سامانه</Link>
+              <br />
+              <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
+            </Grid>
 
 
           </Grid>
         </form>
       </Paper>
 
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={6000} 
-        onClose={() => setSnackbar({ ...snackbar, open: false })} 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
         <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}

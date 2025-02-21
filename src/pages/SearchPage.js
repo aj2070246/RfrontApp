@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { searchUsers, getDropdownItems } from '../api'; // اضافه کردن متد جدید
 import {
-  GenderDropdown, AgeRangeDropdown, ProvinceDropdown,
+  AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
   CarValuesDropdown,
   HomeValueDropDown,
@@ -13,9 +14,10 @@ import {
   ProfilePhotoStatusDropDown,
   RelationTypeDropDown
 } from './registerPage/Dropdowns';
+
 const SearchPage = () => {
-  const [gender, setGender] = useState('');
-  const [ageRange, setAgeRange] = useState('');
+  const [ageFrom, setAgeFrom] = useState('');
+  const [ageTo, setAgeTo] = useState('');
   const [location, setLocation] = useState('');
   const [healthStatus, setHealthStatus] = useState('');
   const [liveType, setLiveType] = useState('');
@@ -31,8 +33,8 @@ const SearchPage = () => {
   const [relationType, setRelationType] = useState('');
 
   const [formData, setFormData] = useState({
-    gender: '',
-    ageRange: '',
+    ageFrom: '',
+    ageTo: '',
     province: '',
     healtStatus: '',
     liveType: '',
@@ -44,11 +46,12 @@ const SearchPage = () => {
     profilePhoto: '',
     relationType: ''
   });
+  const [dropdownVisible, setDropdownVisible] = useState(true);
 
   // اضافه کردن state برای ذخیره داده‌های دراپ‌داون‌ها
   const [dropdownData, setDropdownData] = useState({
-    ages: [],
-    genders: [],
+    ageTo: [],
+    ageFrom: [],
     healtStatus: [],
     liveTypes: [],
     marriageStatus: [],
@@ -68,8 +71,8 @@ const SearchPage = () => {
         const dropdownResponse = await getDropdownItems();
         if (dropdownResponse.data.isSuccess) {
           setDropdownData({
-            ages: dropdownResponse.data.model.ages || [],
-            genders: dropdownResponse.data.model.genders || [],
+            ageFrom: dropdownResponse.data.model.ages || [],
+            ageTo: dropdownResponse.data.model.ages || [],
             healtStatus: dropdownResponse.data.model.healtStatus || [],
             liveTypes: dropdownResponse.data.model.liveTypes || [],
             marriageStatus: dropdownResponse.data.model.marriageStatus || [],
@@ -96,6 +99,8 @@ const SearchPage = () => {
 
 
   const handleSearch = async () => {
+    setDropdownVisible(false); // بستن دراپ‌دان‌ها پس از جستجو
+
     try {
       setError(null); // پاک کردن خطا قبل از جستجو
 
@@ -103,9 +108,9 @@ const SearchPage = () => {
       const requestData = {
         pageIndex: 0,
         pageItemsCount: 10,
-        ageIdFrom: formData.ageRange ? parseInt(formData.ageRange) : 0,
-        ageIdTo: formData.ageRange ? parseInt(formData.ageRange) : 0,
-        genderId: formData.gender ? parseInt(formData.gender) : 0,
+        ageIdFrom: formData.ageFrom ? parseInt(formData.ageFrom) : 0,
+        ageIdTo: formData.ageTo ? parseInt(formData.ageTo) : 0,
+        userId: localStorage.getItem('userId'),
         healthStatusId: formData.healtStatus ? parseInt(formData.healtStatus) : 0,
         liveTypeId: formData.liveType ? parseInt(formData.liveType) : 0,
         marriageStatusId: formData.marriageStatus ? parseInt(formData.marriageStatus) : 0,
@@ -135,22 +140,43 @@ const SearchPage = () => {
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
+      {!dropdownVisible && (
 
+        <Box
+          sx={{
+            backgroundColor: "#ddd",
+            padding: "10px",
+            textAlign: "center",
+            cursor: "pointer",
+            marginTop: "10px",
+            borderRadius: "5px"
+          }}
+          onClick={() => setDropdownVisible(prev => !prev)}
+        >
+          {dropdownVisible ? "بستن فیلترها ❌" : "نمایش فیلترها 🔍"}
+        </Box>
+
+      )}
+
+      {dropdownVisible && (
+
+        <Grid container spacing={2}>
+          <AgeToDropdown ageRange={formData.ageTo} handleChange={handleChange} ages={dropdownData.ageTo} />
+          <AgeFromDropdown ageRange={formData.ageFrom} handleChange={handleChange} ages={dropdownData.ageFrom} />
+          <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
+          <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
+          <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
+          <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
+          <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} onlineStatuss={dropdownData.relationType} />
+
+          <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
+          <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
+          <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
+          <ProfilePhotoStatusDropDown profilePhotoStatus={formData.profilePhoto} handleChange={handleChange} profilePhotoStatuss={dropdownData.profilePhoto} />
+          <OnlineStatusDropDown onlineStatus={formData.onlineStatus} handleChange={handleChange} onlineStatuss={dropdownData.onlineStatus} />
+        </Grid>
+      )}
       <Grid container spacing={2}>
-        <GenderDropdown gender={formData.gender} handleChange={handleChange} genders={dropdownData.genders} />
-        <AgeRangeDropdown ageRange={formData.ageRange} handleChange={handleChange} ages={dropdownData.ages} />
-        <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
-        <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
-        <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
-        <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
-        <RelationTypeDropDown onlineStatus={formData.relationType} handleChange={handleChange} onlineStatuss={dropdownData.relationType} />
-
-        <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
-        <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
-        <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
-        <ProfilePhotoStatusDropDown profilePhotoStatus={formData.profilePhoto} handleChange={handleChange} profilePhotoStatuss={dropdownData.profilePhoto} />
-        <OnlineStatusDropDown onlineStatus={formData.onlineStatus} handleChange={handleChange} onlineStatuss={dropdownData.onlineStatus} />
-
 
         {/* دکمه جستجو */}
         <Grid item xs={12}>
@@ -171,55 +197,65 @@ const SearchPage = () => {
           {results.length > 0 ? (
             results.map((user) => (
               <Grid item xs={12} sm={6} md={3} key={user.id}>
-                 <Card sx={{ margin: 1, bgcolor: 'pink' }}> {/* رنگ پس‌زمینه کارد */}
-      <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
-        <CardActionArea>
-          <Box
-            sx={{
-              position: "relative",
-              height: 140, // ارتفاع ثابت
-              width: "100%", // پر کردن عرض کارت
-              backgroundColor: "red", // رنگ پس‌زمینه قرمز
-              overflow: "hidden", // جلوگیری از نمایش اضافی
-            }}
-          >
-            <CardMedia
-              component="img"
-              image={`http://localhost:5000/connection/downloadProfilePhoto?userId=${user.id}`}
-                         
-              alt="User Avatar"
-              onError={(e) => {
-                e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                e.target.src = ""; // تصویر را خالی می‌کنیم تا پس‌زمینه قرمز دیده شود
-              }}
-              sx={{
-                height: "100%", // پر کردن ارتفاع
-                width: "100%", // پر کردن عرض کارت
-                objectFit: "contain", // برش تصویر در صورت نیاز
-                position: "absolute", // قرارگیری در بالای Box
-                top: 0,
-                left: 0,
-              }}
-            />
-          </Box>
-        </CardActionArea>
-      </Link>
-      <CardContent>
-        <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
-          <Typography variant="h6">
-            {user.firstName} {user.lastName}
-          </Typography>
-        </Link>
-        <Typography variant="body2" color="textSecondary">
-          {user.myDescription}
-        </Typography>
-        <Link to={`/chat/${user.id}`}>
-          <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
-            شروع گفتگو
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
+                <Card sx={{ margin: 1, bgcolor: "rgb(255, 0, 251)" }}> {/* رنگ پس‌زمینه کارد */}
+                  <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+                    <CardActionArea>
+                      <Box
+                        sx={{
+                          position: "relative",
+                          height: 140, // ارتفاع ثابت
+                          width: "100%", // پر کردن عرض کارت
+                          backgroundColor: "pink", // رنگ پس‌زمینه قرمز
+                          overflow: "hidden", // جلوگیری از نمایش اضافی
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          image={`http://localhost:5000/connection/downloadProfilePhoto?userId=${user.id}`}
+
+                          alt="User Avatar"
+                          onError={(e) => {
+                            e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+                            e.target.src = ""; // تصویر را خالی می‌کنیم تا پس‌زمینه قرمز دیده شود
+                          }}
+                          sx={{
+                            height: "100%", // پر کردن ارتفاع
+                            width: "100%", // پر کردن عرض کارت
+                            objectFit: "contain", // برش تصویر در صورت نیاز
+                            position: "absolute", // قرارگیری در بالای Box
+                            top: 0,
+                            left: 0,
+                          }}
+                        />
+                      </Box>
+                    </CardActionArea>
+                  </Link>
+                  <CardContent>
+                    <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+                      <Typography variant="h6">
+                        {user.firstName} {user.lastName}
+                        <br />    {user.age} {" "} ساله از  {" "}{user.province}
+                      </Typography>
+                    </Link>
+
+                    {user.marriageStatus}{" - "}{user.liveType}
+
+
+
+                    <Typography variant="body2" color="textSecondary">
+                      میزان درآمد    {user.incomeAmount}
+                      <br />
+                      نوع رابطه مورد نظر  :  {user.relationType}
+                      <br />
+                      آخرین فعالیت  {user.lastActivityDate}
+                    </Typography>
+                    <Link to={`/chat/${user.id}`}>
+                      <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
+                        شروع گفتگو
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
 
               </Grid>
             ))
