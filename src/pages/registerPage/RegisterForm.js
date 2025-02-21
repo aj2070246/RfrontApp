@@ -149,7 +149,8 @@ const RegisterForm = () => {
         <form onSubmit={handleSubmit}>
           
       <div class="banner2">
-        <p class="banner-text2">بمنظور استفاده از امکانات سایت ابتدا ثبت نام کنید</p>
+        <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
+        <p class="banner-text2"> ابتدا ثبت نام کنید</p>
       </div>
       
           <Grid container spacing={2}>

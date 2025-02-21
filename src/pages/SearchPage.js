@@ -28,7 +28,7 @@ const SearchPage = () => {
   const [carValue, setCarValue] = useState('');
   const [onlineStatus, setOnlineStatus] = useState('');
   const [profilePhoto, setProfilePhoto] = useState('');
-  const [relationType,setRelationType] = useState('');
+  const [relationType, setRelationType] = useState('');
 
   const [formData, setFormData] = useState({
     gender: '',
@@ -42,7 +42,7 @@ const SearchPage = () => {
     carValue: '',
     onlineStatus: '',
     profilePhoto: '',
-    relationType:''
+    relationType: ''
   });
 
   // اضافه کردن state برای ذخیره داده‌های دراپ‌داون‌ها
@@ -58,7 +58,7 @@ const SearchPage = () => {
     carValue: [],
     onlineStatus: [],
     profilePhoto: [],
-    relationType:[]
+    relationType: []
   });
 
 
@@ -130,6 +130,7 @@ const SearchPage = () => {
       setError(err.message);
     }
   };
+  const defaultAvatar = "/pictures/defAv.png"; // عکس پیش‌فرض
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
@@ -142,7 +143,7 @@ const SearchPage = () => {
         <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
         <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
         <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
-        <RelationTypeDropDown  onlineStatus={formData.relationType} handleChange={handleChange} onlineStatuss={dropdownData.relationType} />
+        <RelationTypeDropDown onlineStatus={formData.relationType} handleChange={handleChange} onlineStatuss={dropdownData.relationType} />
 
         <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
         <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
@@ -170,36 +171,55 @@ const SearchPage = () => {
           {results.length > 0 ? (
             results.map((user) => (
               <Grid item xs={12} sm={6} md={3} key={user.id}>
-
-                <Card>
-                  <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }}  target='_blank'>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                        alt="User Avatar"
-                      />
-                    </CardActionArea>
-                  </Link>
-                  <CardContent>
-                    <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
-                      <Typography variant="h6">
-                        {user.firstName} {user.lastName}
-                      </Typography>
-                    </Link>
-
-                    <Typography variant="body2" color="textSecondary">
-                      {user.myDescription}
-                    </Typography>
-                    <Link to={`/chat/${user.id}`}>
-                      <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
-                        شروع گفتگو
-                      </Button>
-                    </Link>
-
-                  </CardContent>
-                </Card>
+                 <Card sx={{ margin: 1, bgcolor: 'pink' }}> {/* رنگ پس‌زمینه کارد */}
+      <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+        <CardActionArea>
+          <Box
+            sx={{
+              position: "relative",
+              height: 140, // ارتفاع ثابت
+              width: "100%", // پر کردن عرض کارت
+              backgroundColor: "red", // رنگ پس‌زمینه قرمز
+              overflow: "hidden", // جلوگیری از نمایش اضافی
+            }}
+          >
+            <CardMedia
+              component="img"
+              image={`http://localhost:5000/connection/downloadProfilePhoto?userId=${user.id}`}
+                         
+              alt="User Avatar"
+              onError={(e) => {
+                e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+                e.target.src = ""; // تصویر را خالی می‌کنیم تا پس‌زمینه قرمز دیده شود
+              }}
+              sx={{
+                height: "100%", // پر کردن ارتفاع
+                width: "100%", // پر کردن عرض کارت
+                objectFit: "contain", // برش تصویر در صورت نیاز
+                position: "absolute", // قرارگیری در بالای Box
+                top: 0,
+                left: 0,
+              }}
+            />
+          </Box>
+        </CardActionArea>
+      </Link>
+      <CardContent>
+        <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+          <Typography variant="h6">
+            {user.firstName} {user.lastName}
+          </Typography>
+        </Link>
+        <Typography variant="body2" color="textSecondary">
+          {user.myDescription}
+        </Typography>
+        <Link to={`/chat/${user.id}`}>
+          <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
+            شروع گفتگو
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
 
               </Grid>
             ))

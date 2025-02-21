@@ -11,18 +11,17 @@ const api = axios.create({
 });
 
 // لیست مسیرهایی که نیاز به توکن ندارند
-const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login','/PublicData/RegisterUser'];
+const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
 
 // **بررسی مقدار توکن در هر درخواست**
 api.interceptors.request.use(
   (config) => {
-    console.log("111111111111");
     // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
     if (!noAuthRoutes.includes(config.url)) {
       const token = localStorage.getItem('token'); // دریافت توکن
       const currentUserId = localStorage.getItem('userId'); // دریافت توکن
       if (!token && window.location.pathname !== '/registerForm') {
-        window.location.href = '/login'; // **اگر توکن خالی بود، به صفحه لاگین هدایت شود**
+        window.location.href = '/login'; 
         return Promise.reject('No token found');
       }
       config.headers['token'] = `Bearer ${token}`;
@@ -34,27 +33,67 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 // **بررسی مقدار statusCode در هر پاسخ**
 api.interceptors.response.use(
   (response) => {
+
+    // **اگر statusCode = 999 بود و جزو لیست نبود، ریدایرکت شود**
     if (response.data.statusCode === 999 && !noAuthRoutes.includes(response.config.url)) {
-      window.location.href = '/login'; // **اگر statusCode = 999 بود و جزو لیست نبود، ریدایرکت شود**
+      window.location.href = "/login";
     }
+
     return response;
   },
   (error) => {
+    // **مدیریت خطای 401 Unauthorized**
+    if (error.response && error.response.status === 401) {
+      console.log("Unauthorized! Redirecting to login...");
+      window.location.href = "/login";
+    }
+
     return Promise.reject(error);
   }
 );
 
+
 export default api;
 
 
+
+export const fetchProfilePicture = async (userId) => {
+    try {
+        const response = await api.get(`/Connection/downloadProfilePhoto/${userId}`, {
+            responseType: 'blob', // دریافت داده به‌صورت فایل
+        });
+
+        return URL.createObjectURL(response.data); // ایجاد URL برای استفاده در `src`
+    } catch (error) {
+        console.error('Error fetching profile picture:', error);
+        return null; // در صورت بروز خطا مقدار null برگردانید
+    }
+};
+
+
+export const uploadProfilePicture = async (file, userId) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+
+    try {
+        const response = await api.post('/Connection/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data; // پاسخ سرور را برگردانید
+    } catch (error) {
+        console.error('There was an error uploading the file!', error);
+        throw error; // خطا را پرتاب کنید
+    }
+};
+
 export const getDropdownItems = () => {
-console.log('api called => GetAllDropDownsItems 12');
-// return api.get('/AccountCountroller/testGet');
-return api.get('/PublicData/GetAllDropDownsItems');
+  return api.get('/PublicData/GetAllDropDownsItems');
 };
 
 
@@ -104,8 +143,8 @@ export const getUserInfo = async (stringId) => {
   }
 };
 export const deleteMessage = (stringId) => {
-console.log('deleteMessage=>   2' + stringId);
-return api.post('/Connection/deleteMessage', { StringId: stringId });
+  console.log('deleteMessage=>   2' + stringId);
+  return api.post('/Connection/deleteMessage', { StringId: stringId });
 };
 
 

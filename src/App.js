@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
-import { FaHome, FaSearch, FaUserPlus, FaSignInAlt, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaSearch, FaUserPlus, FaSignInAlt, FaUser, FaSignOutAlt, FaFile } from 'react-icons/fa';
 import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
 import RegisterForm from "./pages/registerPage/RegisterForm";
 import Login_Form from './pages/Login_Form';
 import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
 import './App.css'; // اضافه کردن فایل CSS
 
 function App() {
@@ -51,10 +52,16 @@ function Main() {
         <nav className={`navbar ${isMenuOpen ? 'open' : ''}`}>
           <ul className="nav-links">
            
-            <li>
+          <li>
               <Link to="/search" className="nav-button">
               جستجوی کاربران
                 <FaSearch />
+              </Link>
+            </li>
+            <li>
+              <Link to="/editProfile" className="nav-button">
+             ویرایش چروفایل
+                <FaFile />
               </Link>
             </li>
            
@@ -72,6 +79,7 @@ function Main() {
       {/* تعریف مسیرهای اپلیکیشن */}
       <Routes>
         <Route path="/chat/:userId" element={<ChatPage />} />
+        <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/profile/:stringId" element={<Profile />} />
         <Route path="/registerForm" element={<RegisterForm />} />
