@@ -141,7 +141,7 @@ const UpdateProfile = () => {
             </Grid>
             <GenderDropdown gender={formData.gender} handleChange={handleChange} genders={dropdownData.genders} />
             <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
-            <HealtStatusDropdown healtStatus={formData.healthStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
+            <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
             <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
             <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
 
