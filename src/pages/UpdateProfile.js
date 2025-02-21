@@ -149,7 +149,6 @@ const UpdateProfile = () => {
             <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
             <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
             <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} relationTypes={dropdownData.relationType} />
-
             <Grid item xs={12}>
               <Button type="submit" variant="contained" fullWidth>
                 ویرایش اطلاعات
