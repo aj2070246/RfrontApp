@@ -1,43 +1,90 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getUserInfo } from "../api"; // مطمئن شوید که مسیر درست است
-import { Card, CardContent, Typography, Avatar, Button, Box, Alert } from "@mui/material";
+import { getUserInfo, blockUser, favoriteUser } from "../api"; // اطمینان حاصل کنید که مسیر درست است
+import { Card, CardContent, Typography, Avatar, Button, Box, Alert, IconButton } from "@mui/material";
 import { Link } from 'react-router-dom';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const Profile = () => {
   const { stringId } = useParams(); // دریافت stringId از URL
   const [user, setUser] = useState(null);
+  const [currentUserId, SetCcurrentUserId] = useState(null);
   const [blocked, setBlocked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [blockedMe, setBlockedMe] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    SetCcurrentUserId(localStorage.getItem('userId'));
+
     const fetchUserData = async () => {
       setLoading(true);
-      const response = await getUserInfo(stringId);
+      const response = await getUserInfo(stringId, currentUserId);
 
       if (response?.statusCode === 789) {
-        setBlocked(true);
+        setBlockedMe(true);
       } else if (response?.isSuccess) {
         setUser(response.model);
+        setBlocked(response.model.isBlocked); // تعیین وضعیت بلاک
+        setIsFavorite(response.model.isFavorite); // تعیین وضعیت بلاک
       }
       setLoading(false);
     };
 
     fetchUserData();
-  }, [stringId]);
+  }, [stringId, currentUserId]);
+
+  const handleBlockToggle = async () => {
+    if (user) {
+      const inputModel = {
+        CurrentUserId: currentUserId, // مقدار Id کاربر فعلی
+        DestinationUserId: user.id,
+        SetIsBlock: !blocked, // تغییر وضعیت بلاک
+      };
+
+      const response = await blockUser(inputModel); // صدا زدن API
+
+      if (response.isSuccess) {
+        setBlocked(!blocked); // بروزرسانی وضعیت بلاک
+      } else {
+        // نمایش خطا در صورت نیاز
+        console.error("Error while blocking/unblocking the user");
+      }
+    }
+  };
+  const handleFavoriteToggle = async () => {
+    if (user) {
+      const inputModel = {
+        CurrentUserId: currentUserId, // مقدار Id کاربر فعلی
+        DestinationUserId: user.id,
+        setIsFavorite: !isFavorite, // تغییر وضعیت بلاک
+      };
+
+      const response = await favoriteUser(inputModel); // صدا زدن API
+
+      if (response.isSuccess) {
+        setIsFavorite(!isFavorite); // بروزرسانی وضعیت بلاک
+      } else {
+        // نمایش خطا در صورت نیاز
+        console.error("Error while blocking/unblocking the user");
+      }
+    }
+  };
 
   if (loading) return <Typography sx={{ textAlign: "center", mt: 5 }}>در حال بارگذاری...</Typography>;
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
-        {blocked ? (
+        {blockedMe ? (
           <Alert severity="error" sx={{ textAlign: "center", fontSize: "1.1rem" }}>
             این کاربر شما را بلاک کرده است
           </Alert>
         ) : (
           user && (
             <>
+
               <Avatar
                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
                 alt="User Avatar"
@@ -45,7 +92,9 @@ const Profile = () => {
               />
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h4" fontWeight="bold">
+
                   {user.firstName} {user.lastName}
+
                 </Typography>
 
                 {/* درباره من */}
@@ -87,18 +136,35 @@ const Profile = () => {
                 <Typography>🏡 نوع زندگی: {user.liveType}</Typography>
                 <Typography>❤️ وضعیت تأهل: {user.marriageStatus}</Typography>
                 <Typography>📍 استان: {user.province}</Typography>
-                <Typography>💰 درآمد: {user.incomeAmount}  </Typography>
-                <Typography>🚗 ارزش خودرو: {user.carValue}  </Typography>
-                <Typography>🏠 ارزش خانه: {user.homeValue}  </Typography>
+                <Typography>💰 درآمد: {user.incomeAmount}</Typography>
+                <Typography>🚗 ارزش خودرو: {user.carValue}</Typography>
+                <Typography>🏠 ارزش خانه: {user.homeValue}</Typography>
                 <Typography>🕒 آخرین فعالیت: {user.lastActivityDate.split("T")[0]}</Typography>
                 <Typography>🤝 نوع رابطه مورد نظر: {user.relationType}</Typography>
 
+                <Button
+                  variant="contained"
+                  color={blocked ? "secondary" : "primary"} // تغییر رنگ دکمه بر اساس وضعیت بلاک
+                  onClick={handleBlockToggle}
+                  sx={{ mt: 3 }}
+                  fullWidth
+                >
+                  {blocked ? "از بلاک خارج کن" : "بلاک کن"} {/* متن دکمه بر اساس وضعیت بلاک */}
+                </Button>
+
 
                 <Link to={`/chat/${user.id}`}>
-                  <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
+                  <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth>
                     شروع گفتگو
                   </Button>
                 </Link>
+                <IconButton
+                  onClick={handleFavoriteToggle}
+                  sx={{ mt: 3, color: isFavorite ? "error.main" : "inherit" }} // رنگ آیکن بر اساس وضعیت
+                >
+                  {isFavorite ? <FavoriteIcon fontSize="large" /> : <FavoriteBorderIcon fontSize="large" />} {/* آیکن قلب */}
+                </IconButton>
+
 
               </CardContent>
             </>

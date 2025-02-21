@@ -19,7 +19,7 @@ api.interceptors.request.use(
     // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
     if (!noAuthRoutes.includes(config.url)) {
       const token = localStorage.getItem('token'); // دریافت توکن
-      const currentUserId = localStorage.getItem('userId'); // دریافت توکن
+      const currentUserId = localStorage.getItem('userId'); 
       if (!token && window.location.pathname !== '/registerForm') {
         window.location.href = '/login'; 
         return Promise.reject('No token found');
@@ -128,20 +128,52 @@ export const sendMessage = (senderUserId, receiverUserId, messageText) => {
 };
 
 
+export const blockUser = async (inputModel) => {
+  try {
+    const response = await api.post('/Connection/BlockUserManager', inputModel); // مسیر صحیح API را وارد کنید
+    return response.data; // یا return response بسته به ساختار پاسخ شما
+  } catch (error) {
+    console.error("Error blocking/unblocking user:", error);
+    throw error; // در صورت نیاز می‌توانید خطا را پرتاب کنید
+  }
+};
 
+
+export const favoriteUser = async (inputModel) => {
+  try {
+    const response = await api.post('/Connection/FavoriteUserManager', inputModel); // مسیر صحیح API را وارد کنید
+    return response.data; // یا return response بسته به ساختار پاسخ شما
+  } catch (error) {
+    console.error("Error blocking/Favorite user:", error);
+    throw error; // در صورت نیاز می‌توانید خطا را پرتاب کنید
+  }
+};
 export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
 
 export const registerUser = (formData) => api.post('/PublicData/RegisterUser', formData);
 
-export const getUserInfo = async (stringId) => {
+export const getUserInfo = async (stringId ,currentuserId ) => {
   try {
-    const response = await api.post("/Connection/GetUserInfo", { StringId: stringId });
+    const response = await api.post("/Connection/GetUserInfo", { StringId: stringId ,CurrentuserId:currentuserId});
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
     return null;
   }
 };
+
+export const getMyProfileDataForEdit = async (currentuserId ) => {
+  try {
+    const response = await api.post("/Connection/GetMyProfileInfo", { CurrentUserId:currentuserId});
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
+};
+
+
+
 export const deleteMessage = (stringId) => {
   console.log('deleteMessage=>   2' + stringId);
   return api.post('/Connection/deleteMessage', { StringId: stringId });

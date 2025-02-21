@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Grid, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 import { toGregorian } from 'jalaali-js';
 
-const BirthdaySelector = ({ onChange }) => {
+const BirthdaySelector = ({ value, onChange }) => {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
@@ -23,6 +23,18 @@ const BirthdaySelector = ({ onChange }) => {
     { label: 'اسفند', value: 12 },
   ];
   const years = Array.from({ length: 51 }, (_, i) => 1350 + i); // سال‌های 1350 تا 1400
+
+  // مقداردهی اولیه از مقدار `value`
+  useEffect(() => {
+    if (value) {
+      const { BirthDateYear, BirthDateMonth, BirthDateDay } = value;
+      if (BirthDateYear && BirthDateMonth && BirthDateDay) {
+        setYear(BirthDateYear);
+        setMonth(BirthDateMonth);
+        setDay(BirthDateDay);
+      }
+    }
+  }, [value]);
 
   const handleChange = () => {
     if (day && month && year) {
