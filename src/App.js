@@ -9,6 +9,14 @@ import Profile from './pages/UsersProfile';
 import UploadPicture from './pages/UploadPicture';
 import UpdateProfile from './pages/UpdateProfile';
 
+
+import BlockedUsers from "./pages/BlockedUsers";
+import BlockedMeUsers from './pages/BlockedMeUsers';
+import FavoritedMeUsers from './pages/FavoritedMeUsers';
+import FavoriteUsers from './pages/FavoriteUsers';
+import LastUsersCheckedMe from './pages/LastUsersCheckedMe';
+
+
 import './App.css'; // اضافه کردن فایل CSS
 
 function App() {
@@ -84,6 +92,14 @@ function Main() {
         <Route path="/profile/:stringId" element={<Profile />} />
         <Route path="/registerForm" element={<RegisterForm />} />
         <Route path="/login" element={<Login_Form />} />
+        <Route path="/login" element={<blo />} />
+       
+        <Route path="/blocked" element={<BlockedUsers />} />
+        <Route path="/blockedMe" element={<BlockedMeUsers />} />
+        <Route path="/favoritedMe" element={<FavoritedMeUsers />} />
+        <Route path="/Favorite" element={<FavoriteUsers />} />
+        <Route path="/CheckedMe" element={<LastUsersCheckedMe />} />
+
       </Routes>
     </div>
   );

@@ -19,9 +19,9 @@ api.interceptors.request.use(
     // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
     if (!noAuthRoutes.includes(config.url)) {
       const token = localStorage.getItem('token'); // دریافت توکن
-      const currentUserId = localStorage.getItem('userId'); 
+      const currentUserId = localStorage.getItem('userId');
       if (!token && window.location.pathname !== '/registerForm') {
-        window.location.href = '/login'; 
+        window.location.href = '/login';
         return Promise.reject('No token found');
       }
       config.headers['token'] = `Bearer ${token}`;
@@ -61,35 +61,35 @@ export default api;
 
 
 export const fetchProfilePicture = async (userId) => {
-    try {
-        const response = await api.get(`/Connection/downloadProfilePhoto/${userId}`, {
-            responseType: 'blob', // دریافت داده به‌صورت فایل
-        });
+  try {
+    const response = await api.get(`/Connection/downloadProfilePhoto/${userId}`, {
+      responseType: 'blob', // دریافت داده به‌صورت فایل
+    });
 
-        return URL.createObjectURL(response.data); // ایجاد URL برای استفاده در `src`
-    } catch (error) {
-        console.error('Error fetching profile picture:', error);
-        return null; // در صورت بروز خطا مقدار null برگردانید
-    }
+    return URL.createObjectURL(response.data); // ایجاد URL برای استفاده در `src`
+  } catch (error) {
+    console.error('Error fetching profile picture:', error);
+    return null; // در صورت بروز خطا مقدار null برگردانید
+  }
 };
 
 
 export const uploadProfilePicture = async (file, userId) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('userId', userId);
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('userId', userId);
 
-    try {
-        const response = await api.post('/Connection/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        return response.data; // پاسخ سرور را برگردانید
-    } catch (error) {
-        console.error('There was an error uploading the file!', error);
-        throw error; // خطا را پرتاب کنید
-    }
+  try {
+    const response = await api.post('/Connection/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data; // پاسخ سرور را برگردانید
+  } catch (error) {
+    console.error('There was an error uploading the file!', error);
+    throw error; // خطا را پرتاب کنید
+  }
 };
 
 export const getDropdownItems = () => {
@@ -152,9 +152,9 @@ export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
 
 export const registerUser = (formData) => api.post('/PublicData/RegisterUser', formData);
 
-export const getUserInfo = async (stringId ,currentuserId ) => {
+export const getUserInfo = async (stringId, currentuserId) => {
   try {
-    const response = await api.post("/Connection/GetUserInfo", { StringId: stringId ,CurrentuserId:currentuserId});
+    const response = await api.post("/Connection/GetUserInfo", { StringId: stringId, CurrentuserId: currentuserId });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
@@ -162,9 +162,9 @@ export const getUserInfo = async (stringId ,currentuserId ) => {
   }
 };
 
-export const getMyProfileDataForEdit = async (currentuserId ) => {
+export const getMyProfileDataForEdit = async (currentuserId) => {
   try {
-    const response = await api.post("/Connection/GetMyProfileInfo", { CurrentUserId:currentuserId});
+    const response = await api.post("/Connection/GetMyProfileInfo", { CurrentUserId: currentuserId });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
@@ -195,3 +195,59 @@ export const login = async (formData) => {
 
 
 
+export const BlockedMeUsersApi = async () => {
+  try {
+    const response = await api.post("/Connection/getBlockedMeUsers", {
+      CurrentuserId: localStorage.getItem('userId')
+    });
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
+};
+export const BlockedUsersApi = async () => {
+  try {
+    const response = await api.post("/Connection/getBlockedUsers", {
+      CurrentuserId: localStorage.getItem('userId')
+    });
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
+};
+export const FavoritedMeUsersApi = async () => {
+  try {
+    const response = await api.post("/Connection/getFavoritedMeUsers", {
+      CurrentuserId: localStorage.getItem('userId')
+    });
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
+};
+export const FavoriteUsersApi = async () => {
+  try {
+    const response = await api.post("/Connection/getFavoriteUsers", {
+      CurrentuserId: localStorage.getItem('userId')
+    });
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
+};
+export const LastUsersCheckedMeApi = async () => {
+  try {
+    const response = await api.post("/Connection/LastUsersCheckedMe", {
+      CurrentuserId: localStorage.getItem('userId')
+
+    });
+    return response.data;
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات کاربر:", error);
+    return null;
+  }
+};

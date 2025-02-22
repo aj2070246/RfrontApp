@@ -39,8 +39,9 @@ const ChatPage = () => {
   };
   const fetchUserInfo = async () => {
     try {
-      const response = await getUserInfo(userId);
-      console.log(response); // بررسی پاسخ دریافتی
+      const currentUserId = localStorage.getItem('userId'); // مقدار مستقیم از localStorage
+
+      const response = await getUserInfo(userId,currentUserId); 
       if (response.isSuccess) { // بررسی مستقیم isSuccess
         setUserInfo(response.model); // دسترسی به model
       } else {

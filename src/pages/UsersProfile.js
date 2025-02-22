@@ -9,36 +9,32 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 const Profile = () => {
   const { stringId } = useParams(); // دریافت stringId از URL
   const [user, setUser] = useState(null);
-  const [currentUserId, SetCcurrentUserId] = useState(null);
   const [blocked, setBlocked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [blockedMe, setBlockedMe] = useState(false);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    SetCcurrentUserId(localStorage.getItem('userId'));
-
     const fetchUserData = async () => {
+      const userId = localStorage.getItem('userId'); // مقدار مستقیم از localStorage
       setLoading(true);
-      const response = await getUserInfo(stringId, currentUserId);
-
+      const response = await getUserInfo(stringId, userId);
       if (response?.statusCode === 789) {
         setBlockedMe(true);
       } else if (response?.isSuccess) {
         setUser(response.model);
-        setBlocked(response.model.isBlocked); // تعیین وضعیت بلاک
-        setIsFavorite(response.model.isFavorite); // تعیین وضعیت بلاک
+        setBlocked(response.model.isBlocked);
+        setIsFavorite(response.model.isFavorite);
       }
       setLoading(false);
     };
-
+  
     fetchUserData();
-  }, [stringId, currentUserId]);
-
+  }, [stringId]); // حذف currentUserId از وابستگی‌ها
+  
   const handleBlockToggle = async () => {
     if (user) {
       const inputModel = {
-        CurrentUserId: currentUserId, // مقدار Id کاربر فعلی
+        CurrentUserId: localStorage.getItem('userId'), // مقدار Id کاربر فعلی
         DestinationUserId: user.id,
         SetIsBlock: !blocked, // تغییر وضعیت بلاک
       };
@@ -56,7 +52,7 @@ const Profile = () => {
   const handleFavoriteToggle = async () => {
     if (user) {
       const inputModel = {
-        CurrentUserId: currentUserId, // مقدار Id کاربر فعلی
+        CurrentUserId: localStorage.getItem('userId'), // مقدار Id کاربر فعلی
         DestinationUserId: user.id,
         setIsFavorite: !isFavorite, // تغییر وضعیت بلاک
       };
