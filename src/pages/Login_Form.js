@@ -75,10 +75,10 @@ const fetchCaptcha = async () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
     
-      <div class="banner2">
+      {/* <div class="banner2">
         <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
         <p class="banner-text2">   سامانه دوست یابی</p>
-      </div>
+      </div> */}
        <Grid container spacing={2} className="login-form">
 
     
