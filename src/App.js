@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react
 import { FaSearch, FaFile, FaSignOutAlt } from 'react-icons/fa';
 import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
+import SearchPage2 from './pages/SearchPage-old';
 import RegisterForm from "./pages/registerPage/RegisterForm";
 import Login_Form from './pages/Login_Form';
 import Profile from './pages/UsersProfile';
@@ -53,12 +54,12 @@ function Main() {
         <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
         <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
       </div>
-      <div className="banner">
+      {/* <div className="banner">
         <p className="banner-text">به یاریاب خوش آمدید</p>
-      </div>
+      </div> */}
 
       {/* منو لینک‌ها */}
-      {!isLoginPage && !registerPage && (
+      {/* {!isLoginPage && !registerPage && (
         <nav className={`navbar ${isMenuOpen ? 'open' : ''}`}>
           <ul className="nav-links">
             <li>
@@ -81,7 +82,7 @@ function Main() {
             </li>
           </ul>
         </nav>
-      )}
+      )} */}
 
       {/* تعریف مسیرهای اپلیکیشن */}
       <Routes>
@@ -89,6 +90,7 @@ function Main() {
         <Route path="/UploadPicture" element={<UploadPicture />} />
         <Route path="/update" element={<UpdateProfile />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/search2" element={<SearchPage2 />} />
         <Route path="/profile/:stringId" element={<Profile />} />
         <Route path="/registerForm" element={<RegisterForm />} />
         <Route path="/login" element={<Login_Form />} />

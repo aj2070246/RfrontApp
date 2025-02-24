@@ -1,8 +1,10 @@
 import axios from 'axios';
+const baseAddressApi ='http://localhost:5000';
+const defaultAvatar = "/pictures/default-avatar.png";
 
 // ایجاد نمونه axios
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:5000', // آدرس API
+  baseURL: baseAddressApi,
   timeout: 10000, // زمان تایم‌اوت
   headers: {
     'Accept': 'application/json',
@@ -58,6 +60,12 @@ api.interceptors.response.use(
 
 export default api;
 
+export const getUserProfilePhoto = (userId) => {
+  const result =  `${baseAddressApi}/connection/downloadProfilePhoto?userId=${userId}`;
+
+  console.log(result || defaultAvatar);
+  return result || defaultAvatar;
+};
 
 
 export const fetchProfilePicture = async (userId) => {
