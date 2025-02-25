@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { searchUsers, getDropdownItems, getUserProfilePhoto } from '../api'; // اضافه کردن متد جدید
+import { searchUsers, getDropdownItems, getUserProfilePhoto,getDefaultAvatarAddress } from '../api'; // اضافه کردن متد جدید
 import {
     AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
     HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -16,7 +16,7 @@ import {
 } from './registerPage/Dropdowns';
 
 const SearchPage2 = () => {
-    const defaultAvatar = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
+    const defaultAvatar = getDefaultAvatarAddress();
 
     const [ageFrom, setAgeFrom] = useState('');
     const [ageTo, setAgeTo] = useState('');
@@ -252,6 +252,7 @@ const SearchPage2 = () => {
                             <Grid item xs={12} sm={6} md={3} key={user.id}>
                                 <Card sx={{ margin: 1, bgcolor: "rgb(255, 0, 251)" }}> {/* رنگ پس‌زمینه کارد */}
                                     <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+                                   
                                         <CardActionArea>
                                             <Box
                                                 sx={{
@@ -265,7 +266,6 @@ const SearchPage2 = () => {
 
                                                 <CardMedia
                                                     component="img"
-                                                    //   image={`http://localhost:5000/connection/downloadProfilePhoto?userId=${user.id}`}
                                                     image={getUserProfilePhoto(user.id)}
                                                     alt="User Avatar"
                                                     onError={(e) => {
@@ -283,6 +283,7 @@ const SearchPage2 = () => {
                                                 />
                                             </Box>
                                         </CardActionArea>
+                                        
                                     </Link>
                                     <CardContent>
                                         <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>

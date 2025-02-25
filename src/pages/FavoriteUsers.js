@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { FavoriteUsersApi } from '../api'; // اضافه کردن متد جدید
+import { FavoriteUsersApi ,getDefaultAvatarAddress,getUserProfilePhoto} from '../api'; // اضافه کردن متد جدید
 
 const FavoriteUsers = () => {
   const [results, setResults] = useState([]);
@@ -23,7 +23,7 @@ const FavoriteUsers = () => {
     fetchData();
   }, []);
 
-  const defaultAvatar = "/pictures/defAv.png"; // عکس پیش‌فرض
+  const defaultAvatar = getDefaultAvatarAddress();
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
@@ -33,7 +33,7 @@ const FavoriteUsers = () => {
 
       {/* نمایش نتایج جستجو */}
       <Grid container spacing={2} style={{ marginTop: '20px' }}>
-      {Array.isArray(results) && results.length > 0 ? (
+        {Array.isArray(results) && results.length > 0 ? (
           results.map((user) => (
             <Grid item xs={12} sm={6} md={3} key={user.id}>
               <Card sx={{ margin: 1, bgcolor: "rgb(255, 0, 251)" }}> {/* رنگ پس‌زمینه کارد */}
@@ -50,11 +50,11 @@ const FavoriteUsers = () => {
                     >
                       <CardMedia
                         component="img"
-                        image={`http://localhost:5000/connection/downloadProfilePhoto?userId=${user.id}`}
+                        image={getUserProfilePhoto(user.id)}
                         alt="User Avatar"
                         onError={(e) => {
                           e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                          e.target.src = defaultAvatar; // تصویر پیش‌فرض
+                          e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
                         }}
                         sx={{
                           height: "100%", // پر کردن ارتفاع

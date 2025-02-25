@@ -45,49 +45,6 @@ body {
 }
 
 
-
-.nav-links {
-  list-style-type: none; /* حذف لیست نقاط */
-  padding: 0; /* حذف فضای داخلی */
-  display: flex; /* نمایش افقی */
-  justify-content: space-around; /* توزیع فضای بین دکمه‌ها */
-}
-
-.nav-button {
-  background-color: white; /* رنگ پس‌زمینه دکمه */
-  border: 2px solid pink; /* مرز دکمه */
-  border-radius: 5px; /* گرد کردن گوشه‌ها */
-  padding: 10px 15px; /* فضای داخلی دکمه */
-  text-decoration: none; /* حذف زیرخط */
-  color: pink; /* رنگ متن */
-  transition: background-color 0.3s; /* انیمیشن تغییر رنگ */
-}
-
-.nav-button:hover {
-  background-color: pink; /* تغییر رنگ در حالت هاور */
-  color: white; /* تغییر رنگ متن در حالت هاور */
-}
-
-
-/* App.css */
-
-.navbar {
-  background-color: pink; /* رنگ پس‌زمینه */
-  padding: 10px; /* فضای داخلی */
-  transition: opacity 0.5s ease; /* انیمیشن محو شدن */
-  opacity: 1; /* مقدار اولیه */
-}
-
-.navbar.hide {
-  opacity: 0; /* محو شدن */
-  pointer-events: none; /* غیرفعال کردن تعامل */
-}
-
-.navbar.show {
-  opacity: 1; /* نمایش */
-  pointer-events: auto; /* فعال کردن تعامل */
-}
-
 .toggle-button {
   margin: 10px; /* حاشیه */
   padding: 5px 10px; /* فضای داخلی */
@@ -123,4 +80,161 @@ body {
   color: white; /* رنگ متن سفید */
   font-size: 24px; /* اندازه متن */
   font-weight: bold; /* ضخامت متن */
+}
+
+
+/* new css */
+
+
+/* استایل کلی برای منو */
+.app-container {
+  position: relative;
+}
+
+/* استایل همبرگر */
+.hamburger {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.hamburger .bar {
+  width: 30px;
+  height: 4px;
+  background-color: #333;
+  margin: 6px 0;
+  transition: all 0.3s ease;
+}
+
+.hamburger .bar.active:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger .bar.active:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger .bar.active:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* منوی ناوبری */
+.navbar {
+  position: fixed;
+  top: 0;
+  right: -150px; /* کاهش عرض منو */
+  width: 150px; /* عرض منو کاهش داده شده */
+  height: 100%;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* شروع از بالا */
+  align-items: flex-start; /* شروع از بالا */
+  padding-top: 20px;
+  transition: right 0.3s ease;
+  z-index: 1000; /* قرار دادن منو بالاتر از همه عناصر */
+  overflow-y: auto; /* فعال کردن اسکرول عمودی در منو */
+}
+
+
+/* وقتی منو باز است */
+.navbar.open {
+  right: 0; /* نمایش منو */
+}
+
+/* زیباسازی اسکرول‌بار در مرورگرها */
+.navbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navbar::-webkit-scrollbar-track {
+  background: #444; /* رنگ پس‌زمینه اسکرول */
+}
+
+.navbar::-webkit-scrollbar-thumb {
+  background: #888; /* رنگ اسکرول */
+  border-radius: 3px;
+}
+
+.navbar::-webkit-scrollbar-thumb:hover {
+  background: #bbb; /* تغییر رنگ هنگام هاور */
+}
+.navbar.open {
+  right: 0; /* نمایش منو وقتی که منوی همبرگری باز باشد */
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* تنظیم عرض لینک‌ها به 100% */
+  height: 100%; /* پر کردن ارتفاع منو */
+}
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* پس‌زمینه مشکی با شفافیت */
+  z-index: 999; /* یک مرحله پایین‌تر از منو */
+  display: none; /* در حالت عادی مخفی باشد */
+}
+.menu-overlay.active {
+  display: block; /* هنگام باز شدن منو، نمایش داده شود */
+}
+.nav-links li {
+  margin: 15px 0;
+}
+.nav-links li:last-child {
+  margin-top: auto; /* دکمه خروج را به پایین منو می‌فرستد */
+}
+.nav-links .nav-button {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px; /* فاصله از لبه منو */
+}
+
+.nav-links .nav-button:hover {
+  color: #f1f1f1;
+}
+
+.nav-links .nav-button svg {
+  margin-left: 8px;
+}
+
+/* آیکن بستن منو */
+.close-icon {
+  font-size: 30px;
+  color: #fff;
+  cursor: pointer;
+  position: absolute;
+  left: 0; /* چسباندن به لبه چپ */
+  top: 20px; /* فاصله از بالا */
+  margin-left: 15px; /* فاصله از لبه چپ */
+  margin-bottom: 40px; /* فاصله از پایین به گزینه‌ها */
+  display: flex; /* استفاده از فلیکس برای کنار هم قرار دادن آیکن و متن */
+  align-items: center; /* عمودی هم‌تراز کردن */
+}
+
+/* استایل متن "بستن" */
+.close-text {
+  margin-left: 8px; /* فاصله بین آیکن و کلمه بستن */
+  font-size: 20px; /* اندازه فونت متن */
+}
+/* استایل دکمه خروج */
+.logout-button {
+  margin-top: auto; /* دکمه را به پایین‌ترین قسمت منو می‌فرستد */
+  background-color: red;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
 }

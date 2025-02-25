@@ -13,6 +13,7 @@ import {
   RelationTypeDropDown
 } from './registerPage/Dropdowns';
 import BirthdaySelector from './registerPage/BirthdaySelector';
+import ChangePasswordModal from './ChangePasswordModal';
 
 const UpdateProfile = () => {
   const [captcha, setCaptcha] = useState({ id: null, image: '' });
@@ -34,7 +35,6 @@ const UpdateProfile = () => {
     firstName: '',
     lastName: '',
     userName: '',
-    password: '',
     mobile: '',
     captchaValue: '',
     captchaId: null,
@@ -51,7 +51,8 @@ const UpdateProfile = () => {
     carValue: '',
     relationType: '',
   });
-
+  const [results, setResults] = useState([]); // مقدار پیش‌فرض آرایه خالی
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
   const [currentUserId, setCurrentUserId] = useState(null); // To hold the current user's ID
   const [loading, setLoading] = useState(false); // For loading state
@@ -62,7 +63,12 @@ const UpdateProfile = () => {
       setLoading(true);
       const response = await getMyProfileDataForEdit(currentUserId); // Fetch user info from API
 
-      setFormData(response.model); // Set the form data with user info
+      if (response && response.model) {
+        setFormData(response.model); // مقداردهی فقط در صورت معتبر بودن داده
+      } else {
+        console.error("❌ دریافت اطلاعات کاربر ناموفق بود یا داده‌ها خالی هستند.");
+        setFormData({}); // جلوگیری از کرش با مقداردهی پیش‌فرض
+      }
       setLoading(false);
     };
 
@@ -114,16 +120,15 @@ const UpdateProfile = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <form onSubmit={handleSubmit}>
-          <div className="banner2">
+          {/* <div className="banner2">
             <p className="banner-text2">برای ویرایش اطلاعات کاربری خود</p>
             <p className="banner-text2">لطفاً اطلاعات زیر را تکمیل کنید</p>
-          </div>
+          </div> */}
 
           <Grid container spacing={2}>
             <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
             <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
             <TextField label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
-            <TextField label="رمز عبور" name="password" value={formData.password} onChange={handleChange} type="password" fullWidth />
             <TextField label="شماره موبایل" name="mobile" value={formData.mobile} onChange={handleChange} fullWidth />
             <TextField label="آدرس ایمیل" name="emailAddress" value={formData.emailAddress} onChange={handleChange} fullWidth />
             <TextField label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
@@ -154,6 +159,11 @@ const UpdateProfile = () => {
                 ویرایش اطلاعات
               </Button>
             </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained" fullWidth onClick={() => setIsChangePasswordOpen(true)}>
+                تغییر کلمه عبور
+              </Button>
+            </Grid>
           </Grid>
         </form>
       </Paper>
@@ -167,7 +177,8 @@ const UpdateProfile = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+      <ChangePasswordModal open={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
+      </Container>
   );
 };
 

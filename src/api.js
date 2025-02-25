@@ -1,8 +1,8 @@
 import axios from 'axios';
-const baseAddressApi ='http://localhost:5000';
-const defaultAvatar = "/pictures/default-avatar.png";
+const baseAddressApi = 'http://localhost:5000';
+const defaultAvatar = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
+const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
 
-// ایجاد نمونه axios
 const api = axios.create({
   baseURL: baseAddressApi,
   timeout: 10000, // زمان تایم‌اوت
@@ -12,10 +12,6 @@ const api = axios.create({
   },
 });
 
-// لیست مسیرهایی که نیاز به توکن ندارند
-const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
-
-// **بررسی مقدار توکن در هر درخواست**
 api.interceptors.request.use(
   (config) => {
     // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
@@ -29,13 +25,20 @@ api.interceptors.request.use(
       config.headers['token'] = `Bearer ${token}`;
       config.headers['currentUserId'] = currentUserId;
     }
+    if (config.method === 'post') {
+      config.data = {
+        ...config.data,
+        currentUserId: localStorage.getItem('userId'),
+      };
+    }
+
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
-// **بررسی مقدار statusCode در هر پاسخ**
+
 api.interceptors.response.use(
   (response) => {
 
@@ -61,10 +64,28 @@ api.interceptors.response.use(
 export default api;
 
 export const getUserProfilePhoto = (userId) => {
-  const result =  `${baseAddressApi}/connection/downloadProfilePhoto?userId=${userId}`;
+  const result = `${baseAddressApi}/connection/downloadProfilePhoto?userId=${userId}`;
 
-  console.log(result || defaultAvatar);
-  return result || defaultAvatar;
+  console.log(result);
+  return result;
+};
+
+export const getDefaultAvatarAddress = (userId) => {
+
+  console.log(defaultAvatar);
+  return defaultAvatar;
+};
+
+export const getAllMessages = async () => {
+  try {
+    const response = await api.post('/connection/GetMyAllMessages', {
+      // هر داده‌ای که نیاز دارید در اینجا بفرستید
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    return { isSuccess: false };
+  }
 };
 
 
@@ -185,6 +206,21 @@ export const getMyProfileDataForEdit = async (currentuserId) => {
 export const deleteMessage = (stringId) => {
   console.log('deleteMessage=>   2' + stringId);
   return api.post('/Connection/deleteMessage', { StringId: stringId });
+};
+
+
+export const changePasswordApi = async ({ currentPassword, newPassword }) => {
+  try {
+    const response = await api.post('/Connection/ChangePassword', {
+      currentPassword,
+      newPassword
+    });
+
+    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+  } catch (error) {
+    console.error('❌ خطا در تغییر رمز عبور:', error);
+    return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
+  }
 };
 
 

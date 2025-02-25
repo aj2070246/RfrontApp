@@ -3,6 +3,8 @@ import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { searchUsers, getDropdownItems } from '../api';
+import { LastUsersCheckedMeApi ,getDefaultAvatarAddress,getUserProfilePhoto} from '../api'; // اضافه کردن متد جدید
+
 import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -107,6 +109,8 @@ const SearchPage = () => {
     return () => observer.current && observer.current.disconnect();
   }, [results]);
 
+  const defaultAvatar = getDefaultAvatarAddress();
+
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
@@ -116,7 +120,33 @@ const SearchPage = () => {
             <Card sx={{ margin: 1 }}>
               <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                 <CardActionArea>
-                  <CardMedia component="img" image={`http://localhost:5000/connection/downloadProfilePhoto?userId=${user.id}`} alt="User Avatar" />
+                  <Box
+                    sx={{
+                      position: "relative",
+                      height: 140, // ارتفاع ثابت
+                      width: "100%", // پر کردن عرض کارت
+                      backgroundColor: "pink", // رنگ پس‌زمینه قرمز
+                      overflow: "hidden", // جلوگیری از نمایش اضافی
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={getUserProfilePhoto(user.id)}
+                      alt="User Avatar"
+                      onError={(e) => {
+                        e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+                        e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                      }}
+                      sx={{
+                        height: "100%", // پر کردن ارتفاع
+                        width: "100%", // پر کردن عرض کارت
+                        objectFit: "contain", // برش تصویر در صورت نیاز
+                        position: "absolute", // قرارگیری در بالای Box
+                        top: 0,
+                        left: 0,
+                      }}
+                    />
+                  </Box>
                 </CardActionArea>
               </Link>
               <CardContent>

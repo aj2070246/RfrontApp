@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getUserInfo, blockUser, favoriteUser } from "../api"; // اطمینان حاصل کنید که مسیر درست است
-import { Card, CardContent, Typography, Avatar, Button, Box, Alert, IconButton } from "@mui/material";
+import { getUserInfo, blockUser, favoriteUser, getUserProfilePhoto, getDefaultAvatarAddress } from "../api"; // اطمینان حاصل کنید که مسیر درست است
+import {
+  Card, CardContent, Typography, Button, Box, IconButton
+  , CardMedia, Alert, CardActionArea
+} from "@mui/material";
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { FaBan, FaUnlock } from "react-icons/fa";
 
 const Profile = () => {
+  const defaultAvatar = getDefaultAvatarAddress();
   const { stringId } = useParams(); // دریافت stringId از URL
+  const currentUserId = localStorage.getItem('userId'); // گرفتن userId کاربر جاری
+  const isOwnProfile = stringId === currentUserId; // بررسی اینکه پروفایل برای خود کاربر است
   const [user, setUser] = useState(null);
   const [blocked, setBlocked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -27,10 +34,10 @@ const Profile = () => {
       }
       setLoading(false);
     };
-  
+
     fetchUserData();
   }, [stringId]); // حذف currentUserId از وابستگی‌ها
-  
+
   const handleBlockToggle = async () => {
     if (user) {
       const inputModel = {
@@ -68,11 +75,18 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <Typography sx={{ textAlign: "center", mt: 5 }}>در حال بارگذاری...</Typography>;
+  if (loading) return
+  <Typography sx={{ textAlign: "center", mt: 5 }}>در حال بارگذاری...</Typography>;
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+        {isOwnProfile && (
+          <Alert severity="info" sx={{ textAlign: "center", fontSize: "1.1rem", mb: 2 }}>
+            پروفایل شما از نگاه دیگران به این صورت است
+          </Alert>
+        )}
         {blockedMe ? (
           <Alert severity="error" sx={{ textAlign: "center", fontSize: "1.1rem" }}>
             این کاربر شما را بلاک کرده است
@@ -81,11 +95,38 @@ const Profile = () => {
           user && (
             <>
 
-              <Avatar
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                alt="User Avatar"
-                sx={{ width: 140, height: 140, mx: "auto", my: 2 }}
-              />
+
+              <CardActionArea>
+                <Box
+                  sx={{
+                    position: "relative",
+                    height: 140, // ارتفاع ثابت
+                    width: "100%", // پر کردن عرض کارت
+                    backgroundColor: "pink", // رنگ پس‌زمینه قرمز
+                    overflow: "hidden", // جلوگیری از نمایش اضافی
+                  }}
+                >
+
+                  <CardMedia
+                    component="img"
+                    image={getUserProfilePhoto(user.id)}
+                    alt="User Avatar"
+                    onError={(e) => {
+                      e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+                      e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                    }}
+                    sx={{
+                      height: "100%", // پر کردن ارتفاع
+                      width: "100%", // پر کردن عرض کارت
+                      objectFit: "contain", // برش تصویر در صورت نیاز
+                      position: "absolute", // قرارگیری در بالای Box
+                      top: 0,
+                      left: 0,
+                    }}
+                  />
+                </Box>
+              </CardActionArea>
+
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h4" fontWeight="bold">
 
@@ -138,29 +179,36 @@ const Profile = () => {
                 <Typography>🕒 آخرین فعالیت: {user.lastActivityDate.split("T")[0]}</Typography>
                 <Typography>🤝 نوع رابطه مورد نظر: {user.relationType}</Typography>
 
-                <Button
-                  variant="contained"
-                  color={blocked ? "secondary" : "primary"} // تغییر رنگ دکمه بر اساس وضعیت بلاک
-                  onClick={handleBlockToggle}
-                  sx={{ mt: 3 }}
-                  fullWidth
-                >
-                  {blocked ? "از بلاک خارج کن" : "بلاک کن"} {/* متن دکمه بر اساس وضعیت بلاک */}
-                </Button>
+                {!isOwnProfile && (
 
+                  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, mt: 3 }}>
 
+                    {/* دکمه بلاک */}
+                    <IconButton
+                      onClick={handleBlockToggle}
+                      sx={{ color: blocked ? "green" : "red" }}
+                      title={blocked ? "عدم مسدود سازی" : "مسدود سازی"} // متن هنگام Hover
+                    >
+                      {blocked ? <FaUnlock style={{ fontSize: "2.5rem" }} /> : <FaBan style={{ fontSize: "2.5rem" }} />}
+                    </IconButton>
+
+                    {/* دکمه علاقه‌مندی */}
+                    <IconButton
+                      onClick={handleFavoriteToggle}
+                      sx={{ color: isFavorite ? "error.main" : "inherit" }}
+                      title={isFavorite ? "حذف از علاقه‌مندی‌ها" : "اضافه به علاقه‌مندی‌ها"} // متن هنگام Hover
+                    >
+                      {isFavorite ? <FavoriteIcon fontSize="large" /> : <FavoriteBorderIcon fontSize="large" />}
+                    </IconButton>
+
+                  </Box>
+
+                )}
                 <Link to={`/chat/${user.id}`}>
                   <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth>
                     شروع گفتگو
                   </Button>
                 </Link>
-                <IconButton
-                  onClick={handleFavoriteToggle}
-                  sx={{ mt: 3, color: isFavorite ? "error.main" : "inherit" }} // رنگ آیکن بر اساس وضعیت
-                >
-                  {isFavorite ? <FavoriteIcon fontSize="large" /> : <FavoriteBorderIcon fontSize="large" />} {/* آیکن قلب */}
-                </IconButton>
-
 
               </CardContent>
             </>
