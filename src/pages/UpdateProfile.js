@@ -23,6 +23,7 @@ import {
 } from './registerPage/Dropdowns';
 import BirthdaySelector from './registerPage/BirthdaySelector';
 import ChangePasswordModal from './ChangePasswordModal';
+import VerifyEmailCode from './VerifyEmailCode';
 
 import ProfilePictureUpload from './UploadPicture';
 
@@ -71,6 +72,7 @@ const UpdateProfile = () => {
   });
   const [results, setResults] = useState([]); // مقدار پیش‌فرض آرایه خالی
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isVerifyOpen, setIsVerifyOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
   const [currentUserId, setCurrentUserId] = useState(null); // To hold the current user's ID
@@ -201,7 +203,7 @@ const UpdateProfile = () => {
             <VaznDropDown values={formData.vazn} handleChange={handleChange} options={dropdownData.vazn} />
             <CheildCountDropDown values={formData.cheildCount} handleChange={handleChange} options={dropdownData.cheildCount} />
             <FirstCheildAgeDown values={formData.firstCheildAge} handleChange={handleChange} options={dropdownData.firstCheildAge} />
-            
+
             <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
               {/* تغییر کلمه عبور */}
               <br />
@@ -225,7 +227,25 @@ const UpdateProfile = () => {
                 </Button>
               </Grid>
               <br />
-
+              <Grid item xs={6} sm={3}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  startIcon={<FaKey />}
+                  onClick={() => setIsVerifyOpen(true)}
+                  sx={{
+                    height: 50,
+                    backgroundColor: "#aa9800",
+                    "&:hover": { backgroundColor: "#e68900" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px", // فاصله بین آیکن و متن
+                  }}
+                >
+                  <Typography fontSize="0.85rem">تایید ایمیل</Typography>
+                </Button>
+              </Grid>
               {/* ویرایش اطلاعات */}
               <Grid item xs={12} sm={6}>
                 <Button
@@ -293,6 +313,21 @@ const UpdateProfile = () => {
         </Alert>
       </Snackbar>
       <ChangePasswordModal open={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
+
+
+      <VerifyEmailCode open={isVerifyOpen} onClose={() =>setIsVerifyOpen(false)} />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+      <VerifyEmailCode open={isVerifyOpen} onClose={() => setIsVerifyOpen(false)} />
+
     </Container>
   );
 };

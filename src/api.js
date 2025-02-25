@@ -243,6 +243,33 @@ export const changePasswordApi = async ({ currentPassword, newPassword }) => {
   }
 };
 
+export const VerifyEmailCodeForAcceptEmail = async ({ VerifyCode }) => {
+  try {
+    const response = await api.post('/PublicData/VerifyEmailCodeForAcceptEmail', {
+      EmailCode:  VerifyCode,
+    });
+
+    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+  } catch (error) {
+    console.error('❌ خطا:', error);
+    return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
+  }
+};
+
+
+export const sendVerifyCodeEmail = async ({ VerifyCode }) => {
+  try {
+    const response = await api.post('/PublicData/SendEmailVerifyCodeForVerify', {
+      EmailCode:  VerifyCode,
+    });
+
+    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+  } catch (error) {
+    console.error('❌ خطا:', error);
+    return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
+  }
+};
+
 
 
 

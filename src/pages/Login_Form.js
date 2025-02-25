@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
 import { getCaptcha, login } from '../api';
-import {   Container, Paper,  Snackbar, Alert } from '@mui/material';
+import { Container, Paper, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Login_Form = () => {
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const fetchCaptcha = async () => {
+  const fetchCaptcha = async () => {
     setIsCaptchaLoading(true);
     try {
       const captchaResponse = await getCaptcha();
@@ -25,22 +25,22 @@ const fetchCaptcha = async () => {
       setIsCaptchaLoading(false);
     }
   };
-  
+
   const [formData, setFormData] = useState({
     userName: '',
     password: '',
     captchaId: '',
     captchaValue: ''
   });
-    const [captcha, setCaptcha] = useState({ id: null, image: '' });
-  
+  const [captcha, setCaptcha] = useState({ id: null, image: '' });
+
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(false);
   const [message, setMessage] = useState('');
-  
+
   useEffect(() => {
     localStorage.removeItem('token'); // حذف توکن از localStorage
     localStorage.removeItem('userId'); // حذف توکن از localStorage
-    
+
     fetchCaptcha();
   }, []);
 
@@ -54,7 +54,7 @@ const fetchCaptcha = async () => {
   };
 
   const handleSubmit = async (e) => {
-    
+
     e.preventDefault();
     const response = await login(formData); // فرض می‌کنیم تابع login در api.js قرار دارد
     if (response.isSuccess) {
@@ -62,7 +62,7 @@ const fetchCaptcha = async () => {
       localStorage.setItem('token', response.model.token);
       localStorage.setItem('userId', response.model.id);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
-        // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
+      // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
       setMessage(response.message);
       setFormData(prevData => ({ ...prevData, password: '', captchaValue: '' }));
@@ -71,74 +71,75 @@ const fetchCaptcha = async () => {
   };
 
   return (
-    
+
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-    
-      {/* <div class="banner2">
-        <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
-        <p class="banner-text2">   سامانه دوست یابی</p>
-      </div> */}
-       <Grid container spacing={2} className="login-form">
 
-    
+        {<div class="banner2">
+          <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
+          <p class="banner-text2">   سامانه دوست یابی</p>
+        </div>
+        }
+        <Grid container spacing={2} className="login-form">
 
-      <Grid item xs={12}>
-        <Typography variant="h4">ورود به حساب کاربری</Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          label="نام کاربری"
-          name="userName"
-          value={formData.userName}
-          onChange={handleChange}
-          fullWidth
-          required
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          label="رمز عبور"
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          fullWidth
-          required
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <img src={captcha.image} alt="Captcha" />
-      
+
+
+          <Grid item xs={12}>
+            <Typography variant="h4">ورود به حساب کاربری</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="نام کاربری"
+              name="userName"
+              value={formData.userName}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="رمز عبور"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <img src={captcha.image} alt="Captcha" />
+
+          </Grid>
+          <Grid item xs={6}>
+            <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
+          </Grid>
+
+          {isCaptchaLoading && <CircularProgress />}
+          <TextField
+            label="کپچا"
+            name="captchaValue"
+            value={formData.captchaValue}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+          {message && (
+            <Grid item xs={12}>
+              <Typography color="error">{message}</Typography>
+            </Grid>
+          )}
+          <Grid item xs={12}>
+            <Button variant="contained" onClick={handleSubmit}>ورود</Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Link href="/registerForm" variant="body2">ثبت نام</Link>
+            <br />
+            <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-                       <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
-                     </Grid> 
-                     
-                     {isCaptchaLoading && <CircularProgress />}
-                       <TextField
-          label="کپچا"
-          name="captchaValue"
-          value={formData.captchaValue}
-          onChange={handleChange}
-          fullWidth
-          required
-        />
-      {message && (
-        <Grid item xs={12}>
-          <Typography color="error">{message}</Typography>
-        </Grid>
-      )}
-      <Grid item xs={12}>
-        <Button variant="contained" onClick={handleSubmit}>ورود</Button>
-      </Grid>
-      <Grid item xs={12}>
-        <Link href="/registerForm" variant="body2">ثبت نام</Link>
-        <br />
-        <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
-      </Grid>
-    </Grid>
-    </Paper>
+      </Paper>
     </Container>
   );
 };
