@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useParams, Link } from 'react-router-dom'; // اضافه کردن این خط
 import { getMessages, sendMessage, getUserInfo, deleteMessage } from '../api';
+import {    Card , Box} from "@mui/material";
 
 const ChatPage = () => {
   const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
@@ -91,6 +92,9 @@ const ChatPage = () => {
   };
 
   return (
+<Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+   <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+
     <div style={styles.container}>
       {userInfo && (
         <Link to={`/profile/${userInfo.id}`} style={{ textDecoration: 'none' }} target='_blank'>
@@ -181,7 +185,9 @@ const ChatPage = () => {
         <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
       </div>
     </div>
-  );
+   
+</Card> </Box>
+);
 };
 
 const styles = {

@@ -102,22 +102,41 @@ export const fetchProfilePicture = async (userId) => {
   }
 };
 
-
+///////////////////////
 export const uploadProfilePicture = async (file, userId) => {
+  const api2 = axios.create({
+    baseURL: baseAddressApi,
+    timeout: 10000,
+  });
+
+  const token = localStorage.getItem('token'); // دریافت توکن
+  const currentUserId = localStorage.getItem('userId');
+
+  if (!token && window.location.pathname !== '/registerForm') {
+    window.location.href = '/login';
+    return Promise.reject('No token found');
+  }
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('userId', userId);
+  formData.append('currentUserId', userId); // مطمئن شو که سرور `currentUserId` رو قبول می‌کنه
+
+  console.log('✅ Sending API request with:', formData);
 
   try {
-    const response = await api.post('/Connection/upload', formData, {
+    const response = await api2.post('/Connection/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,  // فیلد توکن رو تصحیح کن
+        'currentUserId': currentUserId, // اضافه کردن userId به هدر (اگر لازم باشه)
       },
     });
-    return response.data; // پاسخ سرور را برگردانید
+
+    console.log('✅ Upload success:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('There was an error uploading the file!', error);
-    throw error; // خطا را پرتاب کنید
+    console.error('❌ Upload failed:', error);
+    throw error;
   }
 };
 
@@ -180,6 +199,7 @@ export const favoriteUser = async (inputModel) => {
 export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
 
 export const registerUser = (formData) => api.post('/PublicData/RegisterUser', formData);
+export const UpdateUserInfo = (formData) => api.post('/Connection/UpdateUserInfo', formData);
 
 export const getUserInfo = async (stringId, currentuserId) => {
   try {

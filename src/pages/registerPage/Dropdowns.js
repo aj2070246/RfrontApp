@@ -155,6 +155,77 @@ const RelationTypeDropDown = ({ relationType, handleChange,relationTypes }) => (
     options={relationTypes}
   />
 ); 
+
+const GhadDropDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="قد"
+    name="ghad"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
+const VaznDropDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="وزن"
+    name="vazn"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
+const TipDropDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="تیپ - 5 بیشترین"
+    name="tipNumber"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
+const ZibaeeDropDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="زیبایی - 1 کمترین"
+    name="zibaeeNumber"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
+const CheildCountDropDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="تعداد فرزندان"
+    name="cheildCount"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
+const RangePoostDropDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="رنگ پوست"
+    name="rangePoost"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
+const FirstCheildAgeDown = ({ values, handleChange,options }) => (
+  <Dropdowns
+    label="سن فرزند اول"
+    name="firstCheildAge"
+    value={values}
+    onChange={handleChange}
+    options={options}
+  />
+); 
+
 export {
   GenderDropdown,
   AgeFromDropdown,
@@ -169,5 +240,12 @@ export {
   OnlineStatusDropDown,
   ProfilePhotoStatusDropDown,
   RelationTypeDropDown,
-  AgeRangeDropdown
+  AgeRangeDropdown,
+  GhadDropDown,
+  VaznDropDown,
+  TipDropDown,
+  ZibaeeDropDown,
+  CheildCountDropDown,
+  RangePoostDropDown,
+  FirstCheildAgeDown
 };

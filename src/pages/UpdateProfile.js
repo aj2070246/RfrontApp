@@ -1,6 +1,8 @@
+import { FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
+import { Button, Grid, Typography } from "@mui/material";
 import React, { useState, useEffect } from 'react';
-import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui/material';
-import { getCaptcha, getMyProfileDataForEdit, getDropdownItems } from '../api'; // Import necessary API functions
+import { Container, Paper, TextField, Snackbar, Alert, Modal, Box } from '@mui/material';
+import { UpdateUserInfo, getMyProfileDataForEdit, getDropdownItems, getDefaultAvatarAddress, getUserProfilePhoto } from '../api'; // Import necessary API functions
 import {
   GenderDropdown,
   ProvinceDropdown,
@@ -10,10 +12,19 @@ import {
   CarValuesDropdown,
   HomeValueDropDown,
   IncomeAmountDropDown,
-  RelationTypeDropDown
+  RelationTypeDropDown,
+  GhadDropDown,
+  VaznDropDown,
+  TipDropDown,
+  ZibaeeDropDown,
+  CheildCountDropDown,
+  RangePoostDropDown,
+  FirstCheildAgeDown
 } from './registerPage/Dropdowns';
 import BirthdaySelector from './registerPage/BirthdaySelector';
 import ChangePasswordModal from './ChangePasswordModal';
+
+import ProfilePictureUpload from './UploadPicture';
 
 const UpdateProfile = () => {
   const [captcha, setCaptcha] = useState({ id: null, image: '' });
@@ -50,9 +61,17 @@ const UpdateProfile = () => {
     homeValue: '',
     carValue: '',
     relationType: '',
+    ghad: '',
+    vazn: '',
+    tipNumber: '',
+    zibaeeNumber: '',
+    cheildCount: '',
+    firstCheildAge: '',
+    rangePoost: '',
   });
   const [results, setResults] = useState([]); // مقدار پیش‌فرض آرایه خالی
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
   const [currentUserId, setCurrentUserId] = useState(null); // To hold the current user's ID
   const [loading, setLoading] = useState(false); // For loading state
@@ -81,7 +100,6 @@ const UpdateProfile = () => {
         const dropdownResponse = await getDropdownItems();
         if (dropdownResponse.data.isSuccess) {
           setDropdownData({
-            genders: dropdownResponse.data.model.genders || [],
             healtStatus: dropdownResponse.data.model.healtStatus || [],
             liveTypes: dropdownResponse.data.model.liveTypes || [],
             marriageStatus: dropdownResponse.data.model.marriageStatus || [],
@@ -90,6 +108,15 @@ const UpdateProfile = () => {
             carValue: dropdownResponse.data.model.carValue || [],
             homeValue: dropdownResponse.data.model.homeValue || [],
             relationType: dropdownResponse.data.model.relationType || [],
+
+            ghad: dropdownResponse.data.model.ghad || [],
+            vazn: dropdownResponse.data.model.vazn || [],
+            tipNumber: dropdownResponse.data.model.tipNumber || [],
+            zibaeeNumber: dropdownResponse.data.model.zibaeeNumber || [],
+            cheildCount: dropdownResponse.data.model.cheildCount || [],
+            firstCheildAge: dropdownResponse.data.model.firstCheildAge || [],
+            rangePoost: dropdownResponse.data.model.rangePoost || [],
+
           });
         }
       } catch (error) {
@@ -108,9 +135,22 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you can handle the submit action for the edited profile
-  };
 
+
+    try {
+      const response = await UpdateUserInfo(formData);
+      console.log('✅ Form submitted successfully:', response.data);
+
+      if (response.data.isSuccess) {
+        setSnackbar({ open: true, message: 'ثبت‌نام با موفقیت انجام شد!', severity: 'success' });
+
+      } else {
+        setSnackbar({ open: true, message: response.data.message, severity: 'error' });
+      }
+    } catch (error) {
+      console.error('❌ Error submitting form:', error);
+    }
+  };
 
   if (loading || isLoading) {
     return <div>⏳ لطفاً صبر کنید، در حال بارگیری اطلاعات...</div>;
@@ -144,7 +184,6 @@ const UpdateProfile = () => {
                 onChange={(date) => setFormData({ ...formData, birthDate: date })}
               />
             </Grid>
-            <GenderDropdown gender={formData.gender} handleChange={handleChange} genders={dropdownData.genders} />
             <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
             <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
             <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
@@ -154,19 +193,95 @@ const UpdateProfile = () => {
             <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
             <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
             <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} relationTypes={dropdownData.relationType} />
-            <Grid item xs={12}>
-              <Button type="submit" variant="contained" fullWidth>
-                ویرایش اطلاعات
-              </Button>
+
+            <RangePoostDropDown values={formData.rangePoost} handleChange={handleChange} options={dropdownData.rangePoost} />
+            <TipDropDown values={formData.tipNumber} handleChange={handleChange} options={dropdownData.tipNumber} />
+            <ZibaeeDropDown values={formData.zibaeeNumber} handleChange={handleChange} options={dropdownData.zibaeeNumber} />
+            <GhadDropDown values={formData.ghad} handleChange={handleChange} options={dropdownData.ghad} />
+            <VaznDropDown values={formData.vazn} handleChange={handleChange} options={dropdownData.vazn} />
+            <CheildCountDropDown values={formData.cheildCount} handleChange={handleChange} options={dropdownData.cheildCount} />
+            <FirstCheildAgeDown values={formData.firstCheildAge} handleChange={handleChange} options={dropdownData.firstCheildAge} />
+            
+            <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
+              {/* تغییر کلمه عبور */}
+              <br />
+              <Grid item xs={6} sm={3}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  startIcon={<FaKey />}
+                  onClick={() => setIsChangePasswordOpen(true)}
+                  sx={{
+                    height: 50,
+                    backgroundColor: "#ff9800",
+                    "&:hover": { backgroundColor: "#e68900" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px", // فاصله بین آیکن و متن
+                  }}
+                >
+                  <Typography fontSize="0.85rem">تغییر رمز</Typography>
+                </Button>
+              </Grid>
+              <br />
+
+              {/* ویرایش اطلاعات */}
+              <Grid item xs={12} sm={6}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  startIcon={<FaSave />}
+                  sx={{
+                    height: 50,
+                    backgroundColor: "#3f51b5",
+                    "&:hover": { backgroundColor: "#32408f" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px", // فاصله بین آیکن و متن
+                  }}
+                >
+                  <Typography fontSize="0.85rem">ذخیره</Typography>
+                </Button>
+              </Grid>
+              <br />
+
+              {/* تغییر تصویر پروفایل */}
+              <Grid item xs={6} sm={3}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  startIcon={<FaCamera />}
+                  onClick={() => setIsUploadModalOpen(true)}
+                  sx={{
+                    height: 50,
+                    backgroundColor: "#4caf50",
+                    "&:hover": { backgroundColor: "#3d8c40" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px", // فاصله بین آیکن و متن
+                  }}
+                >
+                  <Typography fontSize="0.85rem">تغییر تصویر</Typography>
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Button variant="contained" fullWidth onClick={() => setIsChangePasswordOpen(true)}>
-                تغییر کلمه عبور
-              </Button>
-            </Grid>
+
+
           </Grid>
         </form>
       </Paper>
+      <Modal open={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)}>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2 }}>
+          <ProfilePictureUpload />
+
+        </Box>
+      </Modal>
+
+      <ChangePasswordModal open={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
 
       <Snackbar
         open={snackbar.open}
@@ -178,7 +293,7 @@ const UpdateProfile = () => {
         </Alert>
       </Snackbar>
       <ChangePasswordModal open={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
-      </Container>
+    </Container>
   );
 };
 

@@ -179,6 +179,14 @@ const Profile = () => {
                 <Typography>🕒 آخرین فعالیت: {user.lastActivityDate.split("T")[0]}</Typography>
                 <Typography>🤝 نوع رابطه مورد نظر: {user.relationType}</Typography>
 
+                <Typography>📏 قد: {user.ghad}</Typography>
+                <Typography>⚖️ وزن: {user.vazn}</Typography>
+                <Typography>👶 تعداد فرزندان: {user.cheildCount}</Typography>
+                <Typography>👦 سن فرزند بزرگتر: {user.firstCheildAge}</Typography>
+                <Typography>🌕 رنگ پوست: {user.rangePoost}</Typography>
+                <Typography>💄 میزان زیبایی: {user.zibaeeNumber}</Typography>
+                <Typography>🧑‍🦱 میزان خوش تیپی: {user.tipNUmber}</Typography>
+
                 {!isOwnProfile && (
 
                   <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, mt: 3 }}>

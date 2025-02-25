@@ -27,7 +27,6 @@ const ChangePasswordModal = ({ open, onClose }) => {
       const response = await changePasswordApi({
         currentPassword: formData.oldPassword,
         newPassword: formData.newPassword,
-        currentUserId
       });
 
       if (response.isSuccess) {

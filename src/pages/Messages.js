@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllMessages } from '../api';
-import { Avatar, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Badge, Box } from '@mui/material';
+import { Avatar, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Badge } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {    Card } from "@mui/material";
+import {    Card , Box} from "@mui/material";
 const StyledTableRow = styled(TableRow)(({ theme, index }) => ({
     backgroundColor: index % 2 === 0 ? '#ffe6e6' : '#e6ffe6',
     cursor: 'pointer',

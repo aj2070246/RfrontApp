@@ -9,7 +9,9 @@
 }
 body {
   font-family: 'Vazir', sans-serif;
+  padding-top: 60px; /* ارتفاع هدر */
 }
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -53,6 +55,9 @@ body {
   border-radius: 5px; /* گرد کردن گوشه‌ها */
   cursor: pointer; /* نشانگر ماوس */
 }
+.user-name-left {
+  text-align: left !important;
+}
 .banner {
   background-color: rgb(255, 0, 251); /* رنگ پس‌زمینه قرمز */
   border: 2px solid black; /* کادر دور بنر */
@@ -84,40 +89,41 @@ body {
 
 
 /* new css */
-
+.container {
+  display: flex;
+  flex-direction: column;
+}
 
 /* استایل کلی برای منو */
 .app-container {
   position: relative;
 }
 
-/* استایل همبرگر */
+.hamburger-container {
+  display: flex;
+  align-items: center; /* قرار دادن همبرگر و متن در یک خط */
+  cursor: pointer; /* نشانگر ماوس */
+}
+
 .hamburger {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   cursor: pointer;
-  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 20px;
 }
 
 .hamburger .bar {
   width: 30px;
   height: 4px;
-  background-color: #333;
+  background-color: #fff;
   margin: 6px 0;
   transition: all 0.3s ease;
 }
 
-.hamburger .bar.active:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.hamburger .bar.active:nth-child(2) {
-  opacity: 0;
-}
-
-.hamburger .bar.active:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
+.bar.active {
+  background-color: #f00;
 }
 
 /* منوی ناوبری */
@@ -138,11 +144,6 @@ body {
   overflow-y: auto; /* فعال کردن اسکرول عمودی در منو */
 }
 
-
-/* وقتی منو باز است */
-.navbar.open {
-  right: 0; /* نمایش منو */
-}
 
 /* زیباسازی اسکرول‌بار در مرورگرها */
 .navbar::-webkit-scrollbar {
@@ -172,6 +173,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%; /* تنظیم عرض لینک‌ها به 100% */
+  align-items: flex-start; /* چپ‌چین کردن آیتم‌ها */
   height: 100%; /* پر کردن ارتفاع منو */
 }
 .menu-overlay {
@@ -237,4 +239,113 @@ body {
   padding: 10px;
   text-align: center;
   cursor: pointer;
+}
+
+.header {
+  direction: rtl; /* راست‌چین کردن محتوا */
+  width: 100%;
+  height: 50px; /* ارتفاع 1 سانتی‌متر (تقریبا 10 پیکسل) */
+  justify-content: flex-end; /* برای قرار گرفتن در سمت چپ */
+  background-color: #007bff; /* رنگ آبی یا هر رنگ دلخواه */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9; /* بالاتر از بقیه اجزا باشد */
+  justify-content: space-between; /* فاصله دادن قسمت‌ها */
+  align-items: center; /* عمودی تنظیم کردن آیتم‌ها */
+}
+.user-info {
+  display: flex;
+  align-items: flex-start; /* تراز عمودی به بالا */
+  direction: rtl; /* راست‌چین کردن این بخش */
+  justify-content: flex-end; /* چسباندن به سمت چپ */
+  width: 100%; /* اطمینان از پر شدن فضای عرضی */
+  cursor: pointer; /* برای نشان دادن اینکه این عنصر قابل کلیک است */
+  border: 2px solid transparent; /* مرز اولیه، پنهان */
+  border-radius: 5px; /* برای گرد کردن گوشه‌ها */
+  transition: border 0.3s ease; /* برای تغییر ملایم مرز */
+}
+.user-info:hover {
+  border-color: #007bff; /* رنگ مرز هنگام هاور */
+}
+.user-name {
+  margin-left: 0; /* حذف فضای اضافی */
+  text-align: left; /* چپ‌چین کردن متن */
+  margin-right: 0; /* حذف هر گونه فضای اضافی از سمت راست */
+}
+
+
+.user-menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+.user-menu {
+  display: none;
+  position: absolute;
+  top: 50px; /* فاصله کم‌تر از هدر */
+  left: 20px; /* از چپ باز می‌شود */
+  background-color: #fff;
+  color: #000;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  font-family: 'Vazir', sans-serif;
+  display: flex;
+  flex-direction: column; /* چینش عمودی */
+  align-items: flex-start; /* چپ‌چین کردن گزینه‌ها */
+  z-index: 1000; /* مطمئن شویم که منو از بقیه عناصر بالاتر است */
+}
+
+.user-menu button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-family: 'Vazir', sans-serif;
+  display: block; /* اطمینان از اینکه هر دکمه یک خط جدید است */
+  width: 100%; /* تمام عرض منو را پر کند */
+}
+
+.user-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* تغییرات جدید برای جلوگیری از افقی شدن منو */
+.user-menu button:hover {
+  background-color: #f0f0f0;
+  flex-direction: column; /* اطمینان از چینش عمودی در زمان هاور */
+}
+
+ 
+/* نمایش منو زمانی که دکمه فشرده شود */
+.user-menu-btn:focus + .user-menu,
+.user-menu:hover {
+  display: block;
+}
+
+.hamburger-text {
+  margin-left: 100px;  /* فاصله بین آیکن همبرگر و متن */
+  font-size: 18px;  /* سایز فونت */
+  font-weight: bold;  /* ضخامت فونت */
+  color: #fff;  /* رنگ متن */
+  margin-left: 10px;  /* فاصله بین همبرگر و متن */
+}
+ 
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: bold;
 }

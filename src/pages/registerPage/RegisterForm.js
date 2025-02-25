@@ -9,7 +9,14 @@ import {
   CarValuesDropdown,
   HomeValueDropDown,
   IncomeAmountDropDown,
-  RelationTypeDropDown
+  RelationTypeDropDown,
+  GhadDropDown,
+  VaznDropDown,
+  TipDropDown,
+  ZibaeeDropDown,
+  CheildCountDropDown,
+  RangePoostDropDown,
+  FirstCheildAgeDown
 } from './Dropdowns';
 import BirthdaySelector from './BirthdaySelector'; // این را اضافه کردم
 
@@ -27,7 +34,13 @@ const RegisterForm = () => {
     homeValue: [],
     carValue: [],
     relationType: [],
-
+    ghad: [],
+    vazn: [],
+    tipNumber: [],
+    zibaeeNumber: [],
+    cheildCount: [],
+    firstCheildAge: [],
+    rangePoost: [],
   });
 
   const [formData, setFormData] = useState({
@@ -48,7 +61,14 @@ const RegisterForm = () => {
     incomeAmount: '',
     homeValue: '',
     carValue: '',
-    relationType: ''
+    relationType: '',
+    ghad: '',
+    vazn: '',
+    tipNumber: '',
+    zibaeeNumber: '',
+    cheildCount: '',
+    firstCheildAge: '',
+    rangePoost: '',
 
   });
 
@@ -87,6 +107,13 @@ const RegisterForm = () => {
             carValue: dropdownResponse.data.model.carValue || [],
             homeValue: dropdownResponse.data.model.homeValue || [],
             relationType: dropdownResponse.data.model.relationType || [],
+            ghad: dropdownResponse.data.model.ghad || [],
+            vazn: dropdownResponse.data.model.vazn || [],
+            zibaeeNumber: dropdownResponse.data.model.zibaeeNumber || [],
+            tipNumber: dropdownResponse.data.model.tipNumber || [],
+            cheildCount: dropdownResponse.data.model.cheildCount || [],
+            firstCheildAge: dropdownResponse.data.model.firstCheildAge || [],
+            rangePoost: dropdownResponse.data.model.rangePoost || [],
           });
         }
         await fetchCaptcha();
@@ -169,11 +196,19 @@ const RegisterForm = () => {
             <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
             <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
             <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
-
             <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
             <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
             <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
             <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} relationTypes={dropdownData.relationType} />
+          
+            <RangePoostDropDown values={formData.rangePoost} handleChange={handleChange} options={dropdownData.rangePoost} />
+            <TipDropDown values={formData.tipNumber} handleChange={handleChange} options={dropdownData.tipNumber} />
+            <ZibaeeDropDown values={formData.zibaeeNumber} handleChange={handleChange} options={dropdownData.zibaeeNumber} />
+            <GhadDropDown values={formData.ghad} handleChange={handleChange} options={dropdownData.ghad} />
+            <VaznDropDown values={formData.vazn} handleChange={handleChange} options={dropdownData.vazn} />
+            <CheildCountDropDown values={formData.cheildCount} handleChange={handleChange} options={dropdownData.cheildCount} />
+            <FirstCheildAgeDown values={formData.firstCheildAge} handleChange={handleChange} options={dropdownData.firstCheildAge} />
+
 
             <Grid item xs={12} container spacing={2} alignItems="center">
               <Grid item xs={6}>

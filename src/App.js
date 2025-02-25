@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
-import { FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
-import { FaBan, FaUserSlash, FaHeart, FaStar, FaEye, FaUserCircle } from "react-icons/fa";
+import { FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
+
+import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
+import { LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
+
+import { FaBars, FaBan, FaUserSlash, FaHeart, FaStar, FaEye, FaUserCircle } from "react-icons/fa";
 import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
 import RegisterForm from "./pages/registerPage/RegisterForm";
@@ -10,7 +14,6 @@ import Profile from './pages/UsersProfile';
 import UploadPicture from './pages/UploadPicture';
 import UpdateProfile from './pages/UpdateProfile';
 import Messages from './pages/Messages';
-
 import BlockedUsers from "./pages/BlockedUsers";
 import BlockedMeUsers from './pages/BlockedMeUsers';
 import FavoritedMeUsers from './pages/FavoritedMeUsers';
@@ -28,12 +31,18 @@ function App() {
 
 function Main() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // وضعیت منوی نام و نام خانوادگی
   const menuRef = useRef(null); // برای تشخیص کلیک بیرون از منو
   const hamburgerRef = useRef(null); // برای تشخیص کلیک روی همبرگر
+  const userMenuRef = useRef(null); // برای تشخیص کلیک بیرون از منوی نام و نام خانوادگی
   const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen(!isUserMenuOpen); // تغییر وضعیت منوی نام و نام خانوادگی
   };
 
   const handleLogout = () => {
@@ -45,15 +54,16 @@ function Main() {
   const isLoginPage = window.location.pathname === '/login';
   const registerPage = window.location.pathname === '/registerForm';
 
-  // استفاده از useEffect برای تشخیص کلیک بیرون از منو
   useEffect(() => {
     // اگر منو باز است و کاربر بیرون از منو کلیک کند، منو بسته می‌شود
     const handleClickOutside = (event) => {
       if (
-        menuRef.current && !menuRef.current.contains(event.target) &&
-        !hamburgerRef.current.contains(event.target)
+        (menuRef.current && !menuRef.current.contains(event.target)) &&
+        (userMenuRef.current && !userMenuRef.current.contains(event.target)) &&
+        (hamburgerRef.current && !hamburgerRef.current.contains(event.target))
       ) {
         setIsMenuOpen(false); // منو را ببندید
+        setIsUserMenuOpen(false); // منوی نام و نام خانوادگی را ببندید
       }
     };
 
@@ -66,20 +76,58 @@ function Main() {
     };
   }, []);
 
+  const defaultAvatar = getDefaultAvatarAddress();
+
   return (
     <div className="app-container">
       {/* دکمه همبرگری */}
-      <div className="hamburger" onClick={toggleMenu} ref={hamburgerRef}>
-        <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
-        <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
-        <div className={`bar ${isMenuOpen ? 'active' : ''}`}></div>
-      </div>
+
+      <header className="header">
+        <div className="hamburger-container" onClick={toggleMenu} ref={hamburgerRef}>
+          <div className="hamburger" onClick={toggleMenu} ref={hamburgerRef}>
+            <FaBars className="hamburger" onClick={toggleMenu} ref={hamburgerRef} /> {/* آیکن همبرگر */}
+          </div>
+          <span className="hamburger-text" onClick={toggleMenu} ref={hamburgerRef}>امکانات</span>
+
+        </div>
+
+        <div className="header-center">
+          خوش آمدید
+        </div>
+        <div className="user-info user-name user-name-left" ref={userMenuRef}>
+          <span className="user-name user-name-left" onClick={toggleUserMenu}>
+            نام و نام خانوادگی
+          </span>
+          <img
+            src={getUserProfilePhoto(localStorage.getItem('userId'))}
+            alt="Profile"
+            style={styles.profileImage}
+            onClick={toggleUserMenu}
+            onError={(e) => {
+              e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+              e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+            }}
+          />
+ 
+          {isUserMenuOpen && (
+            <div className="user-menu">
+              <Link to="/update" className="nav-button">
+                ویرایش پروفایل
+                <FaFile />
+              </Link>
+              <button className="nav-button" onClick={handleLogout}>
+                خروج
+                <FaSignOutAlt />
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
 
       {/* منو لینک‌ها */}
       {!isLoginPage && !registerPage && (
         <nav className={`navbar ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
           <div className="close-icon" onClick={() => setIsMenuOpen(false)}>
-
             <span className="close-text">بستن</span> {/* کلمه بستن */}
             <FaTimes /> {/* آیکن بستن */}
           </div>
@@ -97,10 +145,11 @@ function Main() {
             <li>
               <Link to="/Messages" className="nav-button">
                 مرکز پیام
-                <FaFile />
+                <FaCommentDots />
               </Link>
-            </li> <li>
-              <Link to="/editProfile" className="nav-button">
+            </li>
+            <li>
+              <Link to="/update" className="nav-button">
                 ویرایش پروفایل
                 <FaFile />
               </Link>
@@ -135,7 +184,7 @@ function Main() {
 
             <li>
               <Link to="/CheckedMe" className="nav-button">
-               بازدیدکنندگان من
+                بازدیدکنندگان من
                 <FaEye /> {/* آیکن چشم (برای نمایش بازدیدها) */}
               </Link>
             </li>
@@ -166,7 +215,6 @@ function Main() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/registerForm" element={<RegisterForm />} />
         <Route path="/login" element={<Login_Form />} />
-     
         <Route path="/Messages" element={<Messages />} />
         <Route path="/blocked" element={<BlockedUsers />} />
         <Route path="/blockedMe" element={<BlockedMeUsers />} />
@@ -177,5 +225,17 @@ function Main() {
     </div>
   );
 }
+const styles = {
+  profileImage: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginRight: '10px',
+  },
+  userNameContainer: {
+    display: 'flex',
+    alignItems: 'center', // برای تراز عمودی آیکن و متن
+  }
+};
 
 export default App;
