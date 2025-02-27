@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
-import { getCaptcha, login } from '../api';
+import { getCaptcha, login, getDropdownItems } from '../api';
 import { Container, Paper, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,9 +9,9 @@ const Login_Form = () => {
   const navigate = useNavigate();
 
   const fetchCaptcha = async () => {
-    setIsCaptchaLoading(true);
+    console.log('Fetching captcha...'); // اضافه کنید
     try {
-      const captchaResponse = await getCaptcha();
+      const captchaResponse =  await  getCaptcha();
       if (captchaResponse.data && captchaResponse.data.guid && captchaResponse.data.image) {
         setCaptcha({ id: captchaResponse.data.guid, image: captchaResponse.data.image });
         setFormData(prevData => ({
@@ -36,13 +36,32 @@ const Login_Form = () => {
 
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [hasError, setHasError] = useState(false); // کنترل وضعیت خطا
 
   useEffect(() => {
-    localStorage.removeItem('token'); // حذف توکن از localStorage
-    localStorage.removeItem('userId'); // حذف توکن از localStorage
+    if (hasError) return; // اگر قبلاً خطا رخ داده، از اجرای مجدد جلوگیری کن
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+    } catch (error) {
 
-    fetchCaptcha();
-  }, []);
+    }
+    setIsCaptchaLoading(true);
+
+    const fetchData = async () => {
+      try {
+        const drop = await getDropdownItems();
+        console.log('drop , drop' , drop);
+        await fetchCaptcha();
+      }
+      catch (error) {
+        console.error('❌ خطایی رخ داده است:', error);
+        setHasError(true); // در صورت بروز خطا، اجرای مجدد متوقف می‌شود
+      }
+    };
+
+    fetchData();
+  }, [hasError]); // این تابع فقط زمانی اجرا می‌شود که hasError مقدار false داشته باشد.
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,6 +80,10 @@ const Login_Form = () => {
       // ذخیره‌سازی اطلاعات در localStorage
       localStorage.setItem('token', response.model.token);
       localStorage.setItem('userId', response.model.id);
+      localStorage.setItem('gender', response.model.gender);
+      localStorage.setItem('firstName', response.model.firstName );
+      console.log('firstName',response.model.firstName);
+      localStorage.setItem('lastName',  response.model.lastName);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
       // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
@@ -136,7 +159,7 @@ const Login_Form = () => {
           <Grid item xs={12}>
             <Link href="/registerForm" variant="body2">ثبت نام</Link>
             <br />
-            <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
+            <Link href="/ForgatePassword" variant="body2">بازیابی رمز عبور</Link>
           </Grid>
         </Grid>
       </Paper>

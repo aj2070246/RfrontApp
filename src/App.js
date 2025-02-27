@@ -19,6 +19,7 @@ import BlockedMeUsers from './pages/BlockedMeUsers';
 import FavoritedMeUsers from './pages/FavoritedMeUsers';
 import FavoriteUsers from './pages/FavoriteUsers';
 import LastUsersCheckedMe from './pages/LastUsersCheckedMe';
+import ForgatePassword from './pages/ForgatePassword';
 import './App.css';
 
 function App() {
@@ -51,8 +52,10 @@ function Main() {
     navigate('/login');
   };
 
-  const isLoginPage = window.location.pathname === '/login';
-  const registerPage = window.location.pathname === '/registerForm';
+  const isLoginPage = window.location.pathname.toLowerCase() === '/login'.toLowerCase();
+  const isRegisterPage = window.location.pathname.toLowerCase() === '/registerForm'.toLowerCase();
+  const forgatePassword = window.location.pathname.toLowerCase() === '/ForgatePassword'.toLowerCase();
+  const hideHeaderAndMenu = isLoginPage || isRegisterPage || forgatePassword;
 
   useEffect(() => {
     // اگر منو باز است و کاربر بیرون از منو کلیک کند، منو بسته می‌شود
@@ -80,132 +83,133 @@ function Main() {
 
   return (
     <div className="app-container">
-      {/* دکمه همبرگری */}
+      {!hideHeaderAndMenu && (
+        <>
+          <header className="header">
+            <div className="hamburger-container" onClick={toggleMenu} ref={hamburgerRef}>
+              <div className="hamburger" onClick={toggleMenu} ref={hamburgerRef}>
+                <FaBars className="hamburger" onClick={toggleMenu} ref={hamburgerRef} /> {/* آیکن همبرگر */}
+              </div>
+              <span className="hamburger-text" onClick={toggleMenu} ref={hamburgerRef}>امکانات</span>
 
-      <header className="header">
-        <div className="hamburger-container" onClick={toggleMenu} ref={hamburgerRef}>
-          <div className="hamburger" onClick={toggleMenu} ref={hamburgerRef}>
-            <FaBars className="hamburger" onClick={toggleMenu} ref={hamburgerRef} /> {/* آیکن همبرگر */}
-          </div>
-          <span className="hamburger-text" onClick={toggleMenu} ref={hamburgerRef}>امکانات</span>
-
-        </div>
-
-        <div className="header-center">
-          خوش آمدید
-        </div>
-        <div className="user-info user-name user-name-left" ref={userMenuRef}>
-          <span className="user-name user-name-left" onClick={toggleUserMenu}>
-            نام و نام خانوادگی
-          </span>
-          <img
-            src={getUserProfilePhoto(localStorage.getItem('userId'))}
-            alt="Profile"
-            style={styles.profileImage}
-            onClick={toggleUserMenu}
-            onError={(e) => {
-              e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-              e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
-            }}
-          />
- 
-          {isUserMenuOpen && (
-            <div className="user-menu">
-              <Link to="/update" className="nav-button">
-                ویرایش پروفایل
-                <FaFile />
-              </Link>
-              <button className="nav-button" onClick={handleLogout}>
-                خروج
-                <FaSignOutAlt />
-              </button>
             </div>
-          )}
-        </div>
-      </header>
 
-      {/* منو لینک‌ها */}
-      {!isLoginPage && !registerPage && (
-        <nav className={`navbar ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
-          <div className="close-icon" onClick={() => setIsMenuOpen(false)}>
-            <span className="close-text">بستن</span> {/* کلمه بستن */}
-            <FaTimes /> {/* آیکن بستن */}
-          </div>
+            <div className="header-center">
+              خوش آمدید
+            </div>
+            <div className="user-info user-name user-name-left" ref={userMenuRef}>
+              <span className="user-name user-name-left" onClick={toggleUserMenu}>
 
-          <br />
-          <br />
+                {localStorage.getItem('gender')} {' '} {localStorage.getItem('firstName')}
 
-          <ul className="nav-links">
-            <li>
-              <Link to="/search" className="nav-button">
-                کاربران
-                <FaSearch />
-              </Link>
-            </li>
-            <li>
-              <Link to="/Messages" className="nav-button">
-                مرکز پیام
-                <FaCommentDots />
-              </Link>
-            </li>
-            <li>
-              <Link to="/update" className="nav-button">
-                ویرایش پروفایل
-                <FaFile />
-              </Link>
-            </li>
-            <li>
-              <Link to="/blocked" className="nav-button">
-                مسدود شده ها
-                <FaBan /> {/* آیکن ممنوعیت (بلاک) */}
-              </Link>
-            </li>
+              </span>
+              <img
+                src={getUserProfilePhoto(localStorage.getItem('userId'))}
+                alt="Profile"
+                style={styles.profileImage}
+                onClick={toggleUserMenu}
+                onError={(e) => {
+                  e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+                  e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                }}
+              />
 
-            <li>
-              <Link to="/blockedMe" className="nav-button">
-                مسدود کنندگان
-                <FaUserSlash /> {/* آیکن کاربر حذف‌شده (برای نشان دادن بلاک) */}
-              </Link>
-            </li>
+              {isUserMenuOpen && (
+                <div className="user-menu">
+                  <Link to="/update" className="nav-button">
+                    ویرایش پروفایل
+                    <FaFile />
+                  </Link>
+                  <button className="nav-button" onClick={handleLogout}>
+                    خروج
+                    <FaSignOutAlt />
+                  </button>
+                </div>
+              )}
+            </div>
+          </header>
 
-            <li>
-              <Link to="/Favorite" className="nav-button">
-                علاقه مندی های من
-                <FaHeart /> {/* آیکن قلب (برای علاقه‌مندی‌ها) */}
-              </Link>
-            </li>
+          <nav className={`navbar ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
+            <div className="close-icon" onClick={() => setIsMenuOpen(false)}>
+              <span className="close-text">بستن</span> {/* کلمه بستن */}
+              <FaTimes /> {/* آیکن بستن */}
+            </div>
 
-            <li>
-              <Link to="/favoritedMe" className="nav-button">
-                علاقه مندان به من
-                <FaStar /> {/* آیکن ستاره (برای نشان دادن اهمیت) */}
-              </Link>
-            </li>
+            <br />
+            <br />
 
-            <li>
-              <Link to="/CheckedMe" className="nav-button">
-                بازدیدکنندگان من
-                <FaEye /> {/* آیکن چشم (برای نمایش بازدیدها) */}
-              </Link>
-            </li>
+            <ul className="nav-links">
+              <li>
+                <Link to="/search" className="nav-button">
+                  کاربران
+                  <FaSearch />
+                </Link>
+              </li>
+              <li>
+                <Link to="/Messages" className="nav-button">
+                  مرکز پیام
+                  <FaCommentDots />
+                </Link>
+              </li>
+              <li>
+                <Link to="/update" className="nav-button">
+                  ویرایش پروفایل
+                  <FaFile />
+                </Link>
+              </li>
+              <li>
+                <Link to="/blocked" className="nav-button">
+                  مسدود شده ها
+                  <FaBan /> {/* آیکن ممنوعیت (بلاک) */}
+                </Link>
+              </li>
 
-            <li>
-              <Link to="/profileView" className="nav-button">
-                مشاهده پروفایل خودم
-                <FaUserCircle /> {/* آیکن پروفایل کاربر (برای نمایش پروفایل) */}
-              </Link>
-            </li>
+              <li>
+                <Link to="/blockedMe" className="nav-button">
+                  مسدود کنندگان
+                  <FaUserSlash /> {/* آیکن کاربر حذف‌شده (برای نشان دادن بلاک) */}
+                </Link>
+              </li>
 
-            <li className="logout-button">
-              <button className="nav-button" onClick={handleLogout}>
-                خروج
-                <FaSignOutAlt />
-              </button>
-            </li>
-          </ul>
-        </nav>
+              <li>
+                <Link to="/Favorite" className="nav-button">
+                  علاقه مندی های من
+                  <FaHeart /> {/* آیکن قلب (برای علاقه‌مندی‌ها) */}
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/favoritedMe" className="nav-button">
+                  علاقه مندان به من
+                  <FaStar /> {/* آیکن ستاره (برای نشان دادن اهمیت) */}
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/CheckedMe" className="nav-button">
+                  بازدیدکنندگان من
+                  <FaEye /> {/* آیکن چشم (برای نمایش بازدیدها) */}
+                </Link>
+              </li>
+
+              <li>
+                <Link to={`/profile/${localStorage.getItem('userId')}`} className="nav-button">
+                  مشاهده پروفایل خودم
+                  <FaUserCircle /> {/* آیکن پروفایل کاربر (برای نمایش پروفایل) */}
+                </Link>
+              </li>
+
+              <li className="logout-button">
+                <button className="nav-button" onClick={handleLogout}>
+                  خروج
+                  <FaSignOutAlt />
+                </button>
+              </li>
+            </ul>
+          </nav>
+
+        </>
       )}
-
       {/* مسیرها */}
       <Routes>
         <Route path="/chat/:userId" element={<ChatPage />} />
@@ -221,7 +225,10 @@ function Main() {
         <Route path="/favoritedMe" element={<FavoritedMeUsers />} />
         <Route path="/Favorite" element={<FavoriteUsers />} />
         <Route path="/CheckedMe" element={<LastUsersCheckedMe />} />
+        <Route path="/ForgatePassword" element={<ForgatePassword />} />
       </Routes>
+
+
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+// const baseAddressApi = 'http://5.223.41.164:443';
 const baseAddressApi = 'http://localhost:5000';
 const defaultAvatar = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
 const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
@@ -18,15 +19,19 @@ api.interceptors.request.use(
     if (!noAuthRoutes.includes(config.url)) {
       const token = localStorage.getItem('token'); // دریافت توکن
       const currentUserId = localStorage.getItem('userId');
-      if (!token && window.location.pathname !== '/registerForm') {
+      if (!token && window.location.pathname !== '/registerForm' && window.location.pathname !== '/login'
+         && window.location.pathname !== '/ForgatePassword') {
         window.location.href = '/login';
         return Promise.reject('No token found');
       }
+    if ( window.location.pathname !== '/ForgatePassword') {
+
       config.headers['token'] = `Bearer ${token}`;
       config.headers['currentUserId'] = currentUserId;
     }
-    if (config.method === 'post') {
-      config.data = {
+    }
+    if (config.method === 'post'   && window.location.pathname !== '/ForgatePassword') {
+    config.data = {
         ...config.data,
         currentUserId: localStorage.getItem('userId'),
       };
@@ -35,6 +40,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+
     return Promise.reject(error);
   }
 );
@@ -108,36 +114,37 @@ export const uploadProfilePicture = async (file, userId) => {
     baseURL: baseAddressApi,
     timeout: 10000,
   });
-
-  const token = localStorage.getItem('token'); // دریافت توکن
-  const currentUserId = localStorage.getItem('userId');
-
-  if (!token && window.location.pathname !== '/registerForm') {
-    window.location.href = '/login';
-    return Promise.reject('No token found');
-  }
-
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('currentUserId', userId); // مطمئن شو که سرور `currentUserId` رو قبول می‌کنه
-
-  console.log('✅ Sending API request with:', formData);
-
   try {
-    const response = await api2.post('/Connection/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`,  // فیلد توکن رو تصحیح کن
-        'currentUserId': currentUserId, // اضافه کردن userId به هدر (اگر لازم باشه)
-      },
-    });
+    const token = localStorage.getItem('token'); // دریافت توکن
+    const currentUserId = localStorage.getItem('userId');
 
-    console.log('✅ Upload success:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Upload failed:', error);
-    throw error;
-  }
+    if (!token && window.location.pathname !== '/registerForm' && window.location.pathname !== '/login') {
+      // window.location.href = '/login';
+      return Promise.reject('No token found');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('currentUserId', userId); // مطمئن شو که سرور `currentUserId` رو قبول می‌کنه
+
+    console.log('✅ Sending API request with:', formData);
+
+    try {
+      const response = await api2.post('/Connection/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,  // فیلد توکن رو تصحیح کن
+          'currentUserId': currentUserId, // اضافه کردن userId به هدر (اگر لازم باشه)
+        },
+      });
+      console.log('✅ Upload success:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Upload failed:', error);
+      throw error;
+    }
+  } catch (error) { }
+
 };
 
 export const getDropdownItems = () => {
@@ -211,9 +218,9 @@ export const getUserInfo = async (stringId, currentuserId) => {
   }
 };
 
-export const getMyProfileDataForEdit = async (currentuserId) => {
+export const getMyProfileDataForEdit = async () => {
   try {
-    const response = await api.post("/Connection/GetMyProfileInfo", { CurrentUserId: currentuserId });
+    const response = await api.post("/Connection/GetMyProfileInfo");
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
@@ -243,11 +250,19 @@ export const changePasswordApi = async ({ currentPassword, newPassword }) => {
   }
 };
 
-export const VerifyEmailCodeForAcceptEmail = async ({ VerifyCode }) => {
+export const SendEmailForNewPassword = async ({ data }) => {
   try {
-    const response = await api.post('/PublicData/VerifyEmailCodeForAcceptEmail', {
-      EmailCode:  VerifyCode,
-    });
+    const response = await api.post('/PublicData/SendEmailForNewPassword', data);
+
+    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+  } catch (error) {
+    console.error('❌ خطا:', error);
+    return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
+  }
+};
+export const VerifyEmailCodeForAcceptEmail = async ({ data }) => {
+  try {
+    const response = await api.post('/PublicData/VerifyEmailCodeForAcceptEmail', data);
 
     return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
   } catch (error) {
@@ -257,11 +272,9 @@ export const VerifyEmailCodeForAcceptEmail = async ({ VerifyCode }) => {
 };
 
 
-export const sendVerifyCodeEmail = async ({ VerifyCode }) => {
+export const sendVerifyCodeEmail = async ({ data }) => {
   try {
-    const response = await api.post('/PublicData/SendEmailVerifyCodeForVerify', {
-      EmailCode:  VerifyCode,
-    });
+    const response = await api.post('/PublicData/SendEmailVerifyCodeForVerify', data);
 
     return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
   } catch (error) {

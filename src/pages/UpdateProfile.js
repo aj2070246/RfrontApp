@@ -1,4 +1,9 @@
-import { FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
+import { FaTimes , FaCheckCircle, FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
+
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+
+
 import { Button, Grid, Typography } from "@mui/material";
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, TextField, Snackbar, Alert, Modal, Box } from '@mui/material';
@@ -82,7 +87,7 @@ const UpdateProfile = () => {
     setCurrentUserId(localStorage.getItem('userId')); // Get user ID from local storage
     const fetchUserData = async () => {
       setLoading(true);
-      const response = await getMyProfileDataForEdit(currentUserId); // Fetch user info from API
+      const response = await getMyProfileDataForEdit(); // Fetch user info from API
 
       if (response && response.model) {
         setFormData(response.model); // مقداردهی فقط در صورت معتبر بودن داده
@@ -94,7 +99,7 @@ const UpdateProfile = () => {
     };
 
     fetchUserData();
-  }, [currentUserId]);
+  }, []);
 
   useEffect(() => {
     const fetchDropdownData = async () => {
@@ -137,8 +142,6 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-
     try {
       const response = await UpdateUserInfo(formData);
       console.log('✅ Form submitted successfully:', response.data);
@@ -169,10 +172,53 @@ const UpdateProfile = () => {
 
           <Grid container spacing={2}>
             <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
+        <br/>
             <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
             <TextField label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
             <TextField label="شماره موبایل" name="mobile" value={formData.mobile} onChange={handleChange} fullWidth />
-            <TextField label="آدرس ایمیل" name="emailAddress" value={formData.emailAddress} onChange={handleChange} fullWidth />
+
+            <TextField
+              label="آدرس ایمیل"
+              name="emailAddress"
+              value={formData.emailAddress}
+              onChange={handleChange}
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {formData.emailAddressStatusId === 1 || formData.emailAddressStatusId === 2 ? (
+                      <>
+                        <IconButton
+                          onClick={() => setIsVerifyOpen(true)}
+                          style={{ color: 'red' }}>
+                          <FaTimes  />
+                        </IconButton>
+                        <div style={{ textAlign: 'center' }} 
+                          onClick={() => setIsVerifyOpen(true)}
+                        
+                        >
+                          <span style={{ color: 'red' }} >تایید نشده</span>
+                          <br/>
+                          <span style={{ color: 'red' }}>کلیک کنید</span>
+                        </div>
+                      </>
+                    ) : formData.emailAddressStatusId === 3 ? (
+                      <>
+                        <IconButton
+                          style={{ color: 'green' }}>
+                          <FaCheckCircle />
+                        </IconButton>
+                        <div style={{ textAlign: 'center' }}>
+                          <span style={{ color: 'green' }}>تایید شده</span>
+                        </div>
+                      </>
+                    ) : null}
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+
             <TextField label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
             <TextField label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
 
@@ -226,26 +272,27 @@ const UpdateProfile = () => {
                   <Typography fontSize="0.85rem">تغییر رمز</Typography>
                 </Button>
               </Grid>
-              <br />
-              <Grid item xs={6} sm={3}>
+                {/* تغییر تصویر پروفایل */}
+                <Grid item xs={6} sm={3}>
                 <Button
                   variant="contained"
                   fullWidth
-                  startIcon={<FaKey />}
-                  onClick={() => setIsVerifyOpen(true)}
+                  startIcon={<FaCamera />}
+                  onClick={() => setIsUploadModalOpen(true)}
                   sx={{
                     height: 50,
-                    backgroundColor: "#aa9800",
-                    "&:hover": { backgroundColor: "#e68900" },
+                    backgroundColor: "#4caf50",
+                    "&:hover": { backgroundColor: "#3d8c40" },
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px", // فاصله بین آیکن و متن
                   }}
                 >
-                  <Typography fontSize="0.85rem">تایید ایمیل</Typography>
+                  <Typography fontSize="0.85rem">تغییر تصویر</Typography>
                 </Button>
               </Grid>
+     
               {/* ویرایش اطلاعات */}
               <Grid item xs={12} sm={6}>
                 <Button
@@ -266,28 +313,7 @@ const UpdateProfile = () => {
                   <Typography fontSize="0.85rem">ذخیره</Typography>
                 </Button>
               </Grid>
-              <br />
-
-              {/* تغییر تصویر پروفایل */}
-              <Grid item xs={6} sm={3}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  startIcon={<FaCamera />}
-                  onClick={() => setIsUploadModalOpen(true)}
-                  sx={{
-                    height: 50,
-                    backgroundColor: "#4caf50",
-                    "&:hover": { backgroundColor: "#3d8c40" },
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px", // فاصله بین آیکن و متن
-                  }}
-                >
-                  <Typography fontSize="0.85rem">تغییر تصویر</Typography>
-                </Button>
-              </Grid>
+            
             </Grid>
 
 
@@ -315,7 +341,7 @@ const UpdateProfile = () => {
       <ChangePasswordModal open={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
 
 
-      <VerifyEmailCode open={isVerifyOpen} onClose={() =>setIsVerifyOpen(false)} />
+      <VerifyEmailCode open={isVerifyOpen} onClose={() => setIsVerifyOpen(false)} />
 
       <Snackbar
         open={snackbar.open}

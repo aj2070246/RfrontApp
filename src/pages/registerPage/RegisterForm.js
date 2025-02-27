@@ -245,7 +245,7 @@ const RegisterForm = () => {
             <Grid item xs={12}>
               <Link href="/login" variant="body2">بازگشت به صفحه ورود به سامانه</Link>
               <br />
-              <Link href="/forgot-password" variant="body2">بازیابی رمز عبور</Link>
+              <Link href="/ForgatePassword" variant="body2">بازیابی رمز عبور</Link>
             </Grid>
 
 
