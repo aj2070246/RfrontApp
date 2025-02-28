@@ -24,7 +24,7 @@ const ForgatePassword = ({ open, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   };
-
+  
   const fetchCaptcha = async () => {
     setIsCaptchaLoading(true);
     try {
@@ -76,7 +76,7 @@ const ForgatePassword = ({ open, onClose }) => {
       setSnackbar({ open: true, message: 'متن تصویر را وارد کنید', severity: 'error' });
       return;
     }
-
+    console.log('email ', formData.emailAddress);
     if (!formData.emailAddress || formData.emailAddress.trim() === '') {
 
       setSnackbar({ open: true, message: 'ایمیل تان  را وارد کنید', severity: 'error' });

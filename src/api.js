@@ -1,11 +1,26 @@
 import axios from 'axios';
-// const baseAddressApi = 'http://5.223.41.164:443';
-const baseAddressApi = 'http://localhost:5000';
+
 const defaultAvatar = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
 const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
 
+// لیست آدرس‌ها برای تست به ترتیب
+const baseUrls = [
+  'https://api.mySite.com',
+  'https://api.mySite.com:443',
+  
+  'http://localhost:443',
+  'http://5.223.41.164:443',
+
+  'https://localhost:443',
+  'https://5.223.41.164:443',
+  'https://localhost',
+  'https://5.223.41.164',
+  'http://localhost:5000',
+  'http://5.223.41.164:5000'
+];
+
+// ایجاد یک نمونه axios بدون baseURL ثابت
 const api = axios.create({
-  baseURL: baseAddressApi,
   timeout: 10000, // زمان تایم‌اوت
   headers: {
     'Accept': 'application/json',
@@ -13,80 +28,70 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use(
-  (config) => {
-    // بررسی اینکه آیا این درخواست در لیست noAuthRoutes قرار دارد یا نه
-    if (!noAuthRoutes.includes(config.url)) {
-      const token = localStorage.getItem('token'); // دریافت توکن
-      const currentUserId = localStorage.getItem('userId');
-      if (!token && window.location.pathname !== '/registerForm' && window.location.pathname !== '/login'
-         && window.location.pathname !== '/ForgatePassword') {
-        window.location.href = '/login';
-        return Promise.reject('No token found');
-      }
-    if ( window.location.pathname !== '/ForgatePassword') {
+// تابع sendRequest با چک کردن آدرس‌ها به ترتیب
+const sendRequest = async (method, url, data = null) => {
+  let lastError = null;
 
-      config.headers['token'] = `Bearer ${token}`;
-      config.headers['currentUserId'] = currentUserId;
-    }
-    }
-    if (config.method === 'post'   && window.location.pathname !== '/ForgatePassword') {
-    config.data = {
-        ...config.data,
-        currentUserId: localStorage.getItem('userId'),
-      };
-    }
+  // حلقه برای تست هر آدرس
+  for (const baseUrl of baseUrls) {
+    try {
+      // تنظیم baseURL برای این درخواست
+      api.defaults.baseURL = baseUrl;
 
-    return config;
-  },
-  (error) => {
+      // ارسال درخواست
+      const response = await api({
+        method: method,
+        url: url, // url اینجا فقط مسیر (مثل /connection/GetMyAllMessages) هست
+        data: data,
+      });
 
-    return Promise.reject(error);
+      // اگه موفق شد، پاسخ رو برگردون
+      return response;
+    } catch (error) {
+      console.error(`Error with ${baseUrl}:`, error);
+      lastError = error; // ذخیره آخرین خطا
+    }
   }
-);
 
-api.interceptors.response.use(
-  (response) => {
-
-    // **اگر statusCode = 999 بود و جزو لیست نبود، ریدایرکت شود**
-    if (response.data.statusCode === 999 && !noAuthRoutes.includes(response.config.url)) {
-      window.location.href = "/login";
-    }
-
-    return response;
-  },
-  (error) => {
-    // **مدیریت خطای 401 Unauthorized**
-    if (error.response && error.response.status === 401) {
-      console.log("Unauthorized! Redirecting to login...");
-      window.location.href = "/login";
-    }
-
-    return Promise.reject(error);
-  }
-);
-
-
-export default api;
-
-export const getUserProfilePhoto = (userId) => {
-  const result = `${baseAddressApi}/connection/downloadProfilePhoto?userId=${userId}`;
-
-  console.log(result);
-  return result;
+  // اگه هیچ آدرسی کار نکرد، خطا برگردون
+  throw new Error(`All attempts failed. Last error: ${lastError}`);
 };
 
-export const getDefaultAvatarAddress = (userId) => {
+// **2** - درخواست گرافیک پروفایل
+export const getUserProfilePhoto = async (userId) => {
+  
+  let lastError = null;
 
-  console.log(defaultAvatar);
+  // حلقه برای چک کردن هر آدرس به ترتیب
+  for (const baseUrl of baseUrls) {
+    try {
+      // ایجاد URL کامل با آدرس پایه جدید
+      const result = `${baseUrl}/connection/downloadProfilePhoto?userId=${userId}`;
+
+      // ارسال درخواست به آدرس جدید
+      const response = await axios.get(result);
+
+      // در صورتی که پاسخ دریافت شود، عکس کاربر را باز می‌گرداند
+      return response.data;
+    } catch (error) {
+      console.error(`Error with ${baseUrl}:`, error);
+      lastError = error; // ذخیره آخرین خطا برای لاگ
+    }
+  }
+
+  // اگر هیچ‌کدام از آدرس‌ها پاسخ ندادند
+  throw new Error(`All attempts failed. Last error: ${lastError}`);
+};
+
+// **3** - درخواست آواتار پیش‌فرض
+export const getDefaultAvatarAddress = (userId) => {
   return defaultAvatar;
 };
 
+// **4** - دریافت همه پیام‌ها
 export const getAllMessages = async () => {
   try {
-    const response = await api.post('/connection/GetMyAllMessages', {
-      // هر داده‌ای که نیاز دارید در اینجا بفرستید
-    });
+    const response = await sendRequest('POST', '/connection/GetMyAllMessages');
     return response.data;
   } catch (error) {
     console.error("Error fetching messages:", error);
@@ -94,13 +99,10 @@ export const getAllMessages = async () => {
   }
 };
 
-
+// **5** - دریافت تصویر پروفایل
 export const fetchProfilePicture = async (userId) => {
   try {
-    const response = await api.get(`/Connection/downloadProfilePhoto/${userId}`, {
-      responseType: 'blob', // دریافت داده به‌صورت فایل
-    });
-
+    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto/${userId}`);
     return URL.createObjectURL(response.data); // ایجاد URL برای استفاده در `src`
   } catch (error) {
     console.error('Error fetching profile picture:', error);
@@ -108,109 +110,90 @@ export const fetchProfilePicture = async (userId) => {
   }
 };
 
-///////////////////////
+// **6** - آپلود تصویر پروفایل
 export const uploadProfilePicture = async (file, userId) => {
-  const api2 = axios.create({
-    baseURL: baseAddressApi,
-    timeout: 10000,
-  });
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('currentUserId', userId);
+
   try {
-    const token = localStorage.getItem('token'); // دریافت توکن
+    const token = localStorage.getItem('token');
     const currentUserId = localStorage.getItem('userId');
-
-    if (!token && window.location.pathname !== '/registerForm' && window.location.pathname !== '/login') {
-      // window.location.href = '/login';
-      return Promise.reject('No token found');
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('currentUserId', userId); // مطمئن شو که سرور `currentUserId` رو قبول می‌کنه
-
-    console.log('✅ Sending API request with:', formData);
-
-    try {
-      const response = await api2.post('/Connection/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,  // فیلد توکن رو تصحیح کن
-          'currentUserId': currentUserId, // اضافه کردن userId به هدر (اگر لازم باشه)
-        },
-      });
-      console.log('✅ Upload success:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('❌ Upload failed:', error);
-      throw error;
-    }
-  } catch (error) { }
-
+    const response = await sendRequest('POST', '/Connection/upload', formData);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Upload failed:', error);
+    throw error;
+  }
 };
 
+// **7** - دریافت گزینه‌های کشویی
 export const getDropdownItems = () => {
-  return api.get('/PublicData/GetAllDropDownsItems');
+  return sendRequest('GET', '/PublicData/GetAllDropDownsItems');
 };
 
-
-// این متد برای ارسال درخواست جستجو به آدرس /x/search است
-
+// **8** - جستجوی کاربران
 export const searchUsers = async (requestData) => {
   try {
-    // ارسال درخواست POST به سرور
-    const response = await api.post('/Connection/SearchUsers', requestData);
-    return response; // برگشت نتیجه
+    const response = await sendRequest('POST', '/Connection/SearchUsers', requestData);
+    return response;
   } catch (error) {
     throw new Error('خطا در ارسال درخواست به سرور');
   }
 };
 
-
-// دریافت پیام‌های بین دو کاربر
+// **9** - دریافت پیام‌ها بین دو کاربر
 export const getMessages = (senderUserId, receiverUserId) => {
-  return api.post('/Connection/GetMessagesWithOneUser', {
+  return sendRequest('POST', '/Connection/GetMessagesWithOneUser', {
     senderUserId,
     receiverUserId
   });
 };
 
-// ارسال پیام جدید
+// **10** - ارسال پیام جدید
 export const sendMessage = (senderUserId, receiverUserId, messageText) => {
-  return api.post('/Connection/SendMessage', {
+  return sendRequest('POST', '/Connection/SendMessage', {
     senderUserId,
     receiverUserId,
     messageText
   });
 };
 
-
+// **11** - بلاک کردن کاربر
 export const blockUser = async (inputModel) => {
   try {
-    const response = await api.post('/Connection/BlockUserManager', inputModel); // مسیر صحیح API را وارد کنید
-    return response.data; // یا return response بسته به ساختار پاسخ شما
+    const response = await sendRequest('POST', '/Connection/BlockUserManager', inputModel);
+    return response.data;
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
-    throw error; // در صورت نیاز می‌توانید خطا را پرتاب کنید
+    throw error;
   }
 };
 
-
+// **12** - اضافه کردن کاربر به علاقه‌مندی‌ها
 export const favoriteUser = async (inputModel) => {
   try {
-    const response = await api.post('/Connection/FavoriteUserManager', inputModel); // مسیر صحیح API را وارد کنید
-    return response.data; // یا return response بسته به ساختار پاسخ شما
+    const response = await sendRequest('POST', '/Connection/FavoriteUserManager', inputModel);
+    return response.data;
   } catch (error) {
     console.error("Error blocking/Favorite user:", error);
-    throw error; // در صورت نیاز می‌توانید خطا را پرتاب کنید
+    throw error;
   }
 };
-export const getCaptcha = () => api.get('/PublicData/GetCaptcha');
 
-export const registerUser = (formData) => api.post('/PublicData/RegisterUser', formData);
-export const UpdateUserInfo = (formData) => api.post('/Connection/UpdateUserInfo', formData);
+// **13** - دریافت کپچا
+export const getCaptcha = () => sendRequest('GET', '/PublicData/GetCaptcha');
 
+// **14** - ثبت‌نام کاربر
+export const registerUser = (formData) => sendRequest('POST', '/PublicData/RegisterUser', formData);
+
+// **15** - آپدیت اطلاعات کاربر
+export const UpdateUserInfo = (formData) => sendRequest('POST', '/Connection/UpdateUserInfo', formData);
+
+// **16** - دریافت اطلاعات کاربر
 export const getUserInfo = async (stringId, currentuserId) => {
   try {
-    const response = await api.post("/Connection/GetUserInfo", { StringId: stringId, CurrentuserId: currentuserId });
+    const response = await sendRequest('POST', "/Connection/GetUserInfo", { StringId: stringId, CurrentuserId: currentuserId });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
@@ -218,9 +201,10 @@ export const getUserInfo = async (stringId, currentuserId) => {
   }
 };
 
+// **17** - دریافت اطلاعات پروفایل برای ویرایش
 export const getMyProfileDataForEdit = async () => {
   try {
-    const response = await api.post("/Connection/GetMyProfileInfo");
+    const response = await sendRequest('POST', "/Connection/GetMyProfileInfo");
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
@@ -228,67 +212,62 @@ export const getMyProfileDataForEdit = async () => {
   }
 };
 
-
-
+// **18** - حذف پیام
 export const deleteMessage = (stringId) => {
-  console.log('deleteMessage=>   2' + stringId);
-  return api.post('/Connection/deleteMessage', { StringId: stringId });
+  return sendRequest('POST', '/Connection/deleteMessage', { StringId: stringId });
 };
 
-
+// **19** - تغییر رمز عبور
 export const changePasswordApi = async ({ currentPassword, newPassword }) => {
   try {
-    const response = await api.post('/Connection/ChangePassword', {
+    const response = await sendRequest('POST', '/Connection/ChangePassword', {
       currentPassword,
       newPassword
     });
-
-    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+    return response.data;
   } catch (error) {
     console.error('❌ خطا در تغییر رمز عبور:', error);
     return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
   }
 };
 
+// **20** - ارسال ایمیل برای درخواست رمز جدید
 export const SendEmailForNewPassword = async ({ data }) => {
   try {
-    const response = await api.post('/PublicData/SendEmailForNewPassword', data);
-
-    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+    const response = await sendRequest('POST', '/PublicData/SendEmailForNewPassword', data);
+    return response.data;
   } catch (error) {
     console.error('❌ خطا:', error);
     return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
   }
 };
+
+// **21** - تایید کد ایمیل برای پذیرش ایمیل
 export const VerifyEmailCodeForAcceptEmail = async ({ data }) => {
   try {
-    const response = await api.post('/PublicData/VerifyEmailCodeForAcceptEmail', data);
-
-    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+    const response = await sendRequest('POST', '/PublicData/VerifyEmailCodeForAcceptEmail', data);
+    return response.data;
   } catch (error) {
     console.error('❌ خطا:', error);
     return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
   }
 };
 
-
+// **22** - ارسال کد تایید ایمیل
 export const sendVerifyCodeEmail = async ({ data }) => {
   try {
-    const response = await api.post('/PublicData/SendEmailVerifyCodeForVerify', data);
-
-    return response.data; // انتظار می‌رود که شامل isSuccess و message باشد
+    const response = await sendRequest('POST', '/PublicData/SendEmailVerifyCodeForVerify', data);
+    return response.data;
   } catch (error) {
     console.error('❌ خطا:', error);
     return { isSuccess: false, message: 'خطا در ارتباط با سرور' };
   }
 };
 
-
-
-
+// **23** - ورود به سیستم
 export const login = async (formData) => {
   try {
-    const response = await api.post('/PublicData/login', formData);
+    const response = await sendRequest('POST', '/PublicData/login', formData);
     return response.data;
   } catch (error) {
     console.error("Login error:", error);
@@ -296,56 +275,55 @@ export const login = async (formData) => {
   }
 };
 
-
-
-
+// **24** - دریافت لیست کاربرانی که من را بلاک کرده‌اند
 export const BlockedMeUsersApi = async () => {
   try {
-    const response = await api.post("/Connection/getBlockedMeUsers", {
-      CurrentuserId: localStorage.getItem('userId')
-    });
+    const response = await sendRequest('POST', "/Connection/getBlockedMeUsers", { CurrentuserId: localStorage.getItem('userId') });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
     return null;
   }
 };
+
+// **25** - دریافت لیست کاربرانی که من آن‌ها را بلاک کرده‌ام
 export const BlockedUsersApi = async () => {
   try {
-    const response = await api.post("/Connection/getBlockedUsers", {
-      CurrentuserId: localStorage.getItem('userId')
-    });
+    const response = await sendRequest('POST', "/Connection/getBlockedUsers", { CurrentuserId: localStorage.getItem('userId') });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
     return null;
   }
 };
+
+// **26** - دریافت لیست کاربران مورد علاقه من
 export const FavoritedMeUsersApi = async () => {
   try {
-    const response = await api.post("/Connection/getFavoritedMeUsers", {
-      CurrentuserId: localStorage.getItem('userId')
-    });
+    const response = await sendRequest('POST', "/Connection/getFavoritedMeUsers", { CurrentuserId: localStorage.getItem('userId') });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
     return null;
   }
 };
+
+// **27** - دریافت لیست کاربران مورد علاقه من
 export const FavoriteUsersApi = async () => {
   try {
-    const response = await api.post("/Connection/getFavoriteUsers", {
-      CurrentuserId: localStorage.getItem('userId')
-    });
+    const response = await sendRequest('POST', "/Connection/getFavoriteUsers", { CurrentuserId: localStorage.getItem('userId') });
     return response.data;
   } catch (error) {
     console.error("خطا در دریافت اطلاعات کاربر:", error);
     return null;
   }
 };
+
+// **28** چه کسانی پروفایل من را چک کرده اند ؟
+
 export const LastUsersCheckedMeApi = async () => {
   try {
-    const response = await api.post("/Connection/LastUsersCheckedMe", {
+    const response = await sendRequest("/Connection/LastUsersCheckedMe", {
       CurrentuserId: localStorage.getItem('userId')
 
     });
