@@ -20,11 +20,11 @@ const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicDat
 //   // 'http://209.74.89.215:5000'
 // ];
 
-
+  
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
+  // 'http://localhost:5000',
   'https://api.hamsaryar.com',
-  'http://localhost:5000',
 
 ];
 // ایجاد یک نمونه axios بدون baseURL ثابت
@@ -106,7 +106,7 @@ const sendRequest = async (method, url, data = {}) => { // تغییر مقدار
 export const getUserProfilePhoto = async (userId) => {
   try {
 
-    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto/${userId}`,
+    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`,
       { responseType: "blob" }
     );
     return URL.createObjectURL(response.data); // تبدیل پاسخ به یک URL معتبر
@@ -139,7 +139,7 @@ export const getAllMessages = async () => {
 // **5** - دریافت تصویر پروفایل
 export const fetchProfilePicture = async (userId) => {
   try {
-    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto/${userId}`);
+    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`);
     return URL.createObjectURL(response.data); // ایجاد URL برای استفاده در `src`
   } catch (error) {
     console.error('Error fetching profile picture:', error);

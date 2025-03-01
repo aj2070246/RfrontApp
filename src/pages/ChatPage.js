@@ -1,13 +1,17 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useParams, Link } from 'react-router-dom'; // اضافه کردن این خط
-import { getMessages, sendMessage, getUserInfo, deleteMessage } from '../api';
-import {    Card , Box} from "@mui/material";
+import {getDefaultAvatarAddress, getMessages, sendMessage, getUserInfo, deleteMessage, getUserProfilePhoto } from '../api';
+import { Card, Box } from "@mui/material";
 
 const ChatPage = () => {
   const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
   const senderUserId = localStorage.getItem('userId');
   ;
   const [messages, setMessages] = useState([]);
+  const [statusCode, setStatusCode] = useState(null);
+
+  const defaultAvatar = getDefaultAvatarAddress();
+
   const [newMessage, setNewMessage] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [showStatusText, setShowStatusText] = useState(null);
@@ -15,11 +19,12 @@ const ChatPage = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    if (userId) {
+    if (userId && senderUserId) {  // بررسی می‌کنیم که مقادیر آماده باشند
       fetchUserInfo();
       fetchMessages();
     }
-  }, [userId]);
+  }, [userId, senderUserId]);
+
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -31,7 +36,12 @@ const ChatPage = () => {
   const fetchMessages = async () => {
     try {
       const response = await getMessages(senderUserId, userId);
+      console.log('eeeeeeeeeeeeee', response.data.isSuccess);
+
       if (response.data.isSuccess) {
+        console.log('log gggggggg', response.data.statusCode);
+        setStatusCode(response.data.statusCode);
+
         setMessages(response.data.model.reverse());
       }
     } catch (error) {
@@ -42,7 +52,7 @@ const ChatPage = () => {
     try {
       const currentUserId = localStorage.getItem('userId'); // مقدار مستقیم از localStorage
 
-      const response = await getUserInfo(userId,currentUserId); 
+      const response = await getUserInfo(userId, currentUserId);
       if (response.isSuccess) { // بررسی مستقیم isSuccess
         setUserInfo(response.model); // دسترسی به model
       } else {
@@ -92,102 +102,116 @@ const ChatPage = () => {
   };
 
   return (
-<Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-   <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+      <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
 
-    <div style={styles.container}>
-      {userInfo && (
-        <Link to={`/profile/${userInfo.id}`} style={{ textDecoration: 'none' }} target='_blank'>
-          <div style={styles.userInfoContainer}>
-            <div style={styles.userDetails}>
-              <p style={styles.userName}>
+        <div style={styles.container}>
+          {userInfo && (
+            <Link to={`/profile/${userInfo.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+              <div style={styles.userInfoContainer}>
+                <div style={styles.userDetails}>
+                  <p style={styles.userName}>
 
-                پیام شخصی با <br />
-                {userInfo.firstName} {userInfo.lastName}
-              </p>
-              <p style={styles.userInfo}>
-                 شهر {" "}{userInfo.province}
-              </p>
-              <p style={styles.userInfo}>
-                آخرین فعالیت {" "}{userInfo.lastActivityDate}
-              </p>
-              <p style={styles.userInfo}>
-                رابطه مورد نظر {" "}{userInfo.relationType}
-              </p>
-              <p style={styles.userInfo}>
-                {userInfo.marriageStatus} | {userInfo.liveType}
-              </p>
-            </div>
-            <img
-              src={`https://i.pravatar.cc/40?img=${userId}`}
-              alt="Profile"
-              style={styles.profileImage}
-            />
-          </div>
-        </Link>
-
-      )}
-
-      <div style={styles.chatBox}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            onMouseEnter={() => msg.senderUserId === senderUserId && handleMouseEnter(msg.messageStatusId)} // هاور فقط برای پیام‌های ارسالی
-            onMouseLeave={handleMouseLeave}
-            onClick={handleClick}
-            style={{
-              ...styles.message,
-              backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
-              alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start',
-            }}
-          >
-            <p style={styles.text}>{msg.messageText}</p>
-            <span style={styles.time}>{new Date(msg.sendDate).toLocaleDateString()}</span>
-
-            {/* نمایش تیک‌ها فقط برای پیام‌های ارسالی */}
-            {msg.senderUserId === senderUserId && (
-              <span style={styles.text}>
-                {msg.messageStatusId === 1 ? '✔️' :
-                  msg.messageStatusId === 2 ? '✔️✔️' :
-                    msg.messageStatusId === 3 ? '✅' : ''}
-              </span>
-            )}
-
-            {/* نمایش متن وضعیت پیام زمانی که موس روی آن می‌رود یا کلیک می‌شود (فقط برای پیام‌های ارسالی) */}
-            {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
-              <div style={styles.statusText}>
-                <span style={{ color: '#000' }}>{msg.messageStatus}</span> {/* متن وضعیت سیاه */}
+                    پیام شخصی با <br />
+                    {userInfo.firstName} {userInfo.lastName}
+                  </p>
+                  <p style={styles.userInfo}>
+                    شهر {" "}{userInfo.province}
+                  </p>
+                  <p style={styles.userInfo}>
+                    آخرین فعالیت {" "}{userInfo.lastActivityDate}
+                  </p>
+                  <p style={styles.userInfo}>
+                    رابطه مورد نظر {" "}{userInfo.relationType}
+                  </p>
+                  <p style={styles.userInfo}>
+                    {userInfo.marriageStatus} | {userInfo.liveType}
+                  </p>
+                </div>
+                <img
+                  src={getUserProfilePhoto(userId)} // آدرس اصلی
+                  alt="Profile"
+                  style={styles.profileImage}
+                  onError={(e) => {
+                    e.target.onerror = null; // جلوگیری از لوپ خطا
+                    e.target.src = defaultAvatar; // تصویر پیش‌فرض
+                  }}
+                />
               </div>
-            )}
+            </Link>
 
-            {/* علامت سطل آشغال برای حذف پیام */}
-            {msg.senderUserId === senderUserId && (
-              <button
-                onClick={() => handleDeleteMessage(msg.id)}
-                style={styles.deleteButton}
-              >
-                🗑️
-              </button>
+          )}
+          {console.log('statusCode gggggggg', statusCode)}
+
+          <div className="noMessages">
+            {statusCode == 6969 ? (
+              <div className="noMessages">
+                <h3> گفتگویی یافت نشد. برای شروع گفتگو،.
+                </h3>
+                <h1>  یک پیام ارسال کنید.
+                </h1>
+              </div>
+            ) : (
+              messages.map((msg, index) => (
+                <div
+                  key={index}
+                  onMouseEnter={() => msg.senderUserId === senderUserId && handleMouseEnter(msg.messageStatusId)} // هاور فقط برای پیام‌های ارسالی
+                  onMouseLeave={handleMouseLeave}
+                  onClick={handleClick}
+                  style={{
+                    ...styles.message,
+                    backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
+                    alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start',
+                  }}
+                >
+                  <p style={styles.text}>{msg.messageText}</p>
+                  <span style={styles.time}>{new Date(msg.sendDate).toLocaleDateString()}</span>
+
+                  {/* نمایش تیک‌ها فقط برای پیام‌های ارسالی */}
+                  {msg.senderUserId === senderUserId && (
+                    <span style={styles.text}>
+                      {msg.messageStatusId === 1 ? '✔️' :
+                        msg.messageStatusId === 2 ? '✔️✔️' :
+                          msg.messageStatusId === 3 ? '✅' : ''}
+                    </span>
+                  )}
+
+                  {/* نمایش متن وضعیت پیام زمانی که موس روی آن می‌رود یا کلیک می‌شود (فقط برای پیام‌های ارسالی) */}
+                  {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
+                    <div style={styles.statusText}>
+                      <span style={{ color: '#000' }}>{msg.messageStatus}</span> {/* متن وضعیت سیاه */}
+                    </div>
+                  )}
+
+                  {/* علامت سطل آشغال برای حذف پیام */}
+                  {msg.senderUserId === senderUserId && (
+                    <button
+                      onClick={() => handleDeleteMessage(msg.id)}
+                      style={styles.deleteButton}
+                    >
+                      🗑️
+                    </button>
+                  )}
+                </div>
+              ))
             )}
+            <div ref={messagesEndRef} style={{ height: '0' }} /> {/* این div باعث می‌شود که به انتها اسکرول کند */}
           </div>
-        ))}
-        <div ref={messagesEndRef} style={{ height: '0' }} /> {/* این div باعث می‌شود که به انتها اسکرول کند */}
-      </div>
 
-      <div style={styles.inputContainer}>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="پیام خود را بنویسید..."
-          style={styles.input}
-        />
-        <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
-      </div>
-    </div>
-   
-</Card> </Box>
-);
+          <div style={styles.inputContainer}>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="پیام خود را بنویسید..."
+              style={styles.input}
+            />
+            <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
+          </div>
+        </div>
+
+      </Card> </Box>
+  );
 };
 
 const styles = {

@@ -349,3 +349,15 @@ body {
   font-size: 18px;
   font-weight: bold;
 }
+
+
+.noMessages {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #d70101;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  margin: 10px;
+  font-weight: bold;
+}

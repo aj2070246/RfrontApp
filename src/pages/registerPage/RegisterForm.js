@@ -1,10 +1,10 @@
-import { HelmetProvider } from "react-helmet-async";
 
 import React, { useState, useEffect } from 'react';
 import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui/material';
 import { getCaptcha, registerUser, getDropdownItems } from '../../api';
 import { Link } from '@mui/material';
 
+import { HelmetProvider } from "react-helmet-async";
 import {
   GenderDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,

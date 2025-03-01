@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
-import { Navigate  } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
 
@@ -24,6 +24,7 @@ import './App.css';
 function App() {
   return (
     <Router>
+      <Main />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login_Form />} />
@@ -41,7 +42,7 @@ function App() {
         <Route path="/Favorite" element={<FavoriteUsers />} />
         <Route path="/CheckedMe" element={<LastUsersCheckedMe />} />
         <Route path="/ForgatePassword" element={<ForgatePassword />} />
-     
+
       </Routes>
     </Router>
   );
@@ -74,7 +75,8 @@ function Main() {
   const isLoginPage = window.location.pathname.toLowerCase() === '/login'.toLowerCase();
   const isRegisterPage = window.location.pathname.toLowerCase() === '/registerForm'.toLowerCase();
   const forgatePassword = window.location.pathname.toLowerCase() === '/ForgatePassword'.toLowerCase();
-  const hideHeaderAndMenu = isRoot|| isLoginPage || isRegisterPage || forgatePassword;
+  
+  const hideHeaderAndMenu = isRoot || isLoginPage || isRegisterPage || forgatePassword;
 
   useEffect(() => {
     // اگر منو باز است و کاربر بیرون از منو کلیک کند، منو بسته می‌شود
@@ -102,7 +104,6 @@ function Main() {
 
   return (
     <div className="app-container">
-      console.log('hideHeaderAndMenu',hideHeaderAndMenu);
       {!hideHeaderAndMenu && (
         <>
           <header className="header">
@@ -230,7 +231,7 @@ function Main() {
 
         </>
       )}
-      {/* مسیرها */} 
+      {/* مسیرها */}
     </div>
   );
 }
