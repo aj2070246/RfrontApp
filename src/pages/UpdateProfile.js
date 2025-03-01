@@ -1,4 +1,4 @@
-import { FaTimes , FaCheckCircle, FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
+import { FaTimes, FaCheckCircle, FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
 
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
@@ -47,6 +47,10 @@ const UpdateProfile = () => {
     carValue: [],
     relationType: [],
   });
+
+  
+  const validateMobile = (value) => /^\d{10}$/.test(value);
+  const validateEmail = (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -172,17 +176,41 @@ const UpdateProfile = () => {
 
           <Grid container spacing={2}>
             <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
-        <br/>
+            <br />
             <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
             <TextField label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
-            <TextField label="شماره موبایل" name="mobile" value={formData.mobile} onChange={handleChange} fullWidth />
-
+            <TextField
+              label="شماره موبایل"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              fullWidth
+              placeholder="09123456789"
+              inputProps={{ maxLength: 10, inputMode: "numeric", pattern: "[0-9]*" }} // فقط عدد
+              error={formData.mobile.length > 0 && !validateMobile(formData.mobile)}
+              helperText={formData.mobile.length > 0 && !validateMobile(formData.mobile) ? "شماره موبایل باید دقیقا ۱۰ رقم باشد." : ""}
+              onBlur={() => {
+                if (formData.mobile.length === 10 && !validateMobile(formData.mobile)) {
+                  alert("شماره موبایل باید دقیقا ۱۰ رقم باشد و فقط عدد باشد!");
+                }
+              }}
+            />
             <TextField
               label="آدرس ایمیل"
               name="emailAddress"
               value={formData.emailAddress}
               onChange={handleChange}
               fullWidth
+
+              placeholder="example@email.com"
+              error={formData.emailAddress.length > 0 && !validateEmail(formData.emailAddress)}
+              helperText={formData.emailAddress.length > 0 && !validateEmail(formData.emailAddress) ? "ایمیل معتبر نیست!" : ""}
+              onBlur={() => {
+                if (formData.emailAddress.length > 0 && !validateEmail(formData.emailAddress)) {
+                  alert("ایمیل معتبر نیست!");
+                }
+              }}
+
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -191,14 +219,14 @@ const UpdateProfile = () => {
                         <IconButton
                           onClick={() => setIsVerifyOpen(true)}
                           style={{ color: 'red' }}>
-                          <FaTimes  />
+                          <FaTimes />
                         </IconButton>
-                        <div style={{ textAlign: 'center' }} 
+                        <div style={{ textAlign: 'center' }}
                           onClick={() => setIsVerifyOpen(true)}
-                        
+
                         >
                           <span style={{ color: 'red' }} >تایید نشده</span>
-                          <br/>
+                          <br />
                           <span style={{ color: 'red' }}>کلیک کنید</span>
                         </div>
                       </>
@@ -272,8 +300,8 @@ const UpdateProfile = () => {
                   <Typography fontSize="0.85rem">تغییر رمز</Typography>
                 </Button>
               </Grid>
-                {/* تغییر تصویر پروفایل */}
-                <Grid item xs={6} sm={3}>
+              {/* تغییر تصویر پروفایل */}
+              <Grid item xs={6} sm={3}>
                 <Button
                   variant="contained"
                   fullWidth
@@ -292,7 +320,7 @@ const UpdateProfile = () => {
                   <Typography fontSize="0.85rem">تغییر تصویر</Typography>
                 </Button>
               </Grid>
-     
+
               {/* ویرایش اطلاعات */}
               <Grid item xs={12} sm={6}>
                 <Button
@@ -313,7 +341,7 @@ const UpdateProfile = () => {
                   <Typography fontSize="0.85rem">ذخیره</Typography>
                 </Button>
               </Grid>
-            
+
             </Grid>
 
 

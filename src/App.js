@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
-
+import { Navigate  } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
 
@@ -21,11 +21,28 @@ import FavoriteUsers from './pages/FavoriteUsers';
 import LastUsersCheckedMe from './pages/LastUsersCheckedMe';
 import ForgatePassword from './pages/ForgatePassword';
 import './App.css';
-
 function App() {
   return (
     <Router>
-      <Main />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login_Form />} />
+        <Route path="/chat/:userId" element={<ChatPage />} />
+        <Route path="/profile/:stringId" element={<Profile />} />
+        <Route path="/UploadPicture" element={<UploadPicture />} />
+        <Route path="/update" element={<UpdateProfile />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/registerForm" element={<RegisterForm />} />
+        <Route path="/login" element={<Login_Form />} />
+        <Route path="/Messages" element={<Messages />} />
+        <Route path="/blocked" element={<BlockedUsers />} />
+        <Route path="/blockedMe" element={<BlockedMeUsers />} />
+        <Route path="/favoritedMe" element={<FavoritedMeUsers />} />
+        <Route path="/Favorite" element={<FavoriteUsers />} />
+        <Route path="/CheckedMe" element={<LastUsersCheckedMe />} />
+        <Route path="/ForgatePassword" element={<ForgatePassword />} />
+     
+      </Routes>
     </Router>
   );
 }
@@ -52,10 +69,12 @@ function Main() {
     navigate('/login');
   };
 
+
+  const isRoot = window.location.pathname === '/';
   const isLoginPage = window.location.pathname.toLowerCase() === '/login'.toLowerCase();
   const isRegisterPage = window.location.pathname.toLowerCase() === '/registerForm'.toLowerCase();
   const forgatePassword = window.location.pathname.toLowerCase() === '/ForgatePassword'.toLowerCase();
-  const hideHeaderAndMenu = isLoginPage || isRegisterPage || forgatePassword;
+  const hideHeaderAndMenu = isRoot|| isLoginPage || isRegisterPage || forgatePassword;
 
   useEffect(() => {
     // اگر منو باز است و کاربر بیرون از منو کلیک کند، منو بسته می‌شود
@@ -83,6 +102,7 @@ function Main() {
 
   return (
     <div className="app-container">
+      console.log('hideHeaderAndMenu',hideHeaderAndMenu);
       {!hideHeaderAndMenu && (
         <>
           <header className="header">
@@ -210,25 +230,7 @@ function Main() {
 
         </>
       )}
-      {/* مسیرها */}
-      <Routes>
-        <Route path="/chat/:userId" element={<ChatPage />} />
-        <Route path="/profile/:stringId" element={<Profile />} />
-        <Route path="/UploadPicture" element={<UploadPicture />} />
-        <Route path="/update" element={<UpdateProfile />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/registerForm" element={<RegisterForm />} />
-        <Route path="/login" element={<Login_Form />} />
-        <Route path="/Messages" element={<Messages />} />
-        <Route path="/blocked" element={<BlockedUsers />} />
-        <Route path="/blockedMe" element={<BlockedMeUsers />} />
-        <Route path="/favoritedMe" element={<FavoritedMeUsers />} />
-        <Route path="/Favorite" element={<FavoriteUsers />} />
-        <Route path="/CheckedMe" element={<LastUsersCheckedMe />} />
-        <Route path="/ForgatePassword" element={<ForgatePassword />} />
-      </Routes>
-
-
+      {/* مسیرها */} 
     </div>
   );
 }

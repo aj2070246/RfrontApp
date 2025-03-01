@@ -1,24 +1,32 @@
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const defaultAvatar = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
 const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
 
+// // لیست آدرس‌ها برای تست به ترتیب
+// const baseUrls = [
+//   // 'https://api.hamsaryar.com',
+//   // 'https://api.hamsaryar.com:443',
+
+//   // 'http://localhost:443',
+//   // 'http://209.74.89.215:443',
+
+//   // 'https://localhost:443',
+//   // 'https://209.74.89.215:443',
+//   // 'https://localhost',
+//   // 'https://209.74.89.215',
+//   'http://localhost:5000',
+//   // 'http://209.74.89.215:5000'
+// ];
+
+
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
-  'https://api.mySite.com',
-  'https://api.mySite.com:443',
-  
-  'http://localhost:443',
-  'http://5.223.41.164:443',
-
-  'https://localhost:443',
-  'https://5.223.41.164:443',
-  'https://localhost',
-  'https://5.223.41.164',
+  'https://api.hamsaryar.com',
   'http://localhost:5000',
-  'http://5.223.41.164:5000'
-];
 
+];
 // ایجاد یک نمونه axios بدون baseURL ثابت
 const api = axios.create({
   timeout: 10000, // زمان تایم‌اوت
@@ -28,59 +36,88 @@ const api = axios.create({
   },
 });
 
-// تابع sendRequest با چک کردن آدرس‌ها به ترتیب
-const sendRequest = async (method, url, data = null) => {
-  let lastError = null;
 
-  // حلقه برای تست هر آدرس
+const sendRequest = async (method, url, data = {}) => { // تغییر مقدار پیش‌فرض data
+  let lastError = null;
+  const currentUserId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+
+  // لیست درخواست‌های امن که نیاز به احراز هویت ندارند
+  const trustedActions = ['login', 'getcaptcha', 'registeruser', 'getalldropdownsitems'];
+
+  // بررسی می‌کنیم که آیا درخواست به یکی از `trustedActions` ارسال شده است یا نه
+  const isTrustedRequest = trustedActions.some(action => url.toLowerCase().includes(action));
+
+  // اگر درخواست نیاز به احراز هویت داشت و توکن وجود نداشت، کاربر را به صفحه لاگین هدایت کن
+  if (!token && !isTrustedRequest) {
+    window.location.href = '/login'; // 🚀 حل مشکل useNavigate
+    return;
+  }
+
+  // تنظیم هدرهای ثابت برای همه درخواست‌ها
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'currentUserId': currentUserId,
+  };
+
+  console.log('currentUserId', currentUserId);
+  console.log('type', method);
+
+  // اگه درخواست POST باشه، `CurrentUserId` رو به دیتا اضافه کن
+  if (method.toUpperCase() === 'POST') {
+    data.CurrentUserId = currentUserId;
+    console.log('type in if', method);
+  } else {
+    console.log('log : ', method.toUpperCase(), data, typeof data);
+  }
+
   for (const baseUrl of baseUrls) {
     try {
-      // تنظیم baseURL برای این درخواست
       api.defaults.baseURL = baseUrl;
 
-      // ارسال درخواست
       const response = await api({
         method: method,
-        url: url, // url اینجا فقط مسیر (مثل /connection/GetMyAllMessages) هست
+        url: url,
         data: data,
+        headers: headers,
       });
 
-      // اگه موفق شد، پاسخ رو برگردون
       return response;
     } catch (error) {
       console.error(`Error with ${baseUrl}:`, error);
-      lastError = error; // ذخیره آخرین خطا
+
+      // **اگر خطای 401 (توکن نامعتبر) دریافت شد، کاربر را به لاگین بفرست**
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token'); // حذف توکن نامعتبر
+        localStorage.removeItem('userId'); // حذف یوزر آیدی
+        window.location.href = '/login'; // 🚀 حل مشکل useNavigate
+        return;
+      }
+
+      lastError = error;
     }
   }
 
-  // اگه هیچ آدرسی کار نکرد، خطا برگردون
   throw new Error(`All attempts failed. Last error: ${lastError}`);
 };
 
+
 // **2** - درخواست گرافیک پروفایل
 export const getUserProfilePhoto = async (userId) => {
-  
-  let lastError = null;
+  try {
 
-  // حلقه برای چک کردن هر آدرس به ترتیب
-  for (const baseUrl of baseUrls) {
-    try {
-      // ایجاد URL کامل با آدرس پایه جدید
-      const result = `${baseUrl}/connection/downloadProfilePhoto?userId=${userId}`;
-
-      // ارسال درخواست به آدرس جدید
-      const response = await axios.get(result);
-
-      // در صورتی که پاسخ دریافت شود، عکس کاربر را باز می‌گرداند
-      return response.data;
-    } catch (error) {
-      console.error(`Error with ${baseUrl}:`, error);
-      lastError = error; // ذخیره آخرین خطا برای لاگ
+    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto/${userId}`,
+      { responseType: "blob" }
+    );
+    return URL.createObjectURL(response.data); // تبدیل پاسخ به یک URL معتبر
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      console.warn(`User photo not found for ${userId}, using default.`);
+      return defaultAvatar; // در صورت خطای 404، عکس پیش‌فرض برمی‌گردد
     }
+    console.error("Error fetching user photo:", error);
+    return defaultAvatar; // برای سایر خطاها هم عکس پیش‌فرض برمی‌گردد
   }
-
-  // اگر هیچ‌کدام از آدرس‌ها پاسخ ندادند
-  throw new Error(`All attempts failed. Last error: ${lastError}`);
 };
 
 // **3** - درخواست آواتار پیش‌فرض

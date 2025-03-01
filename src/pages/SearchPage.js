@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TextField, MenuItem, Select, InputLabel, FormControl, 
-  Button, Grid, Box } from '@mui/material';
+import {
+  TextField, MenuItem, Select, InputLabel, FormControl,
+  Button, Grid, Box
+} from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { searchUsers, getDropdownItems } from '../api';
-import { LastUsersCheckedMeApi ,getDefaultAvatarAddress,getUserProfilePhoto} from '../api'; // اضافه کردن متد جدید
+import { LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from '../api'; 
 
 import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
@@ -26,9 +28,10 @@ const SearchPage = () => {
 
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
-  const [dropdownVisible, setDropdownVisible] = useState(true);
   const [pageIndex, setPageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [profilePhotos, setProfilePhotos] = useState({}); // ✅ ذخیره عکس‌ها برای جلوگیری از فراخوانی‌های تکراری
   const observer = useRef();
 
   useEffect(() => {
@@ -63,7 +66,7 @@ const SearchPage = () => {
   };
 
   const fetchMoreResults = async () => {
-    if (loading) return;
+    if (loading || !hasMore) return;
     setLoading(true);
 
     try {
@@ -87,8 +90,22 @@ const SearchPage = () => {
 
       const response = await searchUsers(requestData);
       if (response.data.statusCode === 200) {
-        setResults((prev) => [...prev, ...response.data.model]);
-        setPageIndex((prev) => prev + 1);
+        const newResults = response.data.model || [];
+
+        if (newResults.length === 0) { 
+          setHasMore(false);
+          observer.current.disconnect();
+        } else {
+          setResults((prev) => [...prev, ...newResults]);
+          setPageIndex((prev) => prev + 1);
+
+          // ✅ دریافت عکس‌ها فقط برای کاربران جدید
+          const newProfilePhotos = {};
+          newResults.forEach(user => {
+            newProfilePhotos[user.id] = getUserProfilePhoto(user.id);
+          });
+          setProfilePhotos(prev => ({ ...prev, ...newProfilePhotos }));
+        }
       }
     } catch (err) {
       console.error(err);
@@ -100,7 +117,7 @@ const SearchPage = () => {
 
   useEffect(() => {
     observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+      if (entries[0].isIntersecting && hasMore) {
         fetchMoreResults();
       }
     });
@@ -116,50 +133,56 @@ const SearchPage = () => {
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
       <Grid container spacing={2}>
-        {results.map((user) => (
-          <Grid item xs={12} sm={6} md={3} key={user.id}>
-            <Card sx={{ margin: 1 }}>
-              <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
-                <CardActionArea>
-                  <Box
-                    sx={{
-                      position: "relative",
-                      height: 140, // ارتفاع ثابت
-                      width: "100%", // پر کردن عرض کارت
-                      backgroundColor: "pink", // رنگ پس‌زمینه قرمز
-                      overflow: "hidden", // جلوگیری از نمایش اضافی
-                    }}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={getUserProfilePhoto(user.id)}
-                      alt="User Avatar"
-                      onError={(e) => {
-                        e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                        e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
-                      }}
+        {results.length > 0 ? (
+          results.map((user) => (
+            <Grid item xs={12} sm={6} md={3} key={user.id}>
+              <Card sx={{ margin: 1 }}>
+                <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+                  <CardActionArea>
+                    <Box
                       sx={{
-                        height: "100%", // پر کردن ارتفاع
-                        width: "100%", // پر کردن عرض کارت
-                        objectFit: "contain", // برش تصویر در صورت نیاز
-                        position: "absolute", // قرارگیری در بالای Box
-                        top: 0,
-                        left: 0,
+                        position: "relative",
+                        height: 140,
+                        width: "100%",
+                        backgroundColor: "pink",
+                        overflow: "hidden",
                       }}
-                    />
-                  </Box>
-                </CardActionArea>
-              </Link>
-              <CardContent>
-                <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
-                <Typography variant="body2">{user.age} ساله از {user.province}</Typography>
-                <Link to={`/chat/${user.id}`}>
-                  <Button variant="contained" color="primary" fullWidth>شروع گفتگو</Button>
+                    >
+                      <CardMedia
+                        component="img"
+                        image={profilePhotos[user.id] || defaultAvatar} // ✅ استفاده از state برای جلوگیری از فراخوانی مجدد
+                        alt="User Avatar"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = defaultAvatar;
+                        }}
+                        sx={{
+                          height: "100%",
+                          width: "100%",
+                          objectFit: "contain",
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                        }}
+                      />
+                    </Box>
+                  </CardActionArea>
                 </Link>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                <CardContent>
+                  <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
+                  <Typography variant="body2">{user.age} ساله از {user.province}</Typography>
+                  <Link to={`/chat/${user.id}`}>
+                    <Button variant="contained" color="primary" fullWidth>شروع گفتگو</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography variant="h6" sx={{ textAlign: "center", width: "100%", marginTop: 2 }}>
+            هیچ نتیجه‌ای یافت نشد.
+          </Typography>
+        )}
       </Grid>
       <div id="scroll-end" style={{ height: 10 }}></div>
       {loading && <Typography textAlign="center">در حال بارگذاری...</Typography>}
