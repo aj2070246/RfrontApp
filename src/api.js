@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const defaultAvatar = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
+const defaultAvatarMan = process.env.PUBLIC_URL + "/pictures/default-avatar-man.png";
+const defaultAvatarNone = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
+const defaultAvatarWoman = process.env.PUBLIC_URL + "/pictures/default-avatar-woman.png";
 const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
 
 // // لیست آدرس‌ها برای تست به ترتیب
@@ -20,11 +22,12 @@ const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicDat
 //   // 'http://209.74.89.215:5000'
 // ];
 
-  
+
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
+  'https://api.hamsaryar.com'
   // 'http://localhost:5000',
-  'https://api.hamsaryar.com',
+  // 'https://api.hamsaryar.com',
 
 ];
 // ایجاد یک نمونه axios بدون baseURL ثابت
@@ -56,19 +59,15 @@ const sendRequest = async (method, url, data = {}) => { // تغییر مقدار
 
   // تنظیم هدرهای ثابت برای همه درخواست‌ها
   const headers = {
-    'Authorization': `Bearer ${token}`,
+    'token': `Bearer ${token}`,
     'currentUserId': currentUserId,
   };
 
-  console.log('currentUserId', currentUserId);
-  console.log('type', method);
 
   // اگه درخواست POST باشه، `CurrentUserId` رو به دیتا اضافه کن
   if (method.toUpperCase() === 'POST') {
     data.CurrentUserId = currentUserId;
-    console.log('type in if', method);
   } else {
-    console.log('log : ', method.toUpperCase(), data, typeof data);
   }
 
   for (const baseUrl of baseUrls) {
@@ -105,24 +104,34 @@ const sendRequest = async (method, url, data = {}) => { // تغییر مقدار
 // **2** - درخواست گرافیک پروفایل
 export const getUserProfilePhoto = async (userId) => {
   try {
+    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`, {
+      responseType: "blob" // انتظار دریافت تصویر
+    });
 
-    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`,
-      { responseType: "blob" }
-    );
-    return URL.createObjectURL(response.data); // تبدیل پاسخ به یک URL معتبر
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.warn(`User photo not found for ${userId}, using default.`);
-      return defaultAvatar; // در صورت خطای 404، عکس پیش‌فرض برمی‌گردد
+    // اگر پاسخ JSON بود، یعنی سرور `photoExists: false` را فرستاده است
+    if (response.data.type === "application/json") {
+      const textData = await response.data.text(); // تبدیل به متن
+      const jsonData = JSON.parse(textData); // تبدیل به JSON
+
+      if (jsonData.photoExists === false) {
+        if (jsonData.gender == 1)
+          return defaultAvatarMan
+        else
+          return defaultAvatarWoman; // نمایش عکس پیش‌فرض
+      }
     }
+
+    return URL.createObjectURL(response.data); // تبدیل عکس به URL معتبر
+  } catch (error) {
     console.error("Error fetching user photo:", error);
-    return defaultAvatar; // برای سایر خطاها هم عکس پیش‌فرض برمی‌گردد
+    return defaultAvatarNone; // نمایش عکس پیش‌فرض در صورت بروز خطا
   }
 };
 
 // **3** - درخواست آواتار پیش‌فرض
 export const getDefaultAvatarAddress = (userId) => {
-  return defaultAvatar;
+  console.log('getDefaultAvatarAddress');
+  return defaultAvatarNone;
 };
 
 // **4** - دریافت همه پیام‌ها

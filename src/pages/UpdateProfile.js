@@ -148,7 +148,6 @@ const UpdateProfile = () => {
     e.preventDefault();
     try {
       const response = await UpdateUserInfo(formData);
-      console.log('✅ Form submitted successfully:', response.data);
 
       if (response.data.isSuccess) {
         setSnackbar({ open: true, message: 'ثبت‌نام با موفقیت انجام شد!', severity: 'success' });

@@ -146,7 +146,6 @@ const RegisterForm = () => {
 
     try {
       const response = await registerUser(formData);
-      console.log('✅ Form submitted successfully:', response.data);
 
       if (response.data.isSuccess) {
         setSnackbar({ open: true, message: 'ثبت‌نام با موفقیت انجام شد!', severity: 'success' });
@@ -173,7 +172,8 @@ const RegisterForm = () => {
   return (
     <>
       <HelmetProvider>
-        <title>ثبت نام در همسریار</title>
+        {/* x128
+        <title>ثبت نام در همسریار</title> */}
       </HelmetProvider>
       <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>

@@ -8,7 +8,6 @@ const ProfilePictureUpload = () => {
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
-            console.log("✅ File selected:", selectedFile.name); // نمایش نام فایل برای تست
             setFile(selectedFile);
         }
     };
@@ -18,20 +17,17 @@ const ProfilePictureUpload = () => {
         setError(''); // پاک کردن خطاها قبل از ارسال مجدد
 
         const currentUserId = localStorage.getItem('userId'); // دریافت userId
-        console.log("🔹 currentUserId:", currentUserId);
 
         if (!file) {
-            setError('Please select a file.');
+            setError('لطفا یک فایل انتخاب نمایید');
             return;
         }
 
         try {
             const response = await uploadProfilePicture(file, currentUserId);
-            console.log("✅ Upload Response:", response);
-            alert('Upload successful!');
+            alert('با موفقیت آپلود شد');
         } catch (error) {
-            console.error('❌ Upload failed:', error);
-            setError('Upload failed! Please try again.');
+            setError('خطا در ارسال فایل');
         }
     };
 

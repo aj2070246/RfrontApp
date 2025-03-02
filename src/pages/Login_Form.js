@@ -9,7 +9,6 @@ const Login_Form = () => {
   const navigate = useNavigate();
 
   const fetchCaptcha = async () => {
-    console.log('Fetching captcha...'); // اضافه کنید
     try {
       const captchaResponse =  await  getCaptcha();
       if (captchaResponse.data && captchaResponse.data.guid && captchaResponse.data.image) {
@@ -51,7 +50,6 @@ const Login_Form = () => {
     const fetchData = async () => {
       try {
         const drop = await getDropdownItems();
-        console.log('drop , drop' , drop);
         await fetchCaptcha();
       }
       catch (error) {
@@ -81,8 +79,8 @@ const Login_Form = () => {
       localStorage.setItem('token', response.model.token);
       localStorage.setItem('userId', response.model.id);
       localStorage.setItem('gender', response.model.gender);
+      localStorage.setItem('GenderId', response.model.GenderId);
       localStorage.setItem('firstName', response.model.firstName );
-      console.log('firstName',response.model.firstName);
       localStorage.setItem('lastName',  response.model.lastName);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
       // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
@@ -98,11 +96,13 @@ const Login_Form = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
+{/* 
+x128
         {<div class="banner2">
           <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
           <p class="banner-text2">   سامانه دوست یابی</p>
         </div>
-        }
+        } */}
         <Grid container spacing={2} className="login-form">
 
 
