@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { searchUsers, getDropdownItems, getUserProfilePhoto } from '../api';
+import { searchUsers, getDropdownItems, getUserProfilePhoto, getDefaultAvatarAddress } from '../api';
 import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -198,8 +198,7 @@ const SearchPage = () => {
     }
   };
 
-  const defaultAvatar = "/pictures/defAv.png";
-
+  const defaultAvatar = getDefaultAvatarAddress();
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
