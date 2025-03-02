@@ -123,7 +123,7 @@ body {
 }
 
 .bar.active {
-  background-color: #f00;
+  background-color: rgb(14, 13, 13);
 }
 
 /* منوی ناوبری */
@@ -133,7 +133,7 @@ body {
   right: -150px; /* کاهش عرض منو */
   width: 150px; /* عرض منو کاهش داده شده */
   height: 100%;
-  background-color: #333;
+  background-color: rgb(255, 0, 251);
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* شروع از بالا */
@@ -175,6 +175,7 @@ body {
   width: 100%; /* تنظیم عرض لینک‌ها به 100% */
   align-items: flex-start; /* چپ‌چین کردن آیتم‌ها */
   height: 100%; /* پر کردن ارتفاع منو */
+  
 }
 .menu-overlay {
   position: fixed;
@@ -205,7 +206,7 @@ body {
 }
 
 .nav-links .nav-button:hover {
-  color: #f1f1f1;
+  color: #4009cc;
 }
 
 .nav-links .nav-button svg {
@@ -234,13 +235,30 @@ body {
 /* استایل دکمه خروج */
 .logout-button {
   margin-top: auto; /* دکمه را به پایین‌ترین قسمت منو می‌فرستد */
-  background-color: red;
-  color: white;
   padding: 10px;
   text-align: center;
   cursor: pointer;
+  color: #06819a;
+
+}
+.messages-link {
+  display: flex;
+  align-items: center;
+  margin-left: 15px; /* فاصله بین تعداد پیام‌ها و اسم کاربر */
 }
 
+.unread-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* اندازه دایره */
+  height: 20px; /* اندازه دایره */
+  background-color: red; /* رنگ دایره */
+  color: white; /* رنگ عدد */
+  border-radius: 50%; /* دایره‌ای کردن */
+  margin-left: 5px; /* فاصله بین عدد و آیکن پیام */
+  font-size: 12px; /* اندازه فونت عدد */
+}
 .header {
   direction: rtl; /* راست‌چین کردن محتوا */
   width: 100%;
@@ -295,9 +313,9 @@ body {
   top: 50px; /* فاصله کم‌تر از هدر */
   left: 20px; /* از چپ باز می‌شود */
   background-color: #fff;
-  color: #000;
+  color: #06819a;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(239, 17, 228, 0.1);
   padding: 10px;
   font-family: 'Vazir', sans-serif;
   display: flex;

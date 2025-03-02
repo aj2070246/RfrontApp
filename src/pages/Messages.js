@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link,useParams } from 'react-router-dom';
-import { getAllMessages,getDefaultAvatarAddress,getUserProfilePhoto } from '../api';
+import { Link, useParams } from 'react-router-dom';
+import { getAllMessages, getDefaultAvatarAddress, getUserProfilePhoto } from '../api';
 import { Avatar, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Badge } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Card, Box } from "@mui/material";
@@ -13,11 +13,11 @@ const StyledTableRow = styled(TableRow)(({ theme, index }) => ({
 }));
 
 const Messages = () => {
-  const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
+    const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
 
     const [messages, setMessages] = useState([]);
     const [statusCode, setStatusCode] = useState(null);
-const defaultAvatar = getDefaultAvatarAddress();
+    const defaultAvatar = getDefaultAvatarAddress();
     useEffect(() => {
         const fetchMessages = async () => {
             const response = await getAllMessages();
@@ -57,12 +57,12 @@ const defaultAvatar = getDefaultAvatarAddress();
                                     >
                                         <TableCell>
                                             <Box display="flex" alignItems="center">
-                                                <Avatar 
-                                                src={getUserProfilePhoto(message.senderUserId)}
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.src = defaultAvatar;
-                                                  }} />
+                                                <Avatar
+                                                    src={getUserProfilePhoto(message.senderUserId)}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = defaultAvatar;
+                                                    }} />
                                                 <Box ml={1} display="flex" flexDirection="column" justifyContent="center">
                                                     <span>{message.senderName}</span>
                                                     {message.unreadMessagesCount > 0 && (

@@ -14,9 +14,14 @@ const ProfilePictureUpload = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setError(''); // پاک کردن خطاها قبل از ارسال مجدد
+        setError('');
 
-        const currentUserId = localStorage.getItem('userId'); // دریافت userId
+        const currentUserId = localStorage.getItem('userId');
+
+        if (!currentUserId) {
+            setError('خطا: شناسه کاربر یافت نشد!');
+            return;
+        }
 
         if (!file) {
             setError('لطفا یک فایل انتخاب نمایید');
@@ -24,7 +29,11 @@ const ProfilePictureUpload = () => {
         }
 
         try {
-            const response = await uploadProfilePicture(file, currentUserId);
+            const formData = new FormData();
+            formData.append('File', file); // فیلد `File` اضافه شد
+            formData.append('CurrentUserId', currentUserId);
+
+            const response = await uploadProfilePicture(formData);
             alert('با موفقیت آپلود شد');
         } catch (error) {
             setError('خطا در ارسال فایل');
@@ -45,7 +54,6 @@ const ProfilePictureUpload = () => {
         </div>
     );
 };
-
 
 const styles = {
     container: {
@@ -79,7 +87,7 @@ const styles = {
         transition: '0.3s',
     },
     fileInput: {
-        display: 'none', // مخفی کردن ورودی پیش‌فرض
+        display: 'none',
     },
     button: {
         padding: '10px 20px',
@@ -91,9 +99,6 @@ const styles = {
         fontSize: '16px',
         transition: '0.3s',
         fontFamily: "'Vazir', sans-serif",
-    },
-    buttonHover: {
-        backgroundColor: '#218838',
     },
     error: {
         color: 'red',

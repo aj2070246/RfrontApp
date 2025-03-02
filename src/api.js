@@ -6,23 +6,6 @@ const defaultAvatarNone = process.env.PUBLIC_URL + "/pictures/default-avatar.png
 const defaultAvatarWoman = process.env.PUBLIC_URL + "/pictures/default-avatar-woman.png";
 const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
 
-// // لیست آدرس‌ها برای تست به ترتیب
-// const baseUrls = [
-//   // 'https://api.hamsaryar.com',
-//   // 'https://api.hamsaryar.com:443',
-
-//   // 'http://localhost:443',
-//   // 'http://209.74.89.215:443',
-
-//   // 'https://localhost:443',
-//   // 'https://209.74.89.215:443',
-//   // 'https://localhost',
-//   // 'https://209.74.89.215',
-//   'http://localhost:5000',
-//   // 'http://209.74.89.215:5000'
-// ];
-
-
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
   'https://api.hamsaryar.com'
@@ -40,7 +23,7 @@ const api = axios.create({
 });
 
 
-const sendRequest = async (method, url, data = {}) => { // تغییر مقدار پیش‌فرض data
+const sendRequest = async (method, url, data = {},isFormData = false , config = {}) => { // تغییر مقدار پیش‌فرض data
   let lastError = null;
   const currentUserId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
@@ -62,6 +45,11 @@ const sendRequest = async (method, url, data = {}) => { // تغییر مقدار
     'token': `Bearer ${token}`,
     'currentUserId': currentUserId,
   };
+  if (isFormData) {
+    headers['Content-Type'] = 'multipart/form-data';
+  } else {
+    headers['Content-Type'] = 'application/json';
+  }
 
 
   // اگه درخواست POST باشه، `CurrentUserId` رو به دیتا اضافه کن
@@ -79,6 +67,7 @@ const sendRequest = async (method, url, data = {}) => { // تغییر مقدار
         url: url,
         data: data,
         headers: headers,
+        responseType: config.responseType || 'json', // مقدار پیش‌فرض json
       });
 
       return response;
@@ -101,39 +90,6 @@ const sendRequest = async (method, url, data = {}) => { // تغییر مقدار
 };
 
 
-// **2** - درخواست گرافیک پروفایل
-export const getUserProfilePhoto = async (userId) => {
-  try {
-    const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`, {
-      responseType: "blob" // انتظار دریافت تصویر
-    });
-
-    // اگر پاسخ JSON بود، یعنی سرور `photoExists: false` را فرستاده است
-    if (response.data.type === "application/json") {
-      const textData = await response.data.text(); // تبدیل به متن
-      const jsonData = JSON.parse(textData); // تبدیل به JSON
-
-      if (jsonData.photoExists === false) {
-        if (jsonData.gender == 1)
-          return defaultAvatarMan
-        else
-          return defaultAvatarWoman; // نمایش عکس پیش‌فرض
-      }
-    }
-
-    return URL.createObjectURL(response.data); // تبدیل عکس به URL معتبر
-  } catch (error) {
-    console.error("Error fetching user photo:", error);
-    return defaultAvatarNone; // نمایش عکس پیش‌فرض در صورت بروز خطا
-  }
-};
-
-// **3** - درخواست آواتار پیش‌فرض
-export const getDefaultAvatarAddress = (userId) => {
-  console.log('getDefaultAvatarAddress');
-  return defaultAvatarNone;
-};
-
 // **4** - دریافت همه پیام‌ها
 export const getAllMessages = async () => {
   try {
@@ -144,6 +100,73 @@ export const getAllMessages = async () => {
     return { isSuccess: false };
   }
 };
+export const getUserProfilePhoto = async (userId) => {
+  try {
+    const response = await sendRequest(
+      'GET',
+      `/Connection/downloadProfilePhoto?userId=${userId}`,
+      {}, // داده خالی
+      false, // isFormData
+      { responseType: 'blob' } // تنظیمات اضافی
+    );
+
+    // چک کن که response.data واقعاً Blob باشه
+    if (!(response.data instanceof Blob)) {
+      throw new Error('Response is not a Blob');
+    }
+
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    console.error("Error fetching user photo:", error);
+    return defaultAvatarNone; // عکس پیش‌فرض در صورت خطا
+  }
+};
+// **2** - درخواست گرافیک
+// // توی فایل api.js
+// export const getUserProfilePhoto = async (userId) => {
+//   try {
+//     const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`, {}, false, {
+//       responseType: "blob" // انتظار دریافت تصویر
+//     });
+
+//     if (response.data.type === "application/json") {
+//       const textData = await response.data.text(); // تبدیل به متن
+//       const jsonData = JSON.parse(textData); // تبدیل به JSON
+
+//       if (jsonData.photoExists === false) {
+//         return jsonData.gender == 1 ? defaultAvatarMan : defaultAvatarWoman; // نمایش عکس پیش‌فرض
+//       }
+//     }
+
+//     return URL.createObjectURL(response.data); // تبدیل Blob به URL
+//   } catch (error) {
+//     console.error("Error fetching user photo:", error);
+//     return defaultAvatarNone; // نمایش عکس پیش‌فرض در صورت خطا
+//   }
+// };
+// ✅ اصلاح شده: ارسال `FormData`
+export const uploadProfilePicture = async (formData) => {
+  if (!(formData instanceof FormData)) {
+    console.error('❌ Error: formData is not an instance of FormData!');
+    throw new Error('Invalid formData');
+  }
+
+  try {
+    const response = await sendRequest('POST', '/Connection/upload', formData, true);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Upload failed:', error);
+    throw error;
+  }
+};
+
+// **3** - درخواست آواتار پیش‌فرض
+export const getDefaultAvatarAddress = (userId) => {
+  console.log('getDefaultAvatarAddress');
+  return defaultAvatarNone;
+};
+
+
 
 // **5** - دریافت تصویر پروفایل
 export const fetchProfilePicture = async (userId) => {
@@ -153,23 +176,6 @@ export const fetchProfilePicture = async (userId) => {
   } catch (error) {
     console.error('Error fetching profile picture:', error);
     return null; // در صورت بروز خطا مقدار null برگردانید
-  }
-};
-
-// **6** - آپلود تصویر پروفایل
-export const uploadProfilePicture = async (file, userId) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('currentUserId', userId);
-
-  try {
-    const token = localStorage.getItem('token');
-    const currentUserId = localStorage.getItem('userId');
-    const response = await sendRequest('POST', '/Connection/upload', formData);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Upload failed:', error);
-    throw error;
   }
 };
 
@@ -189,6 +195,12 @@ export const searchUsers = async (requestData) => {
 };
 
 // **9** - دریافت پیام‌ها بین دو کاربر
+export const GetCountOfUnreadMessages = () => {
+  return sendRequest('POST', '/Connection/GetCountOfUnreadMessages', {}
+  );
+};
+
+
 export const getMessages = (senderUserId, receiverUserId) => {
   return sendRequest('POST', '/Connection/GetMessagesWithOneUser', {
     senderUserId,

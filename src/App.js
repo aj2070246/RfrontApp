@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react
 import { FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
 import { Navigate } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
-import { LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
+import { GetCountOfUnreadMessages, LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
 
 import { FaBars, FaBan, FaUserSlash, FaHeart, FaStar, FaEye, FaUserCircle } from "react-icons/fa";
 import ChatPage from './pages/ChatPage';
@@ -55,11 +55,11 @@ function Main() {
   const hamburgerRef = useRef(null); // برای تشخیص کلیک روی همبرگر
   const userMenuRef = useRef(null); // برای تشخیص کلیک بیرون از منوی نام و نام خانوادگی
   const navigate = useNavigate();
-
+  const [profilePhoto, setProfilePhoto] = useState(null); // حالت برای عکس پروفایل
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // حالت برای تعداد پیام‌های خوانده‌نشده
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen); // تغییر وضعیت منوی نام و نام خانوادگی
   };
@@ -75,7 +75,7 @@ function Main() {
   const isLoginPage = window.location.pathname.toLowerCase() === '/login'.toLowerCase();
   const isRegisterPage = window.location.pathname.toLowerCase() === '/registerForm'.toLowerCase();
   const forgatePassword = window.location.pathname.toLowerCase() === '/ForgatePassword'.toLowerCase();
-  
+
   const hideHeaderAndMenu = isRoot || isLoginPage || isRegisterPage || forgatePassword;
 
   useEffect(() => {
@@ -100,6 +100,35 @@ function Main() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchProfilePhoto = async () => {
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const photoUrl = await getUserProfilePhoto(userId);
+        console.log('Photo URL:', photoUrl); // چک کن چی برگشته
+        setProfilePhoto(photoUrl);
+      }
+    };
+    fetchProfilePhoto();
+  }, []);
+
+  useEffect(() => {
+    const fetchUnreadMessagesCount = async () => {
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const response = await GetCountOfUnreadMessages(); // فرض می‌کنم این تابع توی api.js تعریف شده
+        console.log('Unread Messages Count:', response); // چک کن چی برگشته
+        if (response.data.isSuccess) {
+          setUnreadMessagesCount(response.data.model);
+          console.log('(response.data.isSuccess , ' , response.data.isSuccess);
+          console.log('(response.data.model , ' , response.data.model);
+        }
+      }
+    };
+    fetchUnreadMessagesCount();
+  }, []);
+
+
   const defaultAvatar = getDefaultAvatarAddress();
 
   return (
@@ -118,14 +147,21 @@ function Main() {
             <div className="header-center">
               خوش آمدید
             </div>
+
             <div className="user-info user-name user-name-left" ref={userMenuRef}>
+              <Link to="/Messages" className="nav-button messages-link">
+                <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
+                <span className="unread-count">{unreadMessagesCount}</span>
+              </Link>
+
               <span className="user-name user-name-left" onClick={toggleUserMenu}>
-
                 {localStorage.getItem('gender')} {' '} {localStorage.getItem('firstName')}
-
               </span>
+
               <img
-                src={getUserProfilePhoto(localStorage.getItem('userId'))}
+                src={profilePhoto} // استفاده از state به جای تابع مستقیم
+                // 
+                //    src={getUserProfilePhoto(localStorage.getItem('userId'))}
                 alt="Profile"
                 style={styles.profileImage}
                 onClick={toggleUserMenu}
@@ -137,14 +173,24 @@ function Main() {
 
               {isUserMenuOpen && (
                 <div className="user-menu">
-                  <Link to="/update" className="nav-button">
-                    ویرایش پروفایل
-                    <FaFile />
-                  </Link>
+                  <button>
+                    <Link to={`/profile/${localStorage.getItem('userId')}`} className="nav-button">
+                      مشاهده پروفایل خودم
+                      <FaUserCircle /> {/* آیکن پروفایل کاربر (برای نمایش پروفایل) */}
+                    </Link>
+                  </button>
+                  <button>
+                    <Link to="/update" className="nav-button">
+                      ویرایش پروفایل
+                      <FaFile />
+                    </Link>
+                  </button>
                   <button className="nav-button" onClick={handleLogout}>
                     خروج
                     <FaSignOutAlt />
                   </button>
+
+
                 </div>
               )}
             </div>
@@ -167,17 +213,19 @@ function Main() {
                 </Link>
               </li>
               <li>
-                <Link to="/Messages" className="nav-button">
+                <Link to="/Messages" className="nav-button  nav-button messages-link">
                   مرکز پیام
-                  <FaCommentDots />
+                    <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
+                    <span className="unread-count">{unreadMessagesCount}</span>
+
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/update" className="nav-button">
                   ویرایش پروفایل
                   <FaFile />
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/blocked" className="nav-button">
                   مسدود شده ها
@@ -213,19 +261,14 @@ function Main() {
                 </Link>
               </li>
 
-              <li>
-                <Link to={`/profile/${localStorage.getItem('userId')}`} className="nav-button">
-                  مشاهده پروفایل خودم
-                  <FaUserCircle /> {/* آیکن پروفایل کاربر (برای نمایش پروفایل) */}
-                </Link>
-              </li>
-
-              <li className="logout-button">
-                <button className="nav-button" onClick={handleLogout}>
+              {<li className="logout-button">
+                <Link onClick={handleLogout} className="nav-button">
                   خروج
-                  <FaSignOutAlt />
-                </button>
-              </li>
+                  <FaUserCircle />
+                </Link>
+              </li>}
+
+
             </ul>
           </nav>
 
@@ -245,7 +288,7 @@ const styles = {
   userNameContainer: {
     display: 'flex',
     alignItems: 'center', // برای تراز عمودی آیکن و متن
-  }
+  },
 };
 
 export default App;

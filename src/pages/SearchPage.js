@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  TextField, MenuItem, Select, InputLabel, FormControl,
-  Button, Grid, Box
-} from '@mui/material';
+import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { searchUsers, getDropdownItems } from '../api';
-import { LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from '../api'; 
-
+import { searchUsers, getDropdownItems, getUserProfilePhoto } from '../api';
 import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -17,23 +12,49 @@ import {
 
 const SearchPage = () => {
   const [formData, setFormData] = useState({
-    ageFrom: '', ageTo: '', province: '', healtStatus: '', liveType: '', marriageStatus: '',
-    incomeAmount: '', homeValue: '', carValue: '', onlineStatus: '', profilePhoto: '', relationType: ''
+    ageFrom: '',
+    ageTo: '',
+    province: '',
+    healtStatus: '',
+    liveType: '',
+    marriageStatus: '',
+    incomeAmount: '',
+    homeValue: '',
+    carValue: '',
+    onlineStatus: '',
+    profilePhoto: '',
+    relationType: ''
   });
-
-  const [dropdownData, setDropdownData] = useState({
-    ageTo: [], ageFrom: [], healtStatus: [], liveTypes: [], marriageStatus: [], provinces: [],
-    incomeAmount: [], homeValue: [], carValue: [], onlineStatus: [], profilePhoto: [], relationType: []
-  });
-
+  const [dropdownVisible, setDropdownVisible] = useState(true);
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [profilePhotos, setProfilePhotos] = useState({}); // ✅ ذخیره عکس‌ها برای جلوگیری از فراخوانی‌های تکراری
-  const observer = useRef();
+  const [pageIndex, setPageIndex] = useState(1); // از 1 شروع می‌شه
+  const [loading, setLoading] = useState(false); // برای مدیریت لودینگ
+  const [hasMore, setHasMore] = useState(true); // چک کردن اینکه آیا داده بیشتری هست یا نه
+  const [searchInitiated, setSearchInitiated] = useState(false); // آیا جستجو با دکمه شروع شده؟
+  const observer = useRef(); // برای IntersectionObserver
+  const lastElementRef = useRef(); // برای ردیابی آخرین المنت
 
+  // ذخیره عکس پروفایل برای هر کاربر
+  const [profilePhotos, setProfilePhotos] = useState({});
+
+  // داده‌های دراپ‌داون‌ها
+  const [dropdownData, setDropdownData] = useState({
+    ageTo: [],
+    ageFrom: [],
+    healtStatus: [],
+    liveTypes: [],
+    marriageStatus: [],
+    provinces: [],
+    incomeAmount: [],
+    homeValue: [],
+    carValue: [],
+    onlineStatus: [],
+    profilePhoto: [],
+    relationType: []
+  });
+
+  // گرفتن داده‌های دراپ‌داون‌ها
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,21 +82,72 @@ const SearchPage = () => {
     fetchData();
   }, []);
 
+  // گرفتن عکس‌ها برای کاربران
+  useEffect(() => {
+    const fetchProfilePhotos = async () => {
+      const newPhotos = {};
+      for (const user of results) {
+        if (!profilePhotos[user.id]) {
+          const photoUrl = await getUserProfilePhoto(user.id);
+          newPhotos[user.id] = photoUrl;
+        }
+      }
+      setProfilePhotos((prev) => ({ ...prev, ...newPhotos }));
+    };
+    if (results.length > 0) {
+      fetchProfilePhotos();
+    }
+  }, [results]);
+
+  // مدیریت اسکرول با IntersectionObserver
+  useEffect(() => {
+    if (loading || !hasMore || !searchInitiated) return; // فقط وقتی جستجو با دکمه شروع شده باشه
+
+    const currentObserver = observer.current;
+    if (currentObserver) currentObserver.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && searchInitiated) {
+        setPageIndex((prev) => prev + 1);
+      }
+    });
+
+    if (lastElementRef.current) {
+      observer.current.observe(lastElementRef.current);
+    }
+
+    return () => {
+      if (currentObserver) currentObserver.disconnect();
+    };
+  }, [loading, hasMore, searchInitiated]);
+
+  // گرفتن نتایج با تغییر pageIndex
+  useEffect(() => {
+    if (pageIndex > 1 && searchInitiated) { // فقط وقتی جستجو شروع شده باشه
+      handleSearch(false); // false یعنی append کنیم نه reset
+    }
+  }, [pageIndex]);
+
+  // جستجوی اولیه موقع لود صفحه
+  useEffect(() => {
+    handleSearch(true, false); // reset=true, hideDropdowns=false
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const fetchMoreResults = async () => {
-    if (loading || !hasMore) return;
+  const handleSearch = async (reset = true, hideDropdowns = true) => {
     setLoading(true);
-
     try {
+      setError(null);
+
       const requestData = {
-        pageIndex: pageIndex + 1,
+        pageIndex: reset ? 1 : pageIndex, // اگه reset باشه از 1 شروع کن، وگرنه pageIndex فعلی
         pageItemsCount: 10,
         ageIdFrom: formData.ageFrom ? parseInt(formData.ageFrom) : 0,
         ageIdTo: formData.ageTo ? parseInt(formData.ageTo) : 0,
-        CurrentUserId: localStorage.getItem('userId'),
+        userId: localStorage.getItem('userId'),
         healthStatusId: formData.healtStatus ? parseInt(formData.healtStatus) : 0,
         liveTypeId: formData.liveType ? parseInt(formData.liveType) : 0,
         marriageStatusId: formData.marriageStatus ? parseInt(formData.marriageStatus) : 0,
@@ -89,103 +161,175 @@ const SearchPage = () => {
       };
 
       const response = await searchUsers(requestData);
-      if (response.data.statusCode === 200) {
-        const newResults = response.data.model || [];
 
-        if (newResults.length === 0) { 
-          setHasMore(false);
-          observer.current.disconnect();
-        } else {
-          setResults((prev) => [...prev, ...newResults]);
-          setPageIndex((prev) => prev + 1);
-
-          // ✅ دریافت عکس‌ها فقط برای کاربران جدید
-          const newProfilePhotos = {};
-          newResults.forEach(user => {
-            newProfilePhotos[user.id] = getUserProfilePhoto(user.id);
-          });
-          setProfilePhotos(prev => ({ ...prev, ...newProfilePhotos }));
-        }
+      if (response.data.statusCode !== 200) {
+        throw new Error(response.data.message || 'خطایی رخ داده است');
       }
+
+      const newResults = response.data.model || [];
+      if (reset) {
+        setResults(newResults); // نتایج قبلی رو کامل پاک کن و از نو شروع کن
+        setPageIndex(1); // صفحه به 1 برگرده
+        setHasMore(true); // دوباره اجازه اسکرول بده
+        setSearchInitiated(true); // جستجو با دکمه شروع شده
+      } else {
+        setResults((prev) => [...prev, ...newResults]); // فقط append کن
+      }
+
+      // اگه هیچ نتیجه‌ای نبود یا تعداد نتایج کمتر از 10 بود، دیگه داده بیشتری نیست
+      if (newResults.length === 0 || newResults.length < 10) {
+        setHasMore(false);
+      } else {
+        setHasMore(true); // فقط وقتی داده جدید هست اجازه اسکرول بده
+      }
+
+      if (hideDropdowns) setDropdownVisible(false); // فقط وقتی hideDropdowns=true باشه دراپ‌داون رو ببند
     } catch (err) {
-      console.error(err);
       setError(err.message);
+      if (reset) {
+        setResults([]); // نتایج قبلی رو پاک کن
+        setPageIndex(1); // صفحه به 1 برگرده
+        setHasMore(true); // دوباره اجازه اسکرول بده
+        setSearchInitiated(true); // جستجو با دکمه شروع شده
+      }
+      setHasMore(false); // اگه خطا گرفت، دیگه اسکرول نکنه
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
-        fetchMoreResults();
-      }
-    });
-    if (observer.current && document.getElementById('scroll-end')) {
-      observer.current.observe(document.getElementById('scroll-end'));
-    }
-    return () => observer.current && observer.current.disconnect();
-  }, [results]);
-
-  const defaultAvatar = getDefaultAvatarAddress();
+  const defaultAvatar = "/pictures/defAv.png";
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
+      {!dropdownVisible && (
+        <Box
+          sx={{
+            backgroundColor: "#ddd",
+            padding: "10px",
+            textAlign: "center",
+            cursor: "pointer",
+            marginTop: "10px",
+            borderRadius: "5px"
+          }}
+          onClick={() => setDropdownVisible(prev => !prev)}
+        >
+          {dropdownVisible ? "بستن فیلترها ❌" : "نمایش فیلترها 🔍"}
+        </Box>
+      )}
+
+      {dropdownVisible && (
+        <Grid container spacing={2}>
+          <AgeToDropdown ageRange={formData.ageTo} handleChange={handleChange} ages={dropdownData.ageTo} />
+          <AgeFromDropdown ageRange={formData.ageFrom} handleChange={handleChange} ages={dropdownData.ageFrom} />
+          <ProvinceDropdown province={formData.province} handleChange={handleChange} provinces={dropdownData.provinces} />
+          <HealtStatusDropdown healtStatus={formData.healtStatus} handleChange={handleChange} healtStatusOptions={dropdownData.healtStatus} />
+          <LiveTypeDropdown liveType={formData.liveType} handleChange={handleChange} liveTypes={dropdownData.liveTypes} />
+          <MarriageStatusDropdown marriageStatus={formData.marriageStatus} handleChange={handleChange} marriageStatusOptions={dropdownData.marriageStatus} />
+          <RelationTypeDropDown relationType={formData.relationType} handleChange={handleChange} onlineStatuss={dropdownData.relationType} />
+          <HomeValueDropDown homeValue={formData.homeValue} handleChange={handleChange} homeValues={dropdownData.homeValue} />
+          <CarValuesDropdown carValue={formData.carValue} handleChange={handleChange} carValueOptions={dropdownData.carValue} />
+          <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
+          <ProfilePhotoStatusDropDown profilePhotoStatus={formData.profilePhoto} handleChange={handleChange} profilePhotoStatuss={dropdownData.profilePhoto} />
+          <OnlineStatusDropDown onlineStatus={formData.onlineStatus} handleChange={handleChange} onlineStatuss={dropdownData.onlineStatus} />
+        </Grid>
+      )}
+
       <Grid container spacing={2}>
-        {results.length > 0 ? (
-          results.map((user) => (
-            <Grid item xs={12} sm={6} md={3} key={user.id}>
-              <Card sx={{ margin: 1 }}>
-                <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
-                  <CardActionArea>
-                    <Box
-                      sx={{
-                        position: "relative",
-                        height: 140,
-                        width: "100%",
-                        backgroundColor: "pink",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <CardMedia
-                        component="img"
-                        image={profilePhotos[user.id] || defaultAvatar} // ✅ استفاده از state برای جلوگیری از فراخوانی مجدد
-                        alt="User Avatar"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = defaultAvatar;
-                        }}
+        <Grid item xs={12}>
+          <Button variant="contained" color="primary" fullWidth onClick={() => handleSearch(true, true)}>
+            جستجو
+          </Button>
+        </Grid>
+
+        {error && (
+          <Grid item xs={12}>
+            <Alert severity="error">{error}</Alert>
+          </Grid>
+        )}
+
+        <Grid container spacing={2} style={{ marginTop: '20px' }}>
+          {results.length > 0 ? (
+            results.map((user, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={3}
+                key={user.id}
+                ref={index === results.length - 1 ? lastElementRef : null} // آخرین المنت رو ردیابی کن
+              >
+                <Card sx={{ margin: 1, bgcolor: "rgb(255, 0, 251)" }}>
+                  <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+                    <CardActionArea>
+                      <Box
                         sx={{
-                          height: "100%",
+                          position: "relative",
+                          height: 140,
                           width: "100%",
-                          objectFit: "contain",
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
+                          backgroundColor: "pink",
+                          overflow: "hidden",
                         }}
-                      />
-                    </Box>
-                  </CardActionArea>
-                </Link>
-                <CardContent>
-                  <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
-                  <Typography variant="body2">{user.age} ساله از {user.province}</Typography>
-                  <Link to={`/chat/${user.id}`}>
-                    <Button variant="contained" color="primary" fullWidth>شروع گفتگو</Button>
+                      >
+                        <CardMedia
+                          component="img"
+                          image={profilePhotos[user.id] || defaultAvatar} // استفاده از state برای عکس
+                          alt="User Avatar"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = defaultAvatar;
+                          }}
+                          sx={{
+                            height: "100%",
+                            width: "100%",
+                            objectFit: "contain",
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                          }}
+                        />
+                      </Box>
+                    </CardActionArea>
                   </Link>
-                </CardContent>
-              </Card>
+                  <CardContent>
+                    <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
+                      <Typography variant="h6">
+                        {user.firstName} {user.lastName}
+                        <br /> {user.age} {" "} ساله از {" "}{user.province}
+                      </Typography>
+                    </Link>
+                    {user.marriageStatus}{" - "}{user.liveType}
+                    <Typography variant="body2" color="textSecondary">
+                      میزان درآمد {user.incomeAmount}
+                      <br />
+                      نوع رابطه مورد نظر: {user.relationType}
+                      <br />
+                      آخرین فعالیت {user.lastActivityDate}
+                    </Typography>
+                    <Link to={`/chat/${user.id}`}>
+                      <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth>
+                        شروع گفتگو
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Grid item xs={12}>
+              <Typography variant="body2" color="textSecondary" textAlign="center">
+                هیچ نتیجه‌ای برای جستجوی شما پیدا نشد.
+              </Typography>
             </Grid>
-          ))
-        ) : (
-          <Typography variant="h6" sx={{ textAlign: "center", width: "100%", marginTop: 2 }}>
-            هیچ نتیجه‌ای یافت نشد.
-          </Typography>
+          )}
+        </Grid>
+        {loading && (
+          <Grid item xs={12}>
+            <Typography textAlign="center">در حال بارگذاری...</Typography>
+          </Grid>
         )}
       </Grid>
-      <div id="scroll-end" style={{ height: 10 }}></div>
-      {loading && <Typography textAlign="center">در حال بارگذاری...</Typography>}
     </Box>
   );
 };
