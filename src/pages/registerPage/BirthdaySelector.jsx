@@ -40,18 +40,14 @@ const BirthdaySelector = ({ value, onChange }) => {
     if (day && month && year) {
       try {
         const { gy, gm, gd } = toGregorian(Number(year), Number(month), Number(day)); // تبدیل به میلادی
-        console.log("date : ", gy, gm, gd);
 
         // بررسی این که gy، gm و gd معتبر هستند
         if (gy !== undefined && gm !== undefined && gd !== undefined) {
-          console.log(`Converted Date: ${gy}-${gm.toString().padStart(2, '0')}-${gd.toString().padStart(2, '0')}`);
           // ارسال تاریخ میلادی
           onChange(`${gy}-${gm.toString().padStart(2, '0')}-${gd.toString().padStart(2, '0')}`);
         } else {
-          console.error("Invalid date returned from toGregorian");
         }
       } catch (error) {
-        console.error("Error converting date:", error);
       }
     }
   };

@@ -41,9 +41,7 @@ const RegisterForm = () => {
   const fetchCaptcha = async () => {
     setIsCaptchaLoading(true); // شروع بارگذاری کپچا
     try {
-      console.log("🔄 Fetching Captcha...");
       const captchaResponse = await getCaptcha();
-      console.log("📩 Captcha Response:", captchaResponse.data);
 
       if (captchaResponse.data && captchaResponse.data.id && captchaResponse.data.image) {
         setCaptcha({ id: captchaResponse.data.id, image: captchaResponse.data.image });
@@ -51,12 +49,9 @@ const RegisterForm = () => {
           ...prevData,
           captchaId: captchaResponse.data.id
         }));
-        console.log("✅ Captcha ID fetched:", captchaResponse.data.id);
       } else {
-        console.error("⚠️ Error: Captcha data is incomplete", captchaResponse.data);
       }
     } catch (error) {
-      console.error('❌ Error fetching captcha:', error);
     } finally {
       setIsCaptchaLoading(false); // پایان بارگذاری کپچا
     }
@@ -66,7 +61,6 @@ const RegisterForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("🔄 Fetching dropdown data...");
         const dropdownResponse = await getDropdownItems();
         if (dropdownResponse.data.isSuccess) {
           setDropdownData({
@@ -77,9 +71,7 @@ const RegisterForm = () => {
             marriageStatus: dropdownResponse.data.model.marriageStatus || [],
             provinces: dropdownResponse.data.model.provinces || [],
           });
-          console.log("✅ Dropdown data fetched.");
         } else {
-          console.error('⚠️ Error: API returned unsuccessful response for dropdowns');
         }
 
         await fetchCaptcha(); // دریافت کپچا و صبر تا مقدار بیاد
@@ -101,18 +93,14 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("🚀 Submitting Captcha ID:", formData.captchaId);
 
     if (!formData.captchaId) {
-      console.error("❌ Captcha ID is missing! Registration aborted.");
       return;
     }
 
     try {
       const response = await registerUser(formData);
-      console.log('✅ Form submitted successfully:', response.data);
     } catch (error) {
-      console.error('❌ Error submitting form:', error);
     }
   };
 

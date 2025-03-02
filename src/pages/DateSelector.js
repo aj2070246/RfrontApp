@@ -24,7 +24,6 @@ const DateSelector = () => {
       const gregorianDate = moment.from(persianDate, 'fa', 'YYYY/MM/DD').format('YYYY-MM-DD');
 
       // ارسال به بک‌اند
-      console.log('Converted Gregorian Date:', gregorianDate);
       // ارسال داده به بک‌اند
     }
   };
