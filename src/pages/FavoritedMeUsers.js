@@ -8,7 +8,7 @@ const FavoritedMeUsers = () => {
   const [results, setResults] = useState([]);
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
-  const defaultAvatar = getDefaultAvatarAddress();
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +54,7 @@ const FavoritedMeUsers = () => {
                         alt="User Avatar"
                         onError={(e) => {
                           e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                          e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                          e.target.src = getDefaultAvatarAddress(user.genderId); // نمایش عکس پیش‌فرض
                         }}
                         sx={{
                           height: "100%", // پر کردن ارتفاع

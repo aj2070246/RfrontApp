@@ -11,7 +11,6 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { FaBan, FaUnlock } from "react-icons/fa";
 
 const Profile = () => {
-  const defaultAvatar = getDefaultAvatarAddress();
   const { stringId } = useParams(); // دریافت stringId از URL
   const currentUserId = localStorage.getItem('userId'); // گرفتن userId کاربر جاری
   const isOwnProfile = stringId === currentUserId; // بررسی اینکه پروفایل برای خود کاربر است
@@ -19,7 +18,19 @@ const Profile = () => {
   const [blocked, setBlocked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [blockedMe, setBlockedMe] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null); // حالت برای عکس پروفایل
   const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchProfilePhoto = async () => {
+      console.log('Photo URL=========== photoUrl',stringId);
+      if (stringId) {
+        const photoUrl = await getUserProfilePhoto(stringId);
+        console.log('Photo URL:::::::::::', photoUrl); // چک کن چی برگشته
+        setProfilePhoto(photoUrl);
+      }
+    };
+    fetchProfilePhoto();
+  }, [stringId]);
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = localStorage.getItem('userId'); // مقدار مستقیم از localStorage
@@ -101,29 +112,31 @@ const Profile = () => {
                   sx={{
                     position: "relative",
                     height: 140, // ارتفاع ثابت
-                    width: "100%", // پر کردن عرض کارت
-                    backgroundColor: "pink", // رنگ پس‌زمینه قرمز
+                    width: "100%", // عرض کارت را پر کند
+                    backgroundColor: "pink",
                     overflow: "hidden", // جلوگیری از نمایش اضافی
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
 
-                  <CardMedia
-                    component="img"
-                    image={getUserProfilePhoto(user.id)}
-                    alt="User Avatar"
-                    onError={(e) => {
-                      e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                      e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                  <img
+                    src={profilePhoto}
+                    alt="Profile"
+                    style={{
+                      maxHeight: "100%", // جلوگیری از بزرگ‌تر شدن از کادر
+                      maxWidth: "100%", // جلوگیری از بزرگ‌تر شدن از کادر
+                      objectFit: "contain", // تصویر را متناسب نگه می‌دارد
                     }}
-                    sx={{
-                      height: "100%", // پر کردن ارتفاع
-                      width: "100%", // پر کردن عرض کارت
-                      objectFit: "contain", // برش تصویر در صورت نیاز
-                      position: "absolute", // قرارگیری در بالای Box
-                      top: 0,
-                      left: 0,
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      const genderId = localStorage.getItem("genderId");
+                      console.log("-------genderId-------------",genderId);
+                      e.target.src = getDefaultAvatarAddress(user.genderId);
                     }}
                   />
+
                 </Box>
               </CardActionArea>
 
@@ -148,10 +161,26 @@ const Profile = () => {
                   <Typography variant="h6" fontWeight="bold">
                     درباره من
                   </Typography>
-                  <Typography sx={{ mt: 1 }}>{user.myDescription}</Typography>
+                  <Typography
+                    sx={{
+                      mt: 1,
+                      maxHeight: "6.8em", // محدود کردن به 4 خط
+                      overflowY: "auto", // اضافه کردن اسکرول در صورت بلند بودن متن
+                      display: "-webkit-box",
+                      WebkitLineClamp: 6, // نمایش حداکثر 4 خط
+                      WebkitBoxOrient: "vertical",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "normal", // حفظ ساختار متن
+                      wordBreak: "break-word", // شکستن کلمات طولانی
+                      overflowWrap: "break-word", // جلوگیری از خروج کلمات بلند از عرض
+                    }}
+                  >
+                    {user.myDescription}
+                  </Typography>
+
+
                 </Box>
 
-                {/* خصوصیات پارتنر مورد نظر */}
                 <Box
                   sx={{
                     border: "1px solid #ccc",
@@ -164,7 +193,23 @@ const Profile = () => {
                   <Typography variant="h6" fontWeight="bold">
                     درباره پارتنر مورد نظر
                   </Typography>
-                  <Typography sx={{ mt: 1 }}>{user.rDescription}</Typography>
+                  <Typography
+                    sx={{
+                      mt: 1,
+                      maxHeight: "6.8em", // محدود کردن به 4 خط
+                      overflowY: "auto", // اضافه کردن اسکرول در صورت بلند بودن متن
+                      display: "-webkit-box",
+                      WebkitLineClamp: 6, // نمایش حداکثر 4 خط
+                      WebkitBoxOrient: "vertical",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "normal", // حفظ ساختار متن
+                      wordBreak: "break-word", // شکستن کلمات طولانی
+                      overflowWrap: "break-word", // جلوگیری از خروج کلمات بلند از عرض
+                    }}
+                  >
+                    {user.rDescription}
+                  </Typography>
+
                 </Box>
 
                 <Typography sx={{ mt: 2 }}>📅 تاریخ تولد: {user.birthDate.split("T")[0]}</Typography>
@@ -227,4 +272,12 @@ const Profile = () => {
   );
 };
 
+const styles = {
+  profileImage: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginRight: '10px',
+  },
+};
 export default Profile;

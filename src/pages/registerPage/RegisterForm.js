@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui/material';
-import { getCaptcha, registerUser, getDropdownItems } from '../../api';
+import { getCaptcha, registerUser, getDropdownItems, isDevelopMode } from '../../api';
 import { Link } from '@mui/material';
 
 import { HelmetProvider } from "react-helmet-async";
@@ -52,7 +52,7 @@ const RegisterForm = () => {
     firstName: '',
     lastName: '',
     userName: '',
-    password: '',confirmPassword:'',
+    password: '', confirmPassword: '',
     mobile: '',
     captchaValue: '',
     captchaId: null, province: '',
@@ -172,18 +172,25 @@ const RegisterForm = () => {
   return (
     <>
       <HelmetProvider>
-        {/* x128
-        <title>ثبت نام در همسریار</title> */}
+        {!isDevelopMode() && (
+          <>
+            <title>ثبت نام در همسریار</title>
+          </>
+        )}
+
       </HelmetProvider>
       <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <form onSubmit={handleSubmit}>
 
-            <div class="banner2">
-              <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
-              <p class="banner-text2"> ابتدا ثبت نام کنید</p>
-            </div>
-
+            {!isDevelopMode() && (
+              <>
+                <div class="banner2">
+                  <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
+                  <p class="banner-text2"> ابتدا ثبت نام کنید</p>
+                </div>
+              </>
+            )}
             <Grid container spacing={2}>
               <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
               <TextField label=" نام خانوادگی - به هیچ کاربری نشان داده نمیشود" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />

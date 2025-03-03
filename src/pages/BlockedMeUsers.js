@@ -5,8 +5,6 @@ import { Link } from 'react-router-dom';
 import { BlockedMeUsersApi ,getDefaultAvatarAddress,getUserProfilePhoto} from '../api'; // اضافه کردن متد جدید
 
 const BlockedMeUsers = () => {
-  const defaultAvatar = getDefaultAvatarAddress();
-
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
 
@@ -54,7 +52,7 @@ const BlockedMeUsers = () => {
                         alt="User Avatar"
                         onError={(e) => {
                           e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                          e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                          e.target.src = getDefaultAvatarAddress(user.genderId); // نمایش عکس پیش‌فرض
                         }}
                         sx={{
                           height: "100%", // پر کردن ارتفاع

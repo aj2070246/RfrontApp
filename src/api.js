@@ -4,12 +4,11 @@ import axios from 'axios';
 const defaultAvatarMan = process.env.PUBLIC_URL + "/pictures/default-avatar-man.png";
 const defaultAvatarNone = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
 const defaultAvatarWoman = process.env.PUBLIC_URL + "/pictures/default-avatar-woman.png";
-const noAuthRoutes = ['/PublicData/GetCaptcha', '/PublicData/login', '/PublicData/RegisterUser'];
-
+export const isDevelopMode =  () => {return false};
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
-  'https://api.hamsaryar.com'
-  // 'http://localhost:5000',
+  // 'https://api.hamsaryar.com'
+  'http://localhost:5000',
   // 'https://api.hamsaryar.com',
 
 ];
@@ -23,19 +22,20 @@ const api = axios.create({
 });
 
 
-const sendRequest = async (method, url, data = {},isFormData = false , config = {}) => { // تغییر مقدار پیش‌فرض data
+const sendRequest = async (method, url, data = {}, isFormData = false, config = {}) => { // تغییر مقدار پیش‌فرض data
   let lastError = null;
   const currentUserId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
 
   // لیست درخواست‌های امن که نیاز به احراز هویت ندارند
-  const trustedActions = ['login', 'getcaptcha', 'registeruser', 'getalldropdownsitems'];
-
+  const trustedActions = ['login', 'getcaptcha', 'registeruser', 'getalldropdownsitems',
+    'searchusers', 'downloadprofilephoto'];
+  console.log(url);
   // بررسی می‌کنیم که آیا درخواست به یکی از `trustedActions` ارسال شده است یا نه
   const isTrustedRequest = trustedActions.some(action => url.toLowerCase().includes(action));
-
   // اگر درخواست نیاز به احراز هویت داشت و توکن وجود نداشت، کاربر را به صفحه لاگین هدایت کن
   if (!token && !isTrustedRequest) {
+    console.log('urlurlurlurlurlurl', url)
     window.location.href = '/login'; // 🚀 حل مشکل useNavigate
     return;
   }
@@ -100,7 +100,7 @@ export const getAllMessages = async () => {
     return { isSuccess: false };
   }
 };
-export const getUserProfilePhoto = async (userId) => {
+export const getUserProfilePhoto = async (userId, genderId = 3) => {
   try {
     const response = await sendRequest(
       'GET',
@@ -110,41 +110,29 @@ export const getUserProfilePhoto = async (userId) => {
       { responseType: 'blob' } // تنظیمات اضافی
     );
 
+
     // چک کن که response.data واقعاً Blob باشه
     if (!(response.data instanceof Blob)) {
+      console.log('Response is not a Blob');
       throw new Error('Response is not a Blob');
     }
+    console.log('createObjectURL', response.data);
+    const result = URL.createObjectURL(response.data)
+    console.log('result', result);
+    if (result === 'undefined') {
+      throw new Error('Response is not a BlobBlobBlob');
+    }
+    return result;
 
-    return URL.createObjectURL(response.data);
   } catch (error) {
     console.error("Error fetching user photo:", error);
+    if (genderId == 1)
+      return defaultAvatarMan; // عکس پیش‌فرض در صورت خطا
+    if (genderId == 2)
+      return defaultAvatarWoman; // عکس پیش‌فرض در صورت خطا
     return defaultAvatarNone; // عکس پیش‌فرض در صورت خطا
   }
 };
-// **2** - درخواست گرافیک
-// // توی فایل api.js
-// export const getUserProfilePhoto = async (userId) => {
-//   try {
-//     const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`, {}, false, {
-//       responseType: "blob" // انتظار دریافت تصویر
-//     });
-
-//     if (response.data.type === "application/json") {
-//       const textData = await response.data.text(); // تبدیل به متن
-//       const jsonData = JSON.parse(textData); // تبدیل به JSON
-
-//       if (jsonData.photoExists === false) {
-//         return jsonData.gender == 1 ? defaultAvatarMan : defaultAvatarWoman; // نمایش عکس پیش‌فرض
-//       }
-//     }
-
-//     return URL.createObjectURL(response.data); // تبدیل Blob به URL
-//   } catch (error) {
-//     console.error("Error fetching user photo:", error);
-//     return defaultAvatarNone; // نمایش عکس پیش‌فرض در صورت خطا
-//   }
-// };
-// ✅ اصلاح شده: ارسال `FormData`
 export const uploadProfilePicture = async (formData) => {
   if (!(formData instanceof FormData)) {
     console.error('❌ Error: formData is not an instance of FormData!');
@@ -161,9 +149,17 @@ export const uploadProfilePicture = async (formData) => {
 };
 
 // **3** - درخواست آواتار پیش‌فرض
-export const getDefaultAvatarAddress = (userId) => {
-  console.log('getDefaultAvatarAddress');
-  return defaultAvatarNone;
+export const getDefaultAvatarAddress = (genderId) => {
+  console.log('getDefaultAvatarAddress=>', genderId);
+
+  if (genderId == 1)
+    return defaultAvatarMan;
+
+  if (genderId == 2)
+    return defaultAvatarWoman;
+
+  if (genderId == 3)
+    return defaultAvatarNone;
 };
 
 

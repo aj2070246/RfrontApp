@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
-import { getCaptcha, login, getDropdownItems } from '../api';
+import { getCaptcha, login, getDropdownItems ,isDevelopMode} from '../api';
 import { Container, Paper, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const Login_Form = () => {
 
   const fetchCaptcha = async () => {
     try {
-      const captchaResponse =  await  getCaptcha();
+      const captchaResponse = await getCaptcha();
       if (captchaResponse.data && captchaResponse.data.guid && captchaResponse.data.image) {
         setCaptcha({ id: captchaResponse.data.guid, image: captchaResponse.data.image });
         setFormData(prevData => ({
@@ -79,9 +79,9 @@ const Login_Form = () => {
       localStorage.setItem('token', response.model.token);
       localStorage.setItem('userId', response.model.id);
       localStorage.setItem('gender', response.model.gender);
-      localStorage.setItem('GenderId', response.model.GenderId);
-      localStorage.setItem('firstName', response.model.firstName );
-      localStorage.setItem('lastName',  response.model.lastName);
+      localStorage.setItem('genderId', response.model.genderId);
+      localStorage.setItem('firstName', response.model.firstName);
+      localStorage.setItem('lastName', response.model.lastName);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
       // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
@@ -96,13 +96,15 @@ const Login_Form = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
-{/* 
-x128
-        {<div class="banner2">
-          <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
-          <p class="banner-text2">   سامانه دوست یابی</p>
-        </div>
-        } */}
+
+        {!isDevelopMode() && (
+          <>
+            <div class="banner2">
+              <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
+              <p class="banner-text2">   سامانه دوست یابی</p>
+            </div>
+          </>
+        )}
         <Grid container spacing={2} className="login-form">
 
 

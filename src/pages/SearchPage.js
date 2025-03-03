@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { searchUsers, getDropdownItems, getUserProfilePhoto } from '../api';
+import { searchUsers, getDropdownItems, getUserProfilePhoto,getDefaultAvatarAddress } from '../api';
 import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -197,9 +197,7 @@ const SearchPage = () => {
       setLoading(false);
     }
   };
-
-  const defaultAvatar = "/pictures/defAv.png";
-
+ 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
@@ -274,11 +272,12 @@ const SearchPage = () => {
                       >
                         <CardMedia
                           component="img"
-                          image={profilePhotos[user.id] || defaultAvatar} // استفاده از state برای عکس
+                          image={profilePhotos[user.id] } // استفاده از state برای عکس
                           alt="User Avatar"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = defaultAvatar;
+                            console.log('error avatar search', user.genderId);
+                            e.target.src =  getDefaultAvatarAddress(user.genderId);
                           }}
                           sx={{
                             height: "100%",
