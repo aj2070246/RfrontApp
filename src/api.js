@@ -121,30 +121,8 @@ export const getUserProfilePhoto = async (userId) => {
     return defaultAvatarNone; // عکس پیش‌فرض در صورت خطا
   }
 };
-// **2** - درخواست گرافیک
-// // توی فایل api.js
-// export const getUserProfilePhoto = async (userId) => {
-//   try {
-//     const response = await sendRequest('GET', `/Connection/downloadProfilePhoto?userId=${userId}`, {}, false, {
-//       responseType: "blob" // انتظار دریافت تصویر
-//     });
 
-//     if (response.data.type === "application/json") {
-//       const textData = await response.data.text(); // تبدیل به متن
-//       const jsonData = JSON.parse(textData); // تبدیل به JSON
 
-//       if (jsonData.photoExists === false) {
-//         return jsonData.gender == 1 ? defaultAvatarMan : defaultAvatarWoman; // نمایش عکس پیش‌فرض
-//       }
-//     }
-
-//     return URL.createObjectURL(response.data); // تبدیل Blob به URL
-//   } catch (error) {
-//     console.error("Error fetching user photo:", error);
-//     return defaultAvatarNone; // نمایش عکس پیش‌فرض در صورت خطا
-//   }
-// };
-// ✅ اصلاح شده: ارسال `FormData`
 export const uploadProfilePicture = async (formData) => {
   if (!(formData instanceof FormData)) {
     console.error('❌ Error: formData is not an instance of FormData!');
