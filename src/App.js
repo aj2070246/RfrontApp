@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react
 import { FaSignInAlt, FaUserPlus, FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
 import { Navigate } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
-import { GetCountOfUnreadMessages, LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto, isDevelopMode } from './api'; // اضافه کردن متد جدید
-
+import { GetCountOfUnreadMessages, LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from './api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import { FaBars, FaBan, FaUserSlash, FaHeart, FaStar, FaEye, FaUserCircle } from "react-icons/fa";
 import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
@@ -100,8 +101,9 @@ function Main() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
-
+  const [isInIframe, setIsInIframe] = useState(false);
   useEffect(() => {
+    setIsInIframe(window.self !== window.top);
     const fetchProfilePhoto = async () => {
       const userId = localStorage.getItem('userId');
       const genderId = localStorage.getItem('genderId');
@@ -136,15 +138,14 @@ function Main() {
     <div className="app-container">
 
 
+      <HelmetProvider>
+        <Helmet>
+          <title>{hamYab()} | {hamYar()}</title>
+        </Helmet>
+      </HelmetProvider> 
 
-      {!hideHeaderAndMenu && (
+      {!hideHeaderAndMenu && !isInIframe && (
         <>
-
-          {!isDevelopMode() && (
-            <>
-              <title>همسریار</title>
-            </>
-          )}
 
           <header className="header">
             <div className="hamburger-container" onClick={toggleMenu} ref={hamburgerRef}>
@@ -159,7 +160,7 @@ function Main() {
 
               {!isDevelopMode() && (
                 <>
-                  به سامانه همسریابی همسریار خوش آمدید
+                  به سامانه {hamYab()} {hamYar()} خوش  آمدین
                 </>
               )}
               {isDevelopMode() && (
@@ -296,7 +297,7 @@ function Main() {
 
         </>
       )}
-      {searchNeedMenu && (
+      {searchNeedMenu && !isInIframe && (
         <>
           <header className="header" style={{ backgroundColor: '#2196F3' }}>
 
@@ -317,6 +318,7 @@ function Main() {
           </header>
         </>
       )}
+
     </div>
   );
 }

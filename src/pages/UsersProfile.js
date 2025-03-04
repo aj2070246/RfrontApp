@@ -1,3 +1,5 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getUserInfo, blockUser, favoriteUser, getUserProfilePhoto, getDefaultAvatarAddress } from "../api"; // اطمینان حاصل کنید که مسیر درست است
@@ -22,7 +24,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchProfilePhoto = async () => {
-      console.log('Photo URL=========== photoUrl',stringId);
+      console.log('Photo URL=========== photoUrl', stringId);
       if (stringId) {
         const photoUrl = await getUserProfilePhoto(stringId);
         console.log('Photo URL:::::::::::', photoUrl); // چک کن چی برگشته
@@ -92,6 +94,13 @@ const Profile = () => {
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
 
+      <HelmetProvider>
+        <Helmet>
+          <title>{hamYab()} | {hamYar()}</title>
+        </Helmet>
+      </HelmetProvider>
+
+
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
         {isOwnProfile && (
           <Alert severity="info" sx={{ textAlign: "center", fontSize: "1.1rem", mb: 2 }}>
@@ -132,7 +141,7 @@ const Profile = () => {
                     onError={(e) => {
                       e.target.onerror = null;
                       const genderId = localStorage.getItem("genderId");
-                      console.log("-------genderId-------------",genderId);
+                      console.log("-------genderId-------------", genderId);
                       e.target.src = getDefaultAvatarAddress(user.genderId);
                     }}
                   />

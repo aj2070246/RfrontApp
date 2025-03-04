@@ -1,3 +1,5 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider,Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAllMessages, getDefaultAvatarAddress, getUserProfilePhoto } from '../api';
@@ -51,6 +53,14 @@ const Messages = () => {
     return (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
             <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+
+            <HelmetProvider>
+              <Helmet>
+                <title>{hamYab() } | { hamYar()}</title>
+              </Helmet>
+            </HelmetProvider>
+
+
                 {statusCode === 6969 ? (
                     <div className="noMessages">
                         <h3>گفتگویی یافت نشد. برای شروع گفتگو،</h3>

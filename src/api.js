@@ -4,11 +4,36 @@ import axios from 'axios';
 const defaultAvatarMan = process.env.PUBLIC_URL + "/pictures/default-avatar-man.png";
 const defaultAvatarNone = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
 const defaultAvatarWoman = process.env.PUBLIC_URL + "/pictures/default-avatar-woman.png";
-export const isDevelopMode =  () => {return false};
+export const isDevelopMode = () => { return false };
+export const hamYar = () => {
+  if (!isDevelopMode())
+    return "همسریار"
+  return"تستیار";
+
+};
+
+export const hamYab = () => {
+  if (!isDevelopMode())
+    return "همسریابی"
+  return"تستیاب";
+};
+export const hamType = () => {
+  if (!isDevelopMode())
+    return "موقت و دائم"
+  return"تستیاب";
+};
+
+export const doostYab = () => {
+  if (!isDevelopMode())
+    return "دوستیابی"
+  return"دوستیاب";
+};
+
+
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
-  // 'https://api.hamsaryar.com'
-  'http://localhost:5000',
+  'https://api.hamsaryar.com'
+  // 'http://localhost:5000',
   // 'https://api.hamsaryar.com',
 
 ];
@@ -376,8 +401,9 @@ export const FavoriteUsersApi = async () => {
 // **28** چه کسانی پروفایل من را چک کرده اند ؟
 
 export const LastUsersCheckedMeApi = async () => {
+  console.log('LastUsersCheckedMeApiLastUsersCheckedMeApiLastUsersCheckedMeApi')
   try {
-    const response = await sendRequest("/Connection/LastUsersCheckedMe", {
+    const response = await sendRequest('POST',"/Connection/LastUsersCheckedMe", {
       CurrentuserId: localStorage.getItem('userId')
 
     });

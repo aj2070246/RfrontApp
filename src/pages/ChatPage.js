@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getDefaultAvatarAddress, getMessages, sendMessage, getUserInfo, deleteMessage, getUserProfilePhoto } from '../api';
 import { Card, Box } from "@mui/material";
-
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 const ChatPage = () => {
   const { userId } = useParams();
   const senderUserId = localStorage.getItem('userId');
@@ -112,6 +113,15 @@ const ChatPage = () => {
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+
+
+        <HelmetProvider>
+          <Helmet>
+            <title>{hamYab()} | {hamYar()}</title>
+          </Helmet>
+        </HelmetProvider>
+
+
         <div style={styles.container}>
           {userInfo && (
             <Link to={`/profile/${userInfo.id}`} style={{ textDecoration: 'none' }} target='_blank'>

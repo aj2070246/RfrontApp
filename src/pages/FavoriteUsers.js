@@ -1,8 +1,10 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider,Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { FavoriteUsersApi ,getDefaultAvatarAddress,getUserProfilePhoto} from '../api'; // اضافه کردن متد جدید
+import { FavoriteUsersApi, getDefaultAvatarAddress, getUserProfilePhoto } from '../api'; // اضافه کردن متد جدید
 
 const FavoriteUsers = () => {
   const [results, setResults] = useState([]);
@@ -22,10 +24,18 @@ const FavoriteUsers = () => {
 
     fetchData();
   }, []);
- 
+
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
+
+      <HelmetProvider>
+        <Helmet>
+          <title>{hamYab()} | {hamYar()}</title>
+        </Helmet>
+      </HelmetProvider>
+
+
       <h2 style={{ textAlign: 'center' }}>کاربران مورد علاقه شما</h2>
 
       {error && <Alert severity="error">{error}</Alert>}

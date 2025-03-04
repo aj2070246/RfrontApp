@@ -1,3 +1,5 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, TextField, Button, Typography, Snackbar, Alert, Grid, CircularProgress, IconButton, Card } from '@mui/material';
 import { SendEmailForNewPassword, sendVerifyCodeEmail, getCaptcha } from '../api'; // متد تغییر رمز عبور
@@ -24,7 +26,7 @@ const ForgatePassword = ({ open, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   };
-  
+
   const fetchCaptcha = async () => {
     setIsCaptchaLoading(true);
     try {
@@ -134,6 +136,31 @@ const ForgatePassword = ({ open, onClose }) => {
               borderRadius: 2,
             }}
           >
+            {!isDevelopMode() && (
+              <>
+
+
+                {!isDevelopMode() && (
+
+                  <div class="banner2">
+                    <p class="banner-text2"> <h1>  {hamYar()} </h1> </p>
+                    <p class="banner-text2"> <h3>  فراموشی رمز عبور </h3> </p>
+                    <p class="banner-text2">  سامانه {hamYab()} {hamType()} </p>
+                    <p class="banner-text2">  سامانه {doostYab()}</p>
+                  </div>)}
+
+                <HelmetProvider>
+                  <Helmet>
+                    <title>{hamYab()} | {hamYar()}</title>
+                  </Helmet>
+                </HelmetProvider>
+
+
+
+
+
+              </>
+            )}
             <Typography variant="h11" gutterBottom> لطفا ایمیل خود را وارد نمایید تا رمز عبور جدید برای شما ارسال شود</Typography>
             <TextField
               label="ایمیل خود را وارد نمایید"

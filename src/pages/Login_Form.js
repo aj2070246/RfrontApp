@@ -1,11 +1,11 @@
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
-import { getCaptcha, login, getDropdownItems ,isDevelopMode} from '../api';
+import { getCaptcha, login, getDropdownItems, isDevelopMode, hamYab, hamYar, doostYab, hamType } from '../api';
 import { Container, Paper, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Login_Form = () => {
-
   const navigate = useNavigate();
 
   const fetchCaptcha = async () => {
@@ -39,12 +39,12 @@ const Login_Form = () => {
 
   useEffect(() => {
     if (hasError) return; // اگر قبلاً خطا رخ داده، از اجرای مجدد جلوگیری کن
-    try {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userId');
-    } catch (error) {
+    // try {
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem('userId');
+    // } catch (error) {
 
-    }
+    // }
     setIsCaptchaLoading(true);
 
     const fetchData = async () => {
@@ -71,7 +71,6 @@ const Login_Form = () => {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     const response = await login(formData); // فرض می‌کنیم تابع login در api.js قرار دارد
     if (response.isSuccess) {
@@ -92,23 +91,24 @@ const Login_Form = () => {
   };
 
   return (
-
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-
-
         {!isDevelopMode() && (
           <>
-            <div class="banner2">
-              <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
-              <p class="banner-text2">   سامانه دوست یابی</p>
+            <div className="banner2">
+              <p className="banner-text2"> <h1>  {hamYar()} </h1> </p>
+              <p className="banner-text2">  سامانه {hamYab()} {hamType()} </p>
+              <p className="banner-text2">  سامانه {doostYab()}</p>
             </div>
+            <HelmetProvider>
+              <Helmet>
+                <title>{hamYab()} | {hamYar()}</title>
+              </Helmet>
+            </HelmetProvider>
           </>
         )}
+
         <Grid container spacing={2} className="login-form">
-
-
-
           <Grid item xs={12}>
             <Typography variant="h4">ورود به حساب کاربری</Typography>
           </Grid>
@@ -135,7 +135,6 @@ const Login_Form = () => {
           </Grid>
           <Grid item xs={6}>
             <img src={captcha.image} alt="Captcha" />
-
           </Grid>
           <Grid item xs={6}>
             <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
@@ -163,6 +162,21 @@ const Login_Form = () => {
             <br />
             <Link href="/ForgatePassword" variant="body2">بازیابی رمز عبور</Link>
           </Grid>
+        </Grid>
+
+        {/* اضافه کردن iframe برای نمایش صفحه Search */}
+        <Grid item xs={12} sx={{ mt: 4 }}>
+          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
+            کاربران {hamYab()} {hamYar()}
+          </Typography>
+          <iframe
+            src="/search"
+            title="Search Page Preview"
+            width="100%"
+            height="400px"
+            style={{ border: '1px solid #ccc', borderRadius: '4px' }}
+            allowFullScreen
+          />
         </Grid>
       </Paper>
     </Container>

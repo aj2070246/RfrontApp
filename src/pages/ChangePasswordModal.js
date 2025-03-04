@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Box, TextField, Button, Typography, Snackbar, Alert } from '@mui/material';
 import { changePasswordApi } from '../api'; // متد تغییر رمز عبور
-
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 const ChangePasswordModal = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
     oldPassword: '',
@@ -44,6 +45,14 @@ const ChangePasswordModal = ({ open, onClose }) => {
 
   return (
     <>
+
+      <HelmetProvider>
+        <Helmet>
+          <title>{hamYab()} | {hamYar()}</title>
+        </Helmet>
+      </HelmetProvider>
+
+
       <Modal open={open} onClose={onClose} aria-labelledby="change-password-modal">
         <Box sx={{
           position: 'absolute', top: '50%', left: '50%',

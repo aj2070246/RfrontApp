@@ -1,8 +1,10 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { searchUsers, getDropdownItems, getUserProfilePhoto,getDefaultAvatarAddress } from '../api';
+import { searchUsers, getDropdownItems, getUserProfilePhoto, getDefaultAvatarAddress } from '../api';
 import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -11,6 +13,7 @@ import {
 } from './registerPage/Dropdowns';
 
 const SearchPage = () => {
+
   const [formData, setFormData] = useState({
     ageFrom: '',
     ageTo: '',
@@ -25,6 +28,7 @@ const SearchPage = () => {
     profilePhoto: '',
     relationType: ''
   });
+  const [isInIframe, setIsInIframe] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(true);
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
@@ -56,6 +60,7 @@ const SearchPage = () => {
 
   // گرفتن داده‌های دراپ‌داون‌ها
   useEffect(() => {
+    setIsInIframe(window.self !== window.top);
     const fetchData = async () => {
       try {
         const dropdownResponse = await getDropdownItems();
@@ -197,9 +202,17 @@ const SearchPage = () => {
       setLoading(false);
     }
   };
- 
+
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
+
+      <HelmetProvider>
+        <Helmet>
+          <title>{hamYab()} | {hamYar()}</title>
+        </Helmet>
+      </HelmetProvider>
+
+
       <h2 style={{ textAlign: 'center' }}>جستجوی کاربران</h2>
       {!dropdownVisible && (
         <Box
@@ -217,7 +230,7 @@ const SearchPage = () => {
         </Box>
       )}
 
-      {dropdownVisible && (
+      {dropdownVisible && !isInIframe && (
         <Grid container spacing={2}>
           <AgeToDropdown ageRange={formData.ageTo} handleChange={handleChange} ages={dropdownData.ageTo} />
           <AgeFromDropdown ageRange={formData.ageFrom} handleChange={handleChange} ages={dropdownData.ageFrom} />
@@ -235,12 +248,13 @@ const SearchPage = () => {
       )}
 
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+
+        {!isInIframe && (<Grid item xs={12}>
           <Button variant="contained" color="primary" fullWidth onClick={() => handleSearch(true, true)}>
             جستجو
           </Button>
         </Grid>
-
+        )}
         {error && (
           <Grid item xs={12}>
             <Alert severity="error">{error}</Alert>
@@ -258,7 +272,7 @@ const SearchPage = () => {
                 key={user.id}
                 ref={index === results.length - 1 ? lastElementRef : null} // آخرین المنت رو ردیابی کن
               >
-                <Card sx={{ margin: 1, bgcolor: "rgb(255, 0, 251)" }}>
+                <Card sx={{ margin: 1, bgcolor:  "var(--ham-backGroung-color)" }}>
                   <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                     <CardActionArea>
                       <Box
@@ -272,12 +286,12 @@ const SearchPage = () => {
                       >
                         <CardMedia
                           component="img"
-                          image={profilePhotos[user.id] } // استفاده از state برای عکس
+                          image={profilePhotos[user.id]} // استفاده از state برای عکس
                           alt="User Avatar"
                           onError={(e) => {
                             e.target.onerror = null;
                             console.log('error avatar search', user.genderId);
-                            e.target.src =  getDefaultAvatarAddress(user.genderId);
+                            e.target.src = getDefaultAvatarAddress(user.genderId);
                           }}
                           sx={{
                             height: "100%",
