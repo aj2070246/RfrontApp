@@ -79,7 +79,7 @@ const BlockedMeUsers = () => {
                 <CardContent>
                   <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                     <Typography variant="h6">
-                      {user.firstName} {user.lastName}
+                      {user.firstName} 
                       <br />    {user.age} {" "} ساله از  {" "}{user.province}
                     </Typography>
                   </Link>

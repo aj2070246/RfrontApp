@@ -252,7 +252,7 @@ const RegisterForm = () => {
               />
 
               <TextField
-                label="آدرس ایمیل"
+                label="آدرس ایمیل - برای ارسال رمز عبور و سایر پیام ها است"
                 name="emailAddress"
                 sx={{ marginBottom: 2 }}
                 value={formData.emailAddress}

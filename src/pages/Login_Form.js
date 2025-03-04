@@ -1,10 +1,9 @@
 import { HelmetProvider, Helmet } from "react-helmet-async";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
 import { getCaptcha, login, getDropdownItems, isDevelopMode, hamYab, hamYar, doostYab, hamType } from '../api';
 import { Container, Paper, Snackbar, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom'; 
 const Login_Form = () => {
   const navigate = useNavigate();
 
@@ -32,10 +31,23 @@ const Login_Form = () => {
     captchaValue: ''
   });
   const [captcha, setCaptcha] = useState({ id: null, image: '' });
-
+  const [iframeHeight, setIframeHeight] = useState(400); // ارتفاع پیش‌فرض 400
+  const iframeRef = useRef(null);
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [hasError, setHasError] = useState(false); // کنترل وضعیت خطا
+  
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data.type === "SET_IFRAME_HEIGHT") {
+        setIframeHeight(event.data.height); // تنظیم ارتفاع از پیام
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   useEffect(() => {
     if (hasError) return; // اگر قبلاً خطا رخ داده، از اجرای مجدد جلوگیری کن
@@ -80,7 +92,6 @@ const Login_Form = () => {
       localStorage.setItem('gender', response.model.gender);
       localStorage.setItem('genderId', response.model.genderId);
       localStorage.setItem('firstName', response.model.firstName);
-      localStorage.setItem('lastName', response.model.lastName);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
       // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
@@ -173,7 +184,7 @@ const Login_Form = () => {
             src="/search"
             title="Search Page Preview"
             width="100%"
-            height="400px"
+            height={iframeHeight} // استفاده از state برای ارتفاع
             style={{ border: '1px solid #ccc', borderRadius: '4px' }}
             allowFullScreen
           />

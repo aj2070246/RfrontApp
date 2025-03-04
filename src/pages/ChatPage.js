@@ -129,7 +129,7 @@ const ChatPage = () => {
                 <div style={styles.userDetails}>
                   <p style={styles.userName}>
                     پیام شخصی با <br />
-                    {userInfo.firstName} {userInfo.lastName}
+                    {userInfo.firstName} 
                   </p>
                   <p style={styles.userInfo}>شهر {" "}{userInfo.province}</p>
                   <p style={styles.userInfo}>آخرین فعالیت {" "}{userInfo.lastActivityDate}</p>

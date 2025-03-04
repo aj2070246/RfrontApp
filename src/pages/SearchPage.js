@@ -12,7 +12,13 @@ import {
   OnlineStatusDropDown, ProfilePhotoStatusDropDown, RelationTypeDropDown
 } from './registerPage/Dropdowns';
 
+
 const SearchPage = () => {
+
+  const sendHeight = () => {
+    const height = document.body.scrollHeight;
+    window.parent.postMessage({ type: "SET_IFRAME_HEIGHT", height }, "*");
+  };
 
   const [formData, setFormData] = useState({
     ageFrom: '',
@@ -85,6 +91,7 @@ const SearchPage = () => {
       }
     };
     fetchData();
+    sendHeight();
   }, []);
 
   // گرفتن عکس‌ها برای کاربران
@@ -107,6 +114,7 @@ const SearchPage = () => {
   // مدیریت اسکرول با IntersectionObserver
   useEffect(() => {
     if (loading || !hasMore || !searchInitiated) return; // فقط وقتی جستجو با دکمه شروع شده باشه
+    sendHeight();
 
     const currentObserver = observer.current;
     if (currentObserver) currentObserver.disconnect();
@@ -120,7 +128,7 @@ const SearchPage = () => {
     if (lastElementRef.current) {
       observer.current.observe(lastElementRef.current);
     }
-
+    sendHeight();
     return () => {
       if (currentObserver) currentObserver.disconnect();
     };
@@ -130,12 +138,13 @@ const SearchPage = () => {
   useEffect(() => {
     if (pageIndex > 1 && searchInitiated) { // فقط وقتی جستجو شروع شده باشه
       handleSearch(false); // false یعنی append کنیم نه reset
-    }
+      sendHeight(); }
   }, [pageIndex]);
 
   // جستجوی اولیه موقع لود صفحه
   useEffect(() => {
     handleSearch(true, false); // reset=true, hideDropdowns=false
+    sendHeight();
   }, []);
 
   const handleChange = (e) => {
@@ -180,6 +189,7 @@ const SearchPage = () => {
       } else {
         setResults((prev) => [...prev, ...newResults]); // فقط append کن
       }
+      sendHeight();
 
       // اگه هیچ نتیجه‌ای نبود یا تعداد نتایج کمتر از 10 بود، دیگه داده بیشتری نیست
       if (newResults.length === 0 || newResults.length < 10) {
@@ -187,7 +197,7 @@ const SearchPage = () => {
       } else {
         setHasMore(true); // فقط وقتی داده جدید هست اجازه اسکرول بده
       }
-
+      sendHeight();
       if (hideDropdowns) setDropdownVisible(false); // فقط وقتی hideDropdowns=true باشه دراپ‌داون رو ببند
     } catch (err) {
       setError(err.message);
@@ -200,6 +210,7 @@ const SearchPage = () => {
       setHasMore(false); // اگه خطا گرفت، دیگه اسکرول نکنه
     } finally {
       setLoading(false);
+      sendHeight();
     }
   };
 
@@ -308,7 +319,7 @@ const SearchPage = () => {
                   <CardContent>
                     <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                       <Typography variant="h6">
-                        {user.firstName} {user.lastName}
+                        {user.firstName} 
                         <br /> {user.age} {" "} ساله از {" "}{user.province}
                       </Typography>
                     </Link>
@@ -348,3 +359,4 @@ const SearchPage = () => {
 };
 
 export default SearchPage;
+

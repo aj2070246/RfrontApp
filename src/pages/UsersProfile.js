@@ -152,7 +152,7 @@ const Profile = () => {
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h4" fontWeight="bold">
 
-                  {user.firstName} {user.lastName}
+                  {user.firstName} 
 
                 </Typography>
 
@@ -266,12 +266,15 @@ const Profile = () => {
                   </Box>
 
                 )}
-                <Link to={`/chat/${user.id}`}>
-                  <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth>
-                    شروع گفتگو
-                  </Button>
-                </Link>
 
+                {!isOwnProfile && (
+
+                  <Link to={`/chat/${user.id}`}>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth>
+                      شروع گفتگو
+                    </Button>
+                  </Link>
+                )}
               </CardContent>
             </>
           )

@@ -112,15 +112,6 @@ const VerifyEmailCode = ({ open, onClose }) => {
   return (
     <>
       <Modal open={open} onClose={onClose} aria-labelledby="verify-email-modal">
-
-        
- <HelmetProvider>
-              <Helmet>
-                <title>{hamYab() } | { hamYar()}</title>
-              </Helmet>
-            </HelmetProvider>
-
-
         <Box
           sx={{
             position: 'absolute',

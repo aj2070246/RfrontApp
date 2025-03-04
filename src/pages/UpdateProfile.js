@@ -285,11 +285,11 @@ const UpdateProfile = () => {
 
             <TextField fullWidth sx={{ marginBottom: 2, marginTop: 2 }}
               multiline
-              maxRows={4} label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
+              maxRows={4} label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange}  />
 
             <TextField fullWidth sx={{ marginBottom: 2 }}
               multiline
-              maxRows={4} label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
+              maxRows={4} label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange}  />
 
 
             <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
