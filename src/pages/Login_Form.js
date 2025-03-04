@@ -10,7 +10,7 @@ const Login_Form = () => {
 
   const fetchCaptcha = async () => {
     try {
-      const captchaResponse =  await  getCaptcha();
+      const captchaResponse = await getCaptcha();
       if (captchaResponse.data && captchaResponse.data.guid && captchaResponse.data.image) {
         setCaptcha({ id: captchaResponse.data.guid, image: captchaResponse.data.image });
         setFormData(prevData => ({
@@ -80,8 +80,8 @@ const Login_Form = () => {
       localStorage.setItem('userId', response.model.id);
       localStorage.setItem('gender', response.model.gender);
       localStorage.setItem('GenderId', response.model.GenderId);
-      localStorage.setItem('firstName', response.model.firstName );
-      localStorage.setItem('lastName',  response.model.lastName);
+      localStorage.setItem('firstName', response.model.firstName);
+      localStorage.setItem('lastName', response.model.lastName);
       navigate('/search'); // اینجا صفحه مورد نظر را مشخص کنید
       // ... می‌توانید سایر مقادیر را نیز ذخیره کنید
     } else {
@@ -96,7 +96,7 @@ const Login_Form = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
-{/* 
+        {/* 
 x128
         {<div class="banner2">
           <p class="banner-text2">  سامانه همسریابی موقت و دائم  </p>
@@ -161,6 +161,9 @@ x128
             <br />
             <Link href="/ForgatePassword" variant="body2">بازیابی رمز عبور</Link>
           </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <iframe src="/search" title="Search Page" width="100%" height="300" style={{ border: 'none' }}></iframe>
         </Grid>
       </Paper>
     </Container>
