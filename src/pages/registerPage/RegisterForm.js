@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui/material';
-import { getCaptcha, registerUser, getDropdownItems } from '../../api';
+import { getCaptcha, registerUser, getDropdownItems, isDevelopMode, hamYab, hamYar, hamType, doostYab } from '../../api';
 import { Link } from '@mui/material';
 
-import { HelmetProvider } from "react-helmet-async";
+import { Helmet,HelmetProvider } from "react-helmet-async";
 import {
   GenderDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -52,7 +52,7 @@ const RegisterForm = () => {
     firstName: '',
     lastName: '',
     userName: '',
-    password: '',confirmPassword:'',
+    password: '', confirmPassword: '',
     mobile: '',
     captchaValue: '',
     captchaId: null, province: '',
@@ -172,48 +172,74 @@ const RegisterForm = () => {
   return (
     <>
       <HelmetProvider>
-        {/* x128
-        <title>ثبت نام در همسریار</title> */}
+        {!isDevelopMode() && (
+          <>
+
+            <Helmet> <title>{ hamYab() } | { hamYar() } | ثبت نام </title>
+            </Helmet>
+          </>
+        )}
+
       </HelmetProvider>
       <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <form onSubmit={handleSubmit}>
 
-            <div class="banner2">
-              <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
-              <p class="banner-text2"> ابتدا ثبت نام کنید</p>
-            </div>
-
+            {!isDevelopMode() && (
+              <>
+                <div class="banner2">
+                  <p class="banner-text2"> <h1>  {hamYar()} </h1> </p>
+                  <p class="banner-text2">  سامانه {hamYab()} {hamType} </p>
+                  <p class="banner-text2">   سامانه {doostYab()} </p>
+                </div>
+                <div class="banner2">
+                  <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
+                  <p class="banner-text2"> ابتدا ثبت نام کنید</p>
+                </div>
+              </>
+            )}
             <Grid container spacing={2}>
-              <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
-              <TextField label=" نام خانوادگی - به هیچ کاربری نشان داده نمیشود" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
-              <TextField label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
+              <TextField fullWidth sx={{ marginBottom: 2, }}
+                label="نام" name="firstName" value={formData.firstName} onChange={handleChange} />
+              <TextField fullWidth sx={{ marginBottom: 2 }} label=" نام خانوادگی - به هیچ کاربری نشان داده نمیشود" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
+              <TextField sx={{ marginBottom: 2 }} label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
 
               <TextField
+                fullWidth sx={{ marginBottom: 2, }}
+                multiline
+                maxRows={4}
+
                 label="رمز عبور"
                 name="password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                fullWidth
               />
 
               <TextField
+                fullWidth sx={{ marginBottom: 2, marginTop: 2 }}
+                multiline
+                maxRows={4}
+
                 label="تکرار رمز عبور"
                 name="confirmPassword"
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                fullWidth
+
                 error={formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword}
                 helperText={formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword ? "رمز عبور و تکرار آن یکسان نیستند!" : ""}
               />
               <TextField
+                fullWidth sx={{ marginBottom: 2, marginTop: 2 }}
+                multiline
+                maxRows={4}
+
                 label="شماره موبایل"
                 name="mobile"
                 value={formData.mobile}
                 onChange={handleChange}
-                fullWidth
+
                 placeholder="09123456789"
                 inputProps={{ maxLength: 10, inputMode: "numeric", pattern: "[0-9]*" }} // فقط عدد
                 error={formData.mobile.length > 0 && !validateMobile(formData.mobile)}
@@ -228,6 +254,7 @@ const RegisterForm = () => {
               <TextField
                 label="آدرس ایمیل"
                 name="emailAddress"
+                sx={{ marginBottom: 2 }}
                 value={formData.emailAddress}
                 onChange={handleChange}
                 fullWidth
@@ -240,9 +267,6 @@ const RegisterForm = () => {
                   }
                 }}
               />
-
-              <TextField label="درباره من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
-              <TextField label="درباره پارنتر مورد نظر من " name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
 
               <Grid item xs={12}>
                 <BirthdaySelector
@@ -268,6 +292,9 @@ const RegisterForm = () => {
               <CheildCountDropDown values={formData.cheildCount} handleChange={handleChange} options={dropdownData.cheildCount} />
               <FirstCheildAgeDown values={formData.firstCheildAge} handleChange={handleChange} options={dropdownData.firstCheildAge} />
 
+
+              <TextField fullWidth sx={{ marginBottom: 2, }} multiline maxRows={4} label="درباره من" name="myDescription" value={formData.myDescription} onChange={handleChange} />
+              <TextField fullWidth sx={{ marginBottom: 2, }} multiline maxRows={4} label="درباره پارنتر مورد نظر من " name="rDescription" value={formData.rDescription} onChange={handleChange} />
 
               <Grid item xs={12} container spacing={2} alignItems="center">
                 <Grid item xs={6}>

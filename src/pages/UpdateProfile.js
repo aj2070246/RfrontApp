@@ -1,3 +1,5 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider,Helmet } from "react-helmet-async";
 import { FaTimes, FaCheckCircle, FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
 
 import InputAdornment from '@mui/material/InputAdornment';
@@ -48,7 +50,7 @@ const UpdateProfile = () => {
     relationType: [],
   });
 
-  
+
   const validateMobile = (value) => /^\d{10}$/.test(value);
   const validateEmail = (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
 
@@ -167,6 +169,14 @@ const UpdateProfile = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+
+        <HelmetProvider>
+          <Helmet>
+            <title>{hamYab()} | {hamYar()}</title>
+          </Helmet>
+        </HelmetProvider>
+
+
         <form onSubmit={handleSubmit}>
           {/* <div className="banner2">
             <p className="banner-text2">برای ویرایش اطلاعات کاربری خود</p>
@@ -174,17 +184,17 @@ const UpdateProfile = () => {
           </div> */}
 
           <Grid container spacing={2}>
-            <TextField label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
+            <TextField sx={{ marginBottom: 2 }} label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
             <br />
-            <TextField label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
-            <TextField label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
-            <TextField
-              label="شماره موبایل"
+            <TextField sx={{ marginBottom: 2 }} label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
+            <TextField sx={{ marginBottom: 2 }} label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
+            <TextField sx={{ marginBottom: 2 }}
+              label="شماره موبایل - بدون صفر"
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
               fullWidth
-              placeholder="09123456789"
+              placeholder="9123456789"
               inputProps={{ maxLength: 10, inputMode: "numeric", pattern: "[0-9]*" }} // فقط عدد
               error={formData.mobile.length > 0 && !validateMobile(formData.mobile)}
               helperText={formData.mobile.length > 0 && !validateMobile(formData.mobile) ? "شماره موبایل باید دقیقا ۱۰ رقم باشد." : ""}
@@ -194,49 +204,48 @@ const UpdateProfile = () => {
                 }
               }}
             />
-            <TextField
-              label="آدرس ایمیل"
+            <TextField sx={{ marginBottom: 2 }}
+              label="آدرس ایمیل - رمز عبور و فراموشی رمز عبور با این ایمیل انجام میشود"
               name="emailAddress"
-              value={formData.emailAddress}
+              value={formData.emailAddress || ""}
               onChange={handleChange}
               fullWidth
-
               placeholder="example@email.com"
-              error={formData.emailAddress.length > 0 && !validateEmail(formData.emailAddress)}
-              helperText={formData.emailAddress.length > 0 && !validateEmail(formData.emailAddress) ? "ایمیل معتبر نیست!" : ""}
+              error={formData.emailAddress?.length > 0 && !validateEmail(formData.emailAddress)}
+              helperText={
+                formData.emailAddress?.length > 0 && !validateEmail(formData.emailAddress)
+                  ? "ایمیل معتبر نیست!"
+                  : ""
+              }
               onBlur={() => {
-                if (formData.emailAddress.length > 0 && !validateEmail(formData.emailAddress)) {
+                if (formData.emailAddress?.length > 0 && !validateEmail(formData.emailAddress)) {
                   alert("ایمیل معتبر نیست!");
                 }
               }}
-
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    {formData.emailAddressStatusId === 1 || formData.emailAddressStatusId === 2 ? (
+                    {(formData.emailAddressStatusId === 1 || formData.emailAddressStatusId === 2) ? (
                       <>
-                        <IconButton
-                          onClick={() => setIsVerifyOpen(true)}
-                          style={{ color: 'red' }}>
+                        <IconButton onClick={() => setIsVerifyOpen(true)} style={{ color: "red" }}>
                           <FaTimes />
                         </IconButton>
-                        <div style={{ textAlign: 'center' }}
+                        <div
+                          style={{ textAlign: "center" }}
                           onClick={() => setIsVerifyOpen(true)}
-
                         >
-                          <span style={{ color: 'red' }} >تایید نشده</span>
+                          <span style={{ color: "red" }}>تایید نشده</span>
                           <br />
-                          <span style={{ color: 'red' }}>کلیک کنید</span>
+                          <span style={{ color: "red" }}>کلیک کنید</span>
                         </div>
                       </>
                     ) : formData.emailAddressStatusId === 3 ? (
                       <>
-                        <IconButton
-                          style={{ color: 'green' }}>
+                        <IconButton style={{ color: "green" }}>
                           <FaCheckCircle />
                         </IconButton>
-                        <div style={{ textAlign: 'center' }}>
-                          <span style={{ color: 'green' }}>تایید شده</span>
+                        <div style={{ textAlign: "center" }}>
+                          <span style={{ color: "green" }}>تایید شده</span>
                         </div>
                       </>
                     ) : null}
@@ -246,10 +255,7 @@ const UpdateProfile = () => {
             />
 
 
-            <TextField label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
-            <TextField label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
-
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ marginBottom: 2 }}>
               <BirthdaySelector
                 value={{
                   BirthDateYear: formData.birthDateYear,
@@ -276,6 +282,15 @@ const UpdateProfile = () => {
             <VaznDropDown values={formData.vazn} handleChange={handleChange} options={dropdownData.vazn} />
             <CheildCountDropDown values={formData.cheildCount} handleChange={handleChange} options={dropdownData.cheildCount} />
             <FirstCheildAgeDown values={formData.firstCheildAge} handleChange={handleChange} options={dropdownData.firstCheildAge} />
+
+            <TextField fullWidth sx={{ marginBottom: 2, marginTop: 2 }}
+              multiline
+              maxRows={4} label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} fullWidth />
+
+            <TextField fullWidth sx={{ marginBottom: 2 }}
+              multiline
+              maxRows={4} label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} fullWidth />
+
 
             <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
               {/* تغییر کلمه عبور */}

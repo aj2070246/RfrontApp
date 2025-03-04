@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
-import { FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
+import { FaSignInAlt, FaUserPlus, FaCommentDots, FaSearch, FaFile, FaSignOutAlt, FaTimes } from 'react-icons/fa'; // اضافه کردن آیکن بستن
 import { Navigate } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { GetCountOfUnreadMessages, LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
-
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from './api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import { FaBars, FaBan, FaUserSlash, FaHeart, FaStar, FaEye, FaUserCircle } from "react-icons/fa";
 import ChatPage from './pages/ChatPage';
 import SearchPage from './pages/SearchPage';
@@ -75,9 +76,10 @@ function Main() {
   const isLoginPage = window.location.pathname.toLowerCase() === '/login'.toLowerCase();
   const isRegisterPage = window.location.pathname.toLowerCase() === '/registerForm'.toLowerCase();
   const forgatePassword = window.location.pathname.toLowerCase() === '/ForgatePassword'.toLowerCase();
-
+  let search = window.location.pathname.toLowerCase() === '/search'.toLowerCase();
+  let userId = localStorage.getItem('userId');
   const hideHeaderAndMenu = isRoot || isLoginPage || isRegisterPage || forgatePassword;
-
+  const searchNeedMenu = search && !userId;
   useEffect(() => {
     // اگر منو باز است و کاربر بیرون از منو کلیک کند، منو بسته می‌شود
     const handleClickOutside = (event) => {
@@ -99,12 +101,14 @@ function Main() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
-
+  const [isInIframe, setIsInIframe] = useState(false);
   useEffect(() => {
+    setIsInIframe(window.self !== window.top);
     const fetchProfilePhoto = async () => {
       const userId = localStorage.getItem('userId');
+      const genderId = localStorage.getItem('genderId');
       if (userId) {
-        const photoUrl = await getUserProfilePhoto(userId);
+        const photoUrl = await getUserProfilePhoto(userId, genderId);
         console.log('Photo URL:', photoUrl); // چک کن چی برگشته
         setProfilePhoto(photoUrl);
       }
@@ -120,8 +124,8 @@ function Main() {
         console.log('Unread Messages Count:', response); // چک کن چی برگشته
         if (response.data.isSuccess) {
           setUnreadMessagesCount(response.data.model);
-          console.log('(response.data.isSuccess , ' , response.data.isSuccess);
-          console.log('(response.data.model , ' , response.data.model);
+          console.log('(response.data.isSuccess , ', response.data.isSuccess);
+          console.log('(response.data.model , ', response.data.model);
         }
       }
     };
@@ -129,12 +133,20 @@ function Main() {
   }, []);
 
 
-  const defaultAvatar = getDefaultAvatarAddress();
-
   return (
+
     <div className="app-container">
-      {!hideHeaderAndMenu && (
+
+
+      <HelmetProvider>
+        <Helmet>
+          <title>{hamYab()} | {hamYar()}</title>
+        </Helmet>
+      </HelmetProvider> 
+
+      {!hideHeaderAndMenu && !isInIframe && (
         <>
+
           <header className="header">
             <div className="hamburger-container" onClick={toggleMenu} ref={hamburgerRef}>
               <div className="hamburger" onClick={toggleMenu} ref={hamburgerRef}>
@@ -145,7 +157,17 @@ function Main() {
             </div>
 
             <div className="header-center">
-              خوش آمدید
+
+              {!isDevelopMode() && (
+                <>
+                  به سامانه {hamYab()} {hamYar()} خوش  آمدین
+                </>
+              )}
+              {isDevelopMode() && (
+                <>
+                  خوش آمدید
+                </>
+              )}
             </div>
 
             <div className="user-info user-name user-name-left" ref={userMenuRef}>
@@ -166,8 +188,9 @@ function Main() {
                 style={styles.profileImage}
                 onClick={toggleUserMenu}
                 onError={(e) => {
-                  e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
-                  e.target.src = defaultAvatar; // نمایش عکس پیش‌فرض
+                  e.target.onerror = null;
+                  const genderId = localStorage.getItem('genderId');
+                  e.target.src = getDefaultAvatarAddress(genderId); // مستقیم از متغیر ثابت استفاده کن
                 }}
               />
 
@@ -215,8 +238,8 @@ function Main() {
               <li>
                 <Link to="/Messages" className="nav-button  nav-button messages-link">
                   مرکز پیام
-                    <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
-                    <span className="unread-count">{unreadMessagesCount}</span>
+                  <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
+                  <span className="unread-count">{unreadMessagesCount}</span>
 
                 </Link>
               </li>
@@ -274,7 +297,28 @@ function Main() {
 
         </>
       )}
-      {/* مسیرها */}
+      {searchNeedMenu && !isInIframe && (
+        <>
+          <header className="header" style={{ backgroundColor: '#2196F3' }}>
+
+            <div className="header-center">
+              خوش آمدید
+            </div>
+
+            <div className="header-buttons">
+              <Link to="/login" className="header-button">
+                <FaSignInAlt style={{ marginLeft: '5px' }} />
+                ورود
+              </Link>
+              <Link to="/registerForm" className="header-button">
+                <FaUserPlus style={{ marginLeft: '5px' }} />
+                ثبت‌نام
+              </Link>
+            </div>
+          </header>
+        </>
+      )}
+
     </div>
   );
 }

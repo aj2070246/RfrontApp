@@ -1,3 +1,5 @@
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider,Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, TextField, Button, Typography, Snackbar, Alert, Grid, CircularProgress, IconButton } from '@mui/material';
 import { VerifyEmailCodeForAcceptEmail, sendVerifyCodeEmail, getCaptcha } from '../api'; // متد تغییر رمز عبور
@@ -110,6 +112,15 @@ const VerifyEmailCode = ({ open, onClose }) => {
   return (
     <>
       <Modal open={open} onClose={onClose} aria-labelledby="verify-email-modal">
+
+        
+ <HelmetProvider>
+              <Helmet>
+                <title>{hamYab() } | { hamYar()}</title>
+              </Helmet>
+            </HelmetProvider>
+
+
         <Box
           sx={{
             position: 'absolute',

@@ -1,17 +1,15 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { useParams, Link } from 'react-router-dom'; // اضافه کردن این خط
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { getDefaultAvatarAddress, getMessages, sendMessage, getUserInfo, deleteMessage, getUserProfilePhoto } from '../api';
 import { Card, Box } from "@mui/material";
-
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { HelmetProvider, Helmet } from "react-helmet-async";
 const ChatPage = () => {
-  const { userId } = useParams();  // استفاده از useParams برای گرفتن userId از URL
+  const { userId } = useParams();
   const senderUserId = localStorage.getItem('userId');
-  console.log('userId', userId);
   const [messages, setMessages] = useState([]);
   const [statusCode, setStatusCode] = useState(null);
-
-  const defaultAvatar = getDefaultAvatarAddress();
-
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [showStatusText, setShowStatusText] = useState(null);
@@ -19,12 +17,17 @@ const ChatPage = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    if (userId && senderUserId) {  // بررسی می‌کنیم که مقادیر آماده باشند
+    const token = localStorage.getItem('token');
+    if (!userId || !token) {
+      console.warn("User ID or token is missing, redirecting to login...");
+      window.location.href = "/login";
+      return;
+    }
+    if (userId && senderUserId) {
       fetchUserInfo();
       fetchMessages();
     }
   }, [userId, senderUserId]);
-
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -32,34 +35,49 @@ const ChatPage = () => {
     }
   }, [messages]);
 
-
   const fetchMessages = async () => {
     try {
+      if (!userId || !senderUserId) {
+        console.warn("User ID or senderUserId is missing, redirecting to login...");
+        window.location.href = "/login";
+        return;
+      }
       const response = await getMessages(senderUserId, userId);
-
       if (response.data.isSuccess) {
         setStatusCode(response.data.statusCode);
-
         setMessages(response.data.model.reverse());
       }
     } catch (error) {
+      console.error("Error fetching messages:", error);
     }
   };
+
   const fetchUserInfo = async () => {
     try {
-      const currentUserId = localStorage.getItem('userId'); // مقدار مستقیم از localStorage
+      const currentUserId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+      console.log('Fetching user info with userId:', userId, 'currentUserId:', currentUserId, 'token:', token);
+
+      if (!currentUserId || !token) {
+        console.warn("Current user ID or token is missing, redirecting to login...");
+        window.location.href = "/login";
+        return;
+      }
 
       const response = await getUserInfo(userId, currentUserId);
-      if (response.isSuccess) { // بررسی مستقیم isSuccess
-        setUserInfo(response.model); // دسترسی به model
+      if (response.isSuccess) {
+        setUserInfo(response.model);
       } else {
         console.error('API response indicates failure:', response);
       }
+
+      const photoUrl = await getUserProfilePhoto(userId);
+      console.log('fetchProfilePhoto Photo URL:', photoUrl);
+      setProfilePhoto(photoUrl || getDefaultAvatarAddress(response.model?.genderId || 0));
     } catch (error) {
       console.error('Error fetching user info:', error);
     }
   };
-
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -80,26 +98,30 @@ const ChatPage = () => {
     setShowStatusText(null);
   };
 
-  const handleClick = () => {
-    // می‌توانید هر عملکرد دلخواهی برای کلیک پیام‌ها قرار دهید
-  };
-
   const handleDeleteMessage = async (messageId) => {
     try {
       const response = await deleteMessage(messageId);
       if (response.data.isSuccess) {
-        // بعد از حذف پیام، لیست پیام‌ها را به‌روزرسانی کنید
         setMessages(messages.filter(msg => msg.id !== messageId));
         fetchMessages();
-
       }
     } catch (error) {
       console.error('Error deleting message:', error);
     }
   };
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+
+
+        <HelmetProvider>
+          <Helmet>
+            <title>{hamYab()} | {hamYar()}</title>
+          </Helmet>
+        </HelmetProvider>
+
+
         <div style={styles.container}>
           {userInfo && (
             <Link to={`/profile/${userInfo.id}`} style={{ textDecoration: 'none' }} target='_blank'>
@@ -109,26 +131,18 @@ const ChatPage = () => {
                     پیام شخصی با <br />
                     {userInfo.firstName} {userInfo.lastName}
                   </p>
-                  <p style={styles.userInfo}>
-                    شهر {" "}{userInfo.province}
-                  </p>
-                  <p style={styles.userInfo}>
-                    آخرین فعالیت {" "}{userInfo.lastActivityDate}
-                  </p>
-                  <p style={styles.userInfo}>
-                    رابطه مورد نظر {" "}{userInfo.relationType}
-                  </p>
-                  <p style={styles.userInfo}>
-                    {userInfo.marriageStatus} | {userInfo.liveType}
-                  </p>
+                  <p style={styles.userInfo}>شهر {" "}{userInfo.province}</p>
+                  <p style={styles.userInfo}>آخرین فعالیت {" "}{userInfo.lastActivityDate}</p>
+                  <p style={styles.userInfo}>رابطه مورد نظر {" "}{userInfo.relationType}</p>
+                  <p style={styles.userInfo}>{userInfo.marriageStatus} | {userInfo.liveType}</p>
                 </div>
                 <img
-                  src={getUserProfilePhoto(userId)}
+                  src={profilePhoto || getDefaultAvatarAddress(userInfo.genderId || 0)}
                   alt="Profile"
                   style={styles.profileImage}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = defaultAvatar;
+                    e.target.src = getDefaultAvatarAddress(userInfo.genderId || 0);
                   }}
                 />
               </div>
@@ -136,9 +150,9 @@ const ChatPage = () => {
           )}
 
           <div className="noMessages" style={styles.messagesContainer}>
-            {statusCode == 6969 ? (
+            {statusCode === 6969 ? (
               <div className="noMessages">
-                <h3>گفتگویی یافت نشد. برای شروع گفتگو،.</h3>
+                <h3>گفتگویی یافت نشد. برای شروع گفتگو،</h3>
                 <h1>یک پیام ارسال کنید.</h1>
               </div>
             ) : (
@@ -147,7 +161,6 @@ const ChatPage = () => {
                   key={index}
                   onMouseEnter={() => msg.senderUserId === senderUserId && handleMouseEnter(msg.messageStatusId)}
                   onMouseLeave={handleMouseLeave}
-                  onClick={handleClick}
                   style={{
                     ...styles.message,
                     backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
@@ -158,7 +171,6 @@ const ChatPage = () => {
                   }}
                 >
                   <p style={styles.text}>{msg.messageText}</p>
-
                   <span style={styles.time}>
                     {new Date(msg.sendDate).toLocaleString('fa-IR', {
                       year: 'numeric',
@@ -170,17 +182,13 @@ const ChatPage = () => {
                   </span>
                   {msg.senderUserId === senderUserId && (
                     <span style={styles.text}>
-                      {msg.messageStatusId === 1 ? '✔️' :
-                        msg.messageStatusId === 2 ? '✔️✔️' : ''}
+                      {msg.messageStatusId === 1 ? '✔️' : msg.messageStatusId === 2 ? '✔️✔️' : ''}
                     </span>
                   )}
                   {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
                     <div style={styles.statusText}>
                       <span style={{ color: '#000' }}>
-                        <span style={styles.text}>
-                          {msg.messageStatusId === 1 ? 'ارسال شده' :
-                            msg.messageStatusId === 2 ? 'خوانده شده' : ''}
-                        </span>
+                        {msg.messageStatusId === 1 ? 'ارسال شده' : msg.messageStatusId === 2 ? 'خوانده شده' : ''}
                       </span>
                     </div>
                   )}
@@ -212,29 +220,9 @@ const ChatPage = () => {
       </Card>
     </Box>
   );
-
 };
 
 const styles = {
-
-
-  statusText: {
-    marginTop: '5px',
-    fontSize: '14px',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // می‌توانید برای پس‌زمینه از رنگ نیمه شفاف استفاده کنید
-    borderRadius: '5px',
-    padding: '5px',
-  },
-
-  deleteButton: {
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    color: '#ff5722', // رنگ سطل آشغال
-    fontSize: '16px',
-    marginLeft: '10px',
-  },
-
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -271,16 +259,11 @@ const styles = {
     color: '#555',
     margin: '2px 0',
   },
-  chatBox: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
+  messagesContainer: {
+    flexGrow: 1,
+    maxHeight: '400px',
     overflowY: 'auto',
-    padding: '10px',
-    borderRadius: '10px',
-    backgroundColor: '#fff',
-    overflowY: 'auto', // این خط برای قابلیت اسکرول به پایین است
-
+    padding: '10px 0',
   },
   message: {
     maxWidth: '60%',
@@ -290,12 +273,6 @@ const styles = {
     marginBottom: '10px',
     display: 'flex',
     flexDirection: 'column',
-
-    // backgroundColor: msg.senderUserId === senderUserId ? '#A97775' : '#2196F3',
-    // width: '75%', // سه‌چهارم عرض
-    // marginLeft: msg.senderUserId === senderUserId ? '25%' : '0', // پیام ارسالی: یک‌چهارم از چپ خالی
-    // marginRight: msg.senderUserId === senderUserId ? '0' : '25%', // پیام دریافتی: یک‌چهارم از راست خالی
-    // alignSelf: msg.senderUserId === senderUserId ? 'flex-end' : 'flex-start'
   },
   text: {
     margin: 0,
@@ -315,8 +292,8 @@ const styles = {
     padding: '10px',
     borderRadius: '5px',
     border: '1px solid #ccc',
-    fontFamily: 'inherit', // این خط را اضافه کنید
-    fontSize: 'inherit', // این خط را اضافه کنید
+    fontFamily: 'inherit',
+    fontSize: 'inherit',
   },
   button: {
     marginLeft: '10px',
@@ -326,36 +303,23 @@ const styles = {
     color: 'white',
     border: 'none',
     cursor: 'pointer',
-    fontFamily: 'inherit', // این خط را اضافه کنید
-    fontSize: 'inherit', // این خط را اضافه کنید
+    fontFamily: 'inherit',
+    fontSize: 'inherit',
   },
   statusText: {
-    fontSize: '12px',
-    color: '#888',
     marginTop: '5px',
+    fontSize: '14px',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: '5px',
+    padding: '5px',
   },
   deleteButton: {
-    background: 'none',
+    background: 'transparent',
     border: 'none',
-    color: '#f44336',
-    fontSize: '18px',
     cursor: 'pointer',
+    color: '#ff5722',
+    fontSize: '16px',
     marginLeft: '10px',
-  },
-  messagesContainer: { // تغییر نام و اضافه کردن استایل
-    flexGrow: 1, // بخش پیام‌ها فضای باقی‌مونده رو پر کنه
-    maxHeight: '400px', // یه ارتفاع مشخص (قابل تنظیم)
-    overflowY: 'auto', // اسکرول عمودی فعال بشه
-    padding: '10px 0', // یه کم فاصله داخلی
-  },
-  message: {
-    maxWidth: '60%',
-    padding: '10px',
-    borderRadius: '10px',
-    color: '#fff',
-    marginBottom: '10px',
-    display: 'flex',
-    flexDirection: 'column',
   },
 };
 
