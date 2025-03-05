@@ -269,6 +269,7 @@ const SearchPage2 = () => {
                                                     alt="User Avatar"
                                                     onError={(e) => {
                                                         e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
+                                                        console.log(user.genderId);
                                                         e.target.src = getDefaultAvatarAddress(user.genderId); // نمایش عکس پیش‌فرض
                                                     }}
                                                     sx={{

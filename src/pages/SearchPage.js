@@ -9,7 +9,7 @@ import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
   CarValuesDropdown, HomeValueDropDown, IncomeAmountDropDown,
-  OnlineStatusDropDown, ProfilePhotoStatusDropDown, RelationTypeDropDown
+  OnlineStatusDropDown, ProfilePhotoStatusDropDown, RelationTypeDropDown,MaxCheildCountDropDown
 } from './registerPage/Dropdowns';
 
 
@@ -32,7 +32,9 @@ const SearchPage = () => {
     carValue: '',
     onlineStatus: '',
     profilePhoto: '',
-    relationType: ''
+    relationType: '',
+    cheildCount: '',
+    
   });
   const [isInIframe, setIsInIframe] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(true);
@@ -57,6 +59,7 @@ const SearchPage = () => {
     marriageStatus: [],
     provinces: [],
     incomeAmount: [],
+    cheildCount: [],
     homeValue: [],
     carValue: [],
     onlineStatus: [],
@@ -79,6 +82,7 @@ const SearchPage = () => {
             marriageStatus: dropdownResponse.data.model.marriageStatus || [],
             provinces: dropdownResponse.data.model.provinces || [],
             incomeAmount: dropdownResponse.data.model.incomeAmount || [],
+            cheildCount: dropdownResponse.data.model.cheildCount || [],
             carValue: dropdownResponse.data.model.carValue || [],
             homeValue: dropdownResponse.data.model.homeValue || [],
             onlineStatus: dropdownResponse.data.model.onlineStatus || [],
@@ -167,6 +171,7 @@ const SearchPage = () => {
         marriageStatusId: formData.marriageStatus ? parseInt(formData.marriageStatus) : 0,
         provinceId: formData.province ? parseInt(formData.province) : 0,
         incomeId: formData.incomeAmount ? parseInt(formData.incomeAmount) : 0,
+        cheildCountId: formData.cheildCount ? parseInt(formData.cheildCount) : 0,
         carValueId: formData.carValue ? parseInt(formData.carValue) : 0,
         homeValueId: formData.homeValue ? parseInt(formData.homeValue) : 0,
         profilePhotoId: formData.profilePhoto ? parseInt(formData.profilePhoto) : 0,
@@ -255,12 +260,13 @@ const SearchPage = () => {
           <IncomeAmountDropDown incomeAmount={formData.incomeAmount} handleChange={handleChange} incomeAmounts={dropdownData.incomeAmount} />
           <ProfilePhotoStatusDropDown profilePhotoStatus={formData.profilePhoto} handleChange={handleChange} profilePhotoStatuss={dropdownData.profilePhoto} />
           <OnlineStatusDropDown onlineStatus={formData.onlineStatus} handleChange={handleChange} onlineStatuss={dropdownData.onlineStatus} />
+          <MaxCheildCountDropDown values={formData.cheildCount} handleChange={handleChange} options={dropdownData.cheildCount} />
         </Grid>
       )}
 
       <Grid container spacing={2}>
 
-        {!isInIframe && (<Grid item xs={12}>
+        {!isInIframe && (<Grid item xs={12} spacing={2} marginTop={2} >
           <Button variant="contained" color="primary" fullWidth onClick={() => handleSearch(true, true)}>
             جستجو
           </Button>

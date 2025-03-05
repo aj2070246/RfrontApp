@@ -129,7 +129,7 @@ const ChatPage = () => {
                 <div style={styles.userDetails}>
                   <p style={styles.userName}>
                     پیام شخصی با <br />
-                    {userInfo.firstName} 
+                    {userInfo.firstName}
                   </p>
                   <p style={styles.userInfo}>شهر {" "}{userInfo.province}</p>
                   <p style={styles.userInfo}>آخرین فعالیت {" "}{userInfo.lastActivityDate}</p>
@@ -171,18 +171,27 @@ const ChatPage = () => {
                   }}
                 >
                   <p style={styles.text}>{msg.messageText}</p>
-                  <span style={styles.time}>
-                    {new Date(msg.sendDate).toLocaleString('fa-IR', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
+
                   {msg.senderUserId === senderUserId && (
                     <span style={styles.text}>
+                       <span style={styles.time}>
+                        {new Date(msg.sendDate).toLocaleString('fa-IR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        style={styles.deleteButton}
+                      >
+                        🗑️
+                      </button>
                       {msg.messageStatusId === 1 ? '✔️' : msg.messageStatusId === 2 ? '✔️✔️' : ''}
+
+                    
                     </span>
                   )}
                   {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (
@@ -192,30 +201,26 @@ const ChatPage = () => {
                       </span>
                     </div>
                   )}
-                  {msg.senderUserId === senderUserId && (
-                    <button
-                      onClick={() => handleDeleteMessage(msg.id)}
-                      style={styles.deleteButton}
-                    >
-                      🗑️
-                    </button>
-                  )}
+
                 </div>
               ))
             )}
             <div ref={messagesEndRef} style={{ height: '0' }} />
           </div>
+          {userId != senderUserId && (
 
-          <div style={styles.inputContainer}>
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="پیام خود را بنویسید..."
-              style={styles.input}
-            />
-            <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
-          </div>
+
+            <div style={styles.inputContainer}>
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="پیام خود را بنویسید..."
+                style={styles.input}
+              />
+              <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
+            </div>
+          )}
         </div>
       </Card>
     </Box>

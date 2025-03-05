@@ -8,25 +8,25 @@ export const isDevelopMode = () => { return false };
 export const hamYar = () => {
   if (!isDevelopMode())
     return "همسریار"
-  return"تستیار";
+  return "تستیار";
 
 };
 
 export const hamYab = () => {
   if (!isDevelopMode())
     return "همسریابی"
-  return"تستیاب";
+  return "تستیاب";
 };
 export const hamType = () => {
   if (!isDevelopMode())
     return "موقت و دائم"
-  return"تستیاب";
+  return "تستیاب";
 };
 
 export const doostYab = () => {
   if (!isDevelopMode())
     return "دوستیابی"
-  return"دوستیاب";
+  return "دوستیاب";
 };
 
 
@@ -61,6 +61,7 @@ const sendRequest = async (method, url, data = {}, isFormData = false, config = 
   // اگر درخواست نیاز به احراز هویت داشت و توکن وجود نداشت، کاربر را به صفحه لاگین هدایت کن
   if (!token && !isTrustedRequest) {
     console.log('urlurlurlurlurlurl', url)
+    debugger;
     window.location.href = '/login'; // 🚀 حل مشکل useNavigate
     return;
   }
@@ -103,6 +104,7 @@ const sendRequest = async (method, url, data = {}, isFormData = false, config = 
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token'); // حذف توکن نامعتبر
         localStorage.removeItem('userId'); // حذف یوزر آیدی
+        debugger;
         window.location.href = '/login'; // 🚀 حل مشکل useNavigate
         return;
       }
@@ -403,7 +405,7 @@ export const FavoriteUsersApi = async () => {
 export const LastUsersCheckedMeApi = async () => {
   console.log('LastUsersCheckedMeApiLastUsersCheckedMeApiLastUsersCheckedMeApi')
   try {
-    const response = await sendRequest('POST',"/Connection/LastUsersCheckedMe", {
+    const response = await sendRequest('POST', "/Connection/LastUsersCheckedMe", {
       CurrentuserId: localStorage.getItem('userId')
 
     });
