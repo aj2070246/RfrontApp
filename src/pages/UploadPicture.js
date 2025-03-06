@@ -7,6 +7,19 @@ const ProfilePictureUpload = () => {
 
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
+
+        if (selectedFile) {
+            const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                setError("❌ فقط فرمت‌های JPG, PNG و WEBP مجاز است.");
+                return;
+            }
+            if (selectedFile.size > 10 * 1024 * 1024) {
+                setError("❌ حداکثر حجم مجاز ۵ مگابایت است.");
+                return;
+            }
+        }
+
         if (selectedFile) {
             setFile(selectedFile);
         }
@@ -30,14 +43,19 @@ const ProfilePictureUpload = () => {
 
         try {
             const formData = new FormData();
-            formData.append('File', file); // فیلد `File` اضافه شد
-            formData.append('CurrentUserId', currentUserId);
+            formData.append("File", file);
+            formData.append("CurrentUserId", localStorage.getItem("userId"));
 
             const response = await uploadProfilePicture(formData);
-            alert('با موفقیت آپلود شد');
-        } catch (error) {
-            setError('خطا در ارسال فایل');
+
+            if (response.isSuccess) {
+            } else {
+                setError(`❌ ${response.message}`);
+            }
+        } catch {
+            setError("❌ خطای غیرمنتظره‌ای رخ داد");
         }
+
     };
 
     return (

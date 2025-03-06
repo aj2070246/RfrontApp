@@ -32,14 +32,14 @@ export const doostYab = () => {
 
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
-  'https://api.hamsaryar.com'
-  // 'http://localhost:5000',
+  // 'https://api.hamsaryar.com'
+  'http://localhost:5000',
   // 'https://api.hamsaryar.com',
 
 ];
 // ایجاد یک نمونه axios بدون baseURL ثابت
 const api = axios.create({
-  timeout: 10000, // زمان تایم‌اوت
+  timeout: 100000, // زمان تایم‌اوت
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -127,8 +127,11 @@ export const getAllMessages = async () => {
     return { isSuccess: false };
   }
 };
-export const getUserProfilePhoto = async (userId, genderId = 3) => {
+export const getUserProfilePhoto = async (userId = '', genderId = 3) => {
   try {
+    if (userId == '' || userId === '') {
+      userId = localStorage.getItem('userId')
+    }
     const response = await sendRequest(
       'GET',
       `/Connection/downloadProfilePhoto?userId=${userId}`,
@@ -185,7 +188,7 @@ export const getDefaultAvatarAddress = (genderId) => {
   if (genderId == 2)
     return defaultAvatarWoman;
 
-  if (genderId == 3)
+  if (genderId == 3 || genderId == 0)
     return defaultAvatarNone;
 };
 
@@ -272,7 +275,7 @@ export const registerUser = (formData) => sendRequest('POST', '/PublicData/Regis
 export const UpdateUserInfo = (formData) => sendRequest('POST', '/Connection/UpdateUserInfo', formData);
 
 // **16** - دریافت اطلاعات کاربر
-export const getUserInfo = async (stringId, currentuserId) => {
+export const getUserInfo = async (stringId, currentuserId = "") => {
   try {
     const response = await sendRequest('POST', "/Connection/GetUserInfo", { StringId: stringId, CurrentuserId: currentuserId });
     return response.data;

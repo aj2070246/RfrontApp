@@ -1,5 +1,5 @@
 import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
-import { HelmetProvider,Helmet } from "react-helmet-async";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import { FaTimes, FaCheckCircle, FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
 
 import InputAdornment from '@mui/material/InputAdornment';
@@ -35,6 +35,7 @@ import VerifyEmailCode from './VerifyEmailCode';
 import ProfilePictureUpload from './UploadPicture';
 
 const UpdateProfile = () => {
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [captcha, setCaptcha] = useState({ id: null, image: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(true);
@@ -102,6 +103,16 @@ const UpdateProfile = () => {
         setFormData({}); // جلوگیری از کرش با مقداردهی پیش‌فرض
       }
       setLoading(false);
+
+      try {
+        const photoUrl = await getUserProfilePhoto();
+        console.log('fetchProfilePhoto Photo URL:', photoUrl);
+        setProfilePhoto(photoUrl || getDefaultAvatarAddress(response.model?.genderId));
+
+      } catch (error) {
+        console.error("Error fetching user photo:", error);
+
+      };
     };
 
     fetchUserData();
@@ -170,6 +181,33 @@ const UpdateProfile = () => {
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
 
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+
+          {profilePhoto ? (
+            <img
+              src={profilePhoto}
+              alt="Profile"
+
+              onLoad={() => console.log("✅ تصویر با موفقیت لود شد")}
+              style={styles.profileImage}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = getDefaultAvatarAddress(formData.genderId || 0);
+                console.log("❌ خطا در لود تصویر، استفاده از آواتار پیش‌فرض");
+
+              }}
+            />
+          ) : (
+            <img
+              src={getDefaultAvatarAddress(formData.genderId || 0)}
+              alt="Profile"
+              style={styles.profileImage}
+            />
+          )}
+
+        
+        
+        </div>
         <HelmetProvider>
           <Helmet>
             <title>{hamYab()} | {hamYar()}</title>
@@ -183,8 +221,9 @@ const UpdateProfile = () => {
             <p className="banner-text2">لطفاً اطلاعات زیر را تکمیل کنید</p>
           </div> */}
 
+
           <Grid container spacing={2}>
-            <TextField sx={{ marginBottom: 2 }} label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
+            <TextField sx={{ marginBottom: 2 , marginTop:8 }} label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
             <br />
             <TextField sx={{ marginBottom: 2 }} label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
             <TextField sx={{ marginBottom: 2 }} label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />
@@ -285,11 +324,11 @@ const UpdateProfile = () => {
 
             <TextField fullWidth sx={{ marginBottom: 2, marginTop: 2 }}
               multiline
-              maxRows={4} label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange}  />
+              maxRows={4} label="توضیحات من" name="myDescription" value={formData.myDescription} onChange={handleChange} />
 
             <TextField fullWidth sx={{ marginBottom: 2 }}
               multiline
-              maxRows={4} label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange}  />
+              maxRows={4} label="توضیحات دریافت شده" name="rDescription" value={formData.rDescription} onChange={handleChange} />
 
 
             <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
@@ -400,4 +439,17 @@ const UpdateProfile = () => {
   );
 };
 
+
+
+
+const styles = {
+
+  profileImage: {
+    width: '150px',
+    height: '150px',
+    borderRadius: '50%',
+    marginRight: '10px',
+  },
+
+}
 export default UpdateProfile;

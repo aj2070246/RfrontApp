@@ -73,6 +73,8 @@ const ChatPage = () => {
 
       const photoUrl = await getUserProfilePhoto(userId);
       console.log('fetchProfilePhoto Photo URL:', photoUrl);
+
+      console.log(photoUrl);
       setProfilePhoto(photoUrl || getDefaultAvatarAddress(response.model?.genderId || 0));
     } catch (error) {
       console.error('Error fetching user info:', error);
