@@ -145,13 +145,14 @@ const ForgatePassword = ({ open, onClose }) => {
                   <div class="banner2">
                     <p class="banner-text2"> <h1>  {hamYar()} </h1> </p>
                     <p class="banner-text2"> <h3>  فراموشی رمز عبور </h3> </p>
-                    <p class="banner-text2">  سامانه {hamYab()} {hamType()} </p>
+                    <p class="banner-text2">  سامانه  همسریابی همسریار </p>
                     <p class="banner-text2">  سامانه {doostYab()}</p>
                   </div>)}
 
                 <HelmetProvider>
                   <Helmet>
-                    <title>{hamYab()} | {hamYar()}</title>
+          <title>همسر یابی همسریار</title>
+                    
                   </Helmet>
                 </HelmetProvider>
 

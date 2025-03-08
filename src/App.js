@@ -140,9 +140,9 @@ function Main() {
 
       <HelmetProvider>
         <Helmet>
-          <title>{hamYab()} | {hamYar()}</title>
+          <title> همسریابی همسریار </title>
         </Helmet>
-      </HelmetProvider> 
+      </HelmetProvider>
 
       {!hideHeaderAndMenu && !isInIframe && (
         <>
@@ -156,34 +156,30 @@ function Main() {
 
             </div>
 
+
+
             <div className="header-center">
 
-              {!isDevelopMode() && (
-                <>
-                  به سامانه {hamYab()} {hamYar()} خوش  آمدین
-                </>
-              )}
-              {isDevelopMode() && (
-                <>
-                  خوش آمدید
-                </>
-              )}
+              به سامانه همسریابی همسریار  خوش  آمدین
+
             </div>
 
             <div className="user-info user-name user-name-left" ref={userMenuRef}>
-              <Link to="/Messages" className="nav-button messages-link">
-                <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
-                <span className="unread-count">{unreadMessagesCount}</span>
-              </Link>
 
               <span className="user-name user-name-left" onClick={toggleUserMenu}>
+
+                <Link to="/Messages" className="nav-button messages-link">
+                  <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
+                  <span className="unread-count">{unreadMessagesCount}</span>
+                </Link>
+
+
                 {localStorage.getItem('gender')} {' '} {localStorage.getItem('firstName')}
+
               </span>
 
               <img
                 src={profilePhoto} // استفاده از state به جای تابع مستقیم
-                // 
-                //    src={getUserProfilePhoto(localStorage.getItem('userId'))}
                 alt="Profile"
                 style={styles.profileImage}
                 onClick={toggleUserMenu}
@@ -196,12 +192,35 @@ function Main() {
 
               {isUserMenuOpen && (
                 <div className="user-menu">
+
                   <button>
                     <Link to={`/profile/${localStorage.getItem('userId')}`} className="nav-button">
                       مشاهده پروفایل خودم
                       <FaUserCircle /> {/* آیکن پروفایل کاربر (برای نمایش پروفایل) */}
                     </Link>
                   </button>
+                  <button>
+                    <Link to="/Messages" className="nav-button messages-link">
+                      {unreadMessagesCount > 0 ? (
+                        <>    'تعداد'
+                          <span className="unread-count"> {unreadMessagesCount} </span>
+                          'پیام جدید'
+                        </>
+                      ) : (
+                        <>
+                          <span className="unread-count"></span>
+                          پیام جدید ندارید
+                        </>
+
+                      )}
+                      <br />
+                      <FaCommentDots style={{ fontSize: '24px' }} /> {/* سایز بزرگ‌تر */}
+
+
+                    </Link>
+                  </button>
+
+
                   <button>
                     <Link to="/update" className="nav-button">
                       ویرایش پروفایل
@@ -334,5 +353,7 @@ const styles = {
     alignItems: 'center', // برای تراز عمودی آیکن و متن
   },
 };
+
+
 
 export default App;

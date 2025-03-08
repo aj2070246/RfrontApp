@@ -175,7 +175,7 @@ const RegisterForm = () => {
         {!isDevelopMode() && (
           <>
 
-            <Helmet> <title>{ hamYab() } | { hamYar() } | ثبت نام </title>
+            <Helmet> <title>همسریابی | همسریار | ثبت نام </title>
             </Helmet>
           </>
         )}
@@ -188,9 +188,9 @@ const RegisterForm = () => {
             {!isDevelopMode() && (
               <>
                 <div class="banner2">
-                  <p class="banner-text2"> <h1>  {hamYar()} </h1> </p>
-                  <p class="banner-text2">  سامانه {hamYab()} {hamType} </p>
-                  <p class="banner-text2">   سامانه {doostYab()} </p>
+                  <p class="banner-text2"> <h1>  همسریار </h1> </p>
+                  <p class="banner-text2">  سامانه همسریابی همسریار </p>
+                  <p class="banner-text2">   سامانه دوست یابی </p>
                 </div>
                 <div class="banner2">
                   <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>

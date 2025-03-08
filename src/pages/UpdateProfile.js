@@ -205,12 +205,12 @@ const UpdateProfile = () => {
             />
           )}
 
-        
-        
+
+
         </div>
         <HelmetProvider>
-          <Helmet>
-            <title>{hamYab()} | {hamYar()}</title>
+          <Helmet>                     
+               <title>همسر یابی همسریار</title>
           </Helmet>
         </HelmetProvider>
 
@@ -223,7 +223,7 @@ const UpdateProfile = () => {
 
 
           <Grid container spacing={2}>
-            <TextField sx={{ marginBottom: 2 , marginTop:8 }} label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
+            <TextField sx={{ marginBottom: 2, marginTop: 8 }} label="نام" name="firstName" value={formData.firstName} onChange={handleChange} fullWidth />
             <br />
             <TextField sx={{ marginBottom: 2 }} label="نام خانوادگی" name="lastName" value={formData.lastName} onChange={handleChange} fullWidth />
             <TextField sx={{ marginBottom: 2 }} label="نام کاربری" name="userName" value={formData.userName} onChange={handleChange} fullWidth />

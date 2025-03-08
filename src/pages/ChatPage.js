@@ -119,7 +119,8 @@ const ChatPage = () => {
 
         <HelmetProvider>
           <Helmet>
-            <title>{hamYab()} | {hamYar()}</title>
+            <title>همسر یابی همسریار</title>
+
           </Helmet>
         </HelmetProvider>
 
@@ -176,7 +177,7 @@ const ChatPage = () => {
 
                   {msg.senderUserId === senderUserId && (
                     <span style={styles.text}>
-                       <span style={styles.time}>
+                      <span style={styles.time}>
                         {new Date(msg.sendDate).toLocaleString('fa-IR', {
                           year: 'numeric',
                           month: '2-digit',
@@ -193,7 +194,7 @@ const ChatPage = () => {
                       </button>
                       {msg.messageStatusId === 1 ? '✔️' : msg.messageStatusId === 2 ? '✔️✔️' : ''}
 
-                    
+
                     </span>
                   )}
                   {msg.senderUserId === senderUserId && showStatusText === msg.messageStatusId && (

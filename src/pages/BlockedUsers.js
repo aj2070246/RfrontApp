@@ -30,7 +30,8 @@ const BlockedUsers = () => {
      
            <HelmetProvider>
              <Helmet>
-               <title>{hamYab()} | {hamYar()}</title>
+          <title>همسر یابی همسریار</title>
+              
              </Helmet>
            </HelmetProvider>
      

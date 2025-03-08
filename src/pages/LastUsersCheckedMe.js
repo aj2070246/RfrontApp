@@ -34,7 +34,7 @@ const LastUsersCheckedMe = () => {
     <Box sx={{ padding: 2 }} dir="rtl">
       <HelmetProvider>
         <Helmet>
-          <title>{hamYab()} | {hamYar()}</title>
+          <title>همسر یابی همسریار</title>
         </Helmet>
       </HelmetProvider>
 

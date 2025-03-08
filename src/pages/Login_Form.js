@@ -107,13 +107,14 @@ const Login_Form = () => {
         {!isDevelopMode() && (
           <>
             <div className="banner2">
-              <p className="banner-text2"> <h1>  {hamYar()} </h1> </p>
-              <p className="banner-text2">  سامانه {hamYab()} {hamType()} </p>
-              <p className="banner-text2">  سامانه {doostYab()}</p>
+              <p className="banner-text2"> <h1>  همسریار </h1> </p>
+              <p className="banner-text2">  سامانه همسریابی </p>
+              <p className="banner-text2">  سامانه  دوست یابی</p>
             </div>
             <HelmetProvider>
               <Helmet>
-                <title>{hamYab()} | {hamYar()}</title>
+              <title>همسر یابی همسریار</title>
+                
               </Helmet>
             </HelmetProvider>
           </>
@@ -178,7 +179,7 @@ const Login_Form = () => {
         {/* اضافه کردن iframe برای نمایش صفحه Search */}
         <Grid item xs={12} sx={{ mt: 4 }}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            کاربران {hamYab()} {hamYar()}
+            کاربران همسریابی همسریار 
           </Typography>
           <iframe
             src="/search"

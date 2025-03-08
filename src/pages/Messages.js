@@ -1,5 +1,5 @@
 import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
-import { HelmetProvider,Helmet } from "react-helmet-async";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAllMessages, getDefaultAvatarAddress, getUserProfilePhoto } from '../api';
@@ -54,11 +54,11 @@ const Messages = () => {
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
             <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
 
-            <HelmetProvider>
-              <Helmet>
-                <title>{hamYab() } | { hamYar()}</title>
-              </Helmet>
-            </HelmetProvider>
+                <HelmetProvider>
+                    <Helmet>
+                        <title>همسر یابی همسریار</title>
+                    </Helmet>
+                </HelmetProvider>
 
 
                 {statusCode === 6969 ? (
