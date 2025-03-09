@@ -2,15 +2,16 @@ import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getUserInfo, blockUser, favoriteUser, getUserProfilePhoto, getDefaultAvatarAddress } from "../api"; // اطمینان حاصل کنید که مسیر درست است
+import { getUserInfo, blockUser, favoriteUser, getUserProfilePhoto, getDefaultAvatarAddress, SendReport } from "../api"; // اطمینان حاصل کنید که مسیر درست است
 import {
-  Card, CardContent, Typography, Button, Box, IconButton
+  Card, CardContent, Typography, Button, Box, IconButton, Snackbar
   , CardMedia, Alert, CardActionArea
 } from "@mui/material";
 import { Link } from 'react-router-dom';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { FaBan, FaUnlock } from "react-icons/fa";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 const Profile = () => {
   const { stringId } = useParams(); // دریافت stringId از URL
@@ -22,6 +23,8 @@ const Profile = () => {
   const [blockedMe, setBlockedMe] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null); // حالت برای عکس پروفایل
   const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+
   useEffect(() => {
     const fetchProfilePhoto = async () => {
       console.log('Photo URL=========== photoUrl', stringId);
@@ -33,6 +36,8 @@ const Profile = () => {
     };
     fetchProfilePhoto();
   }, [stringId]);
+
+
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = localStorage.getItem('userId'); // مقدار مستقیم از localStorage
@@ -54,7 +59,6 @@ const Profile = () => {
   const handleBlockToggle = async () => {
     if (user) {
       const inputModel = {
-        CurrentUserId: localStorage.getItem('userId'), // مقدار Id کاربر فعلی
         DestinationUserId: user.id,
         SetIsBlock: !blocked, // تغییر وضعیت بلاک
       };
@@ -69,10 +73,31 @@ const Profile = () => {
       }
     }
   };
+
+  const SendReportToSitePolice = async () => {
+    if (user) {
+
+      const userConfirmed = window.confirm("آیا از ارسال گزارش به پلیس سایت مطمئن هستید؟");
+      if (userConfirmed) {
+
+        const response = await SendReport(); // صدا زدن API
+
+        if (response.isSuccess) {
+          setSnackbar({ open: true, message: 'ضمن تشکر، گزارش شما ثبت شد و در اسرع وقت پیگیری میشود', severity: 'success' });
+
+        } else {
+          setSnackbar({ open: true, message: response.data.message, severity: 'error' });
+          // نمایش خطا در صورت نیاز
+          console.error("Error while blocking/unblocking the user");
+        }
+      }
+    }
+  };
+
+
   const handleFavoriteToggle = async () => {
     if (user) {
       const inputModel = {
-        CurrentUserId: localStorage.getItem('userId'), // مقدار Id کاربر فعلی
         DestinationUserId: user.id,
         setIsFavorite: !isFavorite, // تغییر وضعیت بلاک
       };
@@ -96,8 +121,8 @@ const Profile = () => {
 
       <HelmetProvider>
         <Helmet>
-        <title>همسر یابی همسریار</title>
-          
+          <title>همسر یابی همسریار</title>
+
         </Helmet>
       </HelmetProvider>
 
@@ -153,7 +178,7 @@ const Profile = () => {
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h4" fontWeight="bold">
 
-                  {user.firstName} 
+                  {user.firstName}
 
                 </Typography>
 
@@ -246,7 +271,6 @@ const Profile = () => {
 
                   <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, mt: 3 }}>
 
-                    {/* دکمه بلاک */}
                     <IconButton
                       onClick={handleBlockToggle}
                       sx={{ color: blocked ? "green" : "red" }}
@@ -255,10 +279,20 @@ const Profile = () => {
                       {blocked ? <FaUnlock style={{ fontSize: "2.5rem" }} /> : <FaBan style={{ fontSize: "2.5rem" }} />}
                     </IconButton>
 
-                    {/* دکمه علاقه‌مندی */}
+
+                    <IconButton
+                      onClick={SendReportToSitePolice}
+                      sx={{ color: isFavorite ? "error.main" : "inherit" }}
+                      title="گزارش به پلیس سایت" // متن هنگام Hover
+                    >
+                      <ReportProblemIcon style={{ fontSize: "large" }} />
+                      <Typography> گزاش تخلف به پلیس سایت</Typography>
+                    </IconButton>
+
+
                     <IconButton
                       onClick={handleFavoriteToggle}
-                      sx={{ color: isFavorite ? "error.main" : "inherit" }}
+                      sx={{ color: "error.main" }}
                       title={isFavorite ? "حذف از علاقه‌مندی‌ها" : "اضافه به علاقه‌مندی‌ها"} // متن هنگام Hover
                     >
                       {isFavorite ? <FavoriteIcon fontSize="large" /> : <FavoriteBorderIcon fontSize="large" />}
@@ -280,6 +314,15 @@ const Profile = () => {
             </>
           )
         )}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Card>
     </Box>
   );

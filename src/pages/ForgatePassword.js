@@ -143,10 +143,9 @@ const ForgatePassword = ({ open, onClose }) => {
                 {!isDevelopMode() && (
 
                   <div class="banner2">
-                    <p class="banner-text2"> <h1>  {hamYar()} </h1> </p>
+                    <p class="banner-text2"> <h1>  همسریار </h1> </p>
                     <p class="banner-text2"> <h3>  فراموشی رمز عبور </h3> </p>
                     <p class="banner-text2">  سامانه  همسریابی همسریار </p>
-                    <p class="banner-text2">  سامانه {doostYab()}</p>
                   </div>)}
 
                 <HelmetProvider>

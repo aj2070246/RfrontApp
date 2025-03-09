@@ -54,7 +54,7 @@ const sendRequest = async (method, url, data = {}, isFormData = false, config = 
 
   // لیست درخواست‌های امن که نیاز به احراز هویت ندارند
   const trustedActions = ['login', 'getcaptcha', 'registeruser', 'getalldropdownsitems',
-    'searchusers', 'downloadprofilephoto'];
+    'searchusers', 'downloadprofilephoto','sendemailfornewpassword'];
   console.log(url);
   // بررسی می‌کنیم که آیا درخواست به یکی از `trustedActions` ارسال شده است یا نه
   const isTrustedRequest = trustedActions.some(action => url.toLowerCase().includes(action));
@@ -261,6 +261,19 @@ export const favoriteUser = async (inputModel) => {
     return response.data;
   } catch (error) {
     console.error("Error blocking/Favorite user:", error);
+    throw error;
+  }
+};
+
+export const SendReport = async (userId) => {
+  try {
+    debugger;
+    const response = await sendRequest('POST', '/Connection/SendReport', {
+      ReportedUserId:userId
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error reporting user:", error);
     throw error;
   }
 };

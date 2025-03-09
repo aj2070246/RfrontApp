@@ -262,12 +262,7 @@ function Main() {
 
                 </Link>
               </li>
-              {/* <li>
-                <Link to="/update" className="nav-button">
-                  ویرایش پروفایل
-                  <FaFile />
-                </Link>
-              </li> */}
+             
               <li>
                 <Link to="/blocked" className="nav-button">
                   مسدود شده ها
@@ -303,12 +298,12 @@ function Main() {
                 </Link>
               </li>
 
-              {<li className="logout-button">
+              <li className="logout-button">
                 <Link onClick={handleLogout} className="nav-button">
                   خروج
                   <FaUserCircle />
                 </Link>
-              </li>}
+              </li>
 
 
             </ul>

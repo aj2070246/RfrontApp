@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getDefaultAvatarAddress, getMessages, sendMessage, getUserInfo, deleteMessage, getUserProfilePhoto } from '../api';
-import { Card, Box } from "@mui/material";
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
+import { Card, Box, Alert, Snackbar, Typography, IconButton } from "@mui/material";
+import { isDevelopMode, hamYab, hamYar, doostYab, hamType, SendReport } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+
 const ChatPage = () => {
   const { userId } = useParams();
   const senderUserId = localStorage.getItem('userId');
@@ -13,6 +15,8 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [showStatusText, setShowStatusText] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+  const [isSending,setIsSending] = useState(false); // وضعیت برای غیرفعال کردن دکمه
 
   const messagesEndRef = useRef(null);
 
@@ -82,7 +86,12 @@ const ChatPage = () => {
   };
 
   const handleSendMessage = async () => {
+
     if (!newMessage.trim()) return;
+
+    setIsSending(true);  // دکمه غیرفعال می‌شود
+
+    
     try {
       await sendMessage(senderUserId, userId, newMessage);
       setNewMessage('');
@@ -90,6 +99,9 @@ const ChatPage = () => {
     } catch (error) {
       console.error('Error sending message:', error);
     }
+
+    setIsSending(false);  // دکمه غیرفعال می‌شود
+
   };
 
   const handleMouseEnter = (statusId) => {
@@ -112,6 +124,23 @@ const ChatPage = () => {
     }
   };
 
+  const SendReportToSitePolice = async () => {
+
+    const userConfirmed = window.confirm("آیا از ارسال گزارش به پلیس سایت مطمئن هستید؟");
+    if (userConfirmed) {
+
+      const response = await SendReport(); // صدا زدن API
+
+      if (response.isSuccess) {
+        setSnackbar({ open: true, message: 'ضمن تشکر، گزارش شما ثبت شد و در اسرع وقت پیگیری میشود', severity: 'success' });
+
+      } else {
+        setSnackbar({ open: true, message: response.data.message, severity: 'error' });
+        // نمایش خطا در صورت نیاز
+        console.error("Error while blocking/unblocking the user");
+      }
+    }
+  };
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
@@ -210,21 +239,43 @@ const ChatPage = () => {
             )}
             <div ref={messagesEndRef} style={{ height: '0' }} />
           </div>
-          {userId != senderUserId && (
+          {userId != senderUserId && userId!='431C6083-C662-46F6-84B0-348075ABF34FE1BD03DA-FC53-4F74-8CFB-75E4D88C89AE0AADB564-B794-4CFF-A26F-28F695D31850BDEB3154-F9CF-4893-ABBD-DDF5177288434122E12B-4D96-4651-99E4-7E2D444B5287' && (
 
+            <>
+              <div style={styles.inputContainer}>
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="پیام خود را بنویسید..."
+                  style={styles.input}
+                />
+                {!isSending && (
+              <button onClick={handleSendMessage} style={styles.button}>ارسال</button> 
+              )}
+              </div>
 
-            <div style={styles.inputContainer}>
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="پیام خود را بنویسید..."
-                style={styles.input}
-              />
-              <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
-            </div>
+              <IconButton
+                onClick={SendReportToSitePolice}
+                sx={{ color: "inherit" }}
+                title="گزارش به پلیس سایت" // متن هنگام Hover
+              >
+                <ReportProblemIcon style={{ fontSize: "large" }} />
+                <Typography> گزاش تخلف به پلیس سایت</Typography>
+              </IconButton>
+
+            </>
           )}
         </div>
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Card>
     </Box>
   );
