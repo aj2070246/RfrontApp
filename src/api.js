@@ -32,8 +32,8 @@ export const doostYab = () => {
 
 // لیست آدرس‌ها برای تست به ترتیب
 const baseUrls = [
-  // 'https://api.hamsaryar.com'
-  'http://localhost:5000',
+  'https://api.hamsaryar.com'
+  // 'http://localhost:5000',
   // 'https://api.hamsaryar.com',
 
 ];
