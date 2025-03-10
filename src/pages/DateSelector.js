@@ -30,6 +30,11 @@ const DateSelector = () => {
 
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
+       <meta
+      name="همسریابی"
+      content="دوست یابی | همسریابی | همسریار"
+    />
+
       <Grid item xs={12} sm={4}>
         <FormControl fullWidth>
           <InputLabel>روز</InputLabel>

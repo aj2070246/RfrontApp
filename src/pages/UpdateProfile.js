@@ -1,4 +1,3 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { FaTimes, FaCheckCircle, FaSave, FaEdit, FaKey, FaCamera } from "react-icons/fa";
 
@@ -180,14 +179,22 @@ const UpdateProfile = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <meta
+          name="همسریابی"
+          content="دوست یابی | همسریابی | همسریار"
+        />
+        <HelmetProvider>
+          <Helmet>
+            <title>همسر یابی همسریار</title>
 
+          </Helmet>
+        </HelmetProvider>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 
           {profilePhoto ? (
             <img
               src={profilePhoto}
-              alt="Profile"
-
+              alt="همسریابی | دوستیابی | همسریار"
               onLoad={() => console.log("✅ تصویر با موفقیت لود شد")}
               style={styles.profileImage}
               onError={(e) => {
@@ -200,7 +207,7 @@ const UpdateProfile = () => {
           ) : (
             <img
               src={getDefaultAvatarAddress(formData.genderId || 0)}
-              alt="Profile"
+           alt="همسریابی | دوستیابی | همسریار"
               style={styles.profileImage}
             />
           )}
@@ -209,8 +216,8 @@ const UpdateProfile = () => {
 
         </div>
         <HelmetProvider>
-          <Helmet>                     
-               <title>همسر یابی همسریار</title>
+          <Helmet>
+            <title>همسر یابی همسریار</title>
           </Helmet>
         </HelmetProvider>
 

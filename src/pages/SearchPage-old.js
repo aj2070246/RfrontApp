@@ -266,7 +266,7 @@ const SearchPage2 = () => {
                                                 <CardMedia
                                                     component="img"
                                                     image={getUserProfilePhoto(user.id)}
-                                                    alt="User Avatar"
+                                                    alt="همسریابی | دوستیابی | همسریار"
                                                     onError={(e) => {
                                                         e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
                                                         console.log(user.genderId);

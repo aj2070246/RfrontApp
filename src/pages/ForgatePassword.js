@@ -1,4 +1,3 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, TextField, Button, Typography, Snackbar, Alert, Grid, CircularProgress, IconButton, Card } from '@mui/material';
@@ -112,6 +111,17 @@ const ForgatePassword = ({ open, onClose }) => {
 
   return (
     <>
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
+
+      <HelmetProvider>
+        <Helmet>
+          <title>همسر یابی همسریار</title>
+
+        </Helmet>
+      </HelmetProvider>
       <Box
         sx={{
           display: "flex",
@@ -136,31 +146,20 @@ const ForgatePassword = ({ open, onClose }) => {
               borderRadius: 2,
             }}
           >
-            {!isDevelopMode() && (
-              <>
 
 
-                {!isDevelopMode() && (
+            <div class="banner2">
+              <p class="banner-text2"> <h1>  همسریار </h1> </p>
+              <p class="banner-text2"> <h3>  فراموشی رمز عبور </h3> </p>
+              <p class="banner-text2">  سامانه  همسریابی همسریار </p>
+            </div>
 
-                  <div class="banner2">
-                    <p class="banner-text2"> <h1>  همسریار </h1> </p>
-                    <p class="banner-text2"> <h3>  فراموشی رمز عبور </h3> </p>
-                    <p class="banner-text2">  سامانه  همسریابی همسریار </p>
-                  </div>)}
+            <HelmetProvider>
+              <Helmet>
+                <title>همسر یابی همسریار</title>
 
-                <HelmetProvider>
-                  <Helmet>
-          <title>همسر یابی همسریار</title>
-                    
-                  </Helmet>
-                </HelmetProvider>
-
-
-
-
-
-              </>
-            )}
+              </Helmet>
+            </HelmetProvider>
             <Typography variant="h11" gutterBottom> لطفا ایمیل خود را وارد نمایید تا رمز عبور جدید برای شما ارسال شود</Typography>
             <TextField
               label="ایمیل خود را وارد نمایید"
@@ -183,7 +182,7 @@ const ForgatePassword = ({ open, onClose }) => {
             />
             <Grid container alignItems="center" spacing={2}>
               <Grid item>
-                <img src={captcha.image} alt="Captcha" />
+                <img src={captcha.image} alt="همسریابی | دوستیابی | همسریار" />
               </Grid>
               <Grid item>
                 <IconButton onClick={fetchCaptcha} color="primary">

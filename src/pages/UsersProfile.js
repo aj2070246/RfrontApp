@@ -1,4 +1,3 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -118,7 +117,10 @@ const Profile = () => {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
       <HelmetProvider>
         <Helmet>
           <title>همسر یابی همسریار</title>
@@ -158,7 +160,7 @@ const Profile = () => {
 
                   <img
                     src={profilePhoto}
-                    alt="Profile"
+                    alt="همسریابی | دوستیابی | همسریار"
                     style={{
                       maxHeight: "100%", // جلوگیری از بزرگ‌تر شدن از کادر
                       maxWidth: "100%", // جلوگیری از بزرگ‌تر شدن از کادر

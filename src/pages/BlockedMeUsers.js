@@ -1,5 +1,4 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
-import { HelmetProvider,Helmet } from "react-helmet-async";import React, { useState, useEffect } from 'react';
+import { HelmetProvider, Helmet } from "react-helmet-async"; import React, { useState, useEffect } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -25,12 +24,15 @@ const BlockedMeUsers = () => {
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
-
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
 
       <HelmetProvider>
         <Helmet>
-        <title>همسر یابی همسریار</title>
-          
+          <title>همسر یابی همسریار</title>
+
         </Helmet>
       </HelmetProvider>
 
@@ -60,7 +62,7 @@ const BlockedMeUsers = () => {
                       <CardMedia
                         component="img"
                         image={getUserProfilePhoto(user.id)}
-                        alt="User Avatar"
+                        alt="همسریابی | دوستیابی | همسریار"
                         onError={(e) => {
                           e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
                           e.target.src = getDefaultAvatarAddress(user.genderId); // نمایش عکس پیش‌فرض
@@ -80,7 +82,7 @@ const BlockedMeUsers = () => {
                 <CardContent>
                   <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                     <Typography variant="h6">
-                      {user.firstName} 
+                      {user.firstName}
                       <br />    {user.age} {" "} ساله از  {" "}{user.province}
                     </Typography>
                   </Link>

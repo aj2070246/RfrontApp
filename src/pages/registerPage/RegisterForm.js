@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Grid, Button, Container, Paper, TextField, Snackbar, Alert } from '@mui/material';
-import { getCaptcha, registerUser, getDropdownItems, isDevelopMode, hamYab, hamYar, hamType, doostYab } from '../../api';
+import { getCaptcha, registerUser, getDropdownItems } from '../../api';
 import { Link } from '@mui/material';
 
-import { Helmet,HelmetProvider } from "react-helmet-async";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
   GenderDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
@@ -171,33 +171,30 @@ const RegisterForm = () => {
 
   return (
     <>
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
       <HelmetProvider>
-        {!isDevelopMode() && (
-          <>
+        <Helmet>
+          <title>همسر یابی همسریار</title>
 
-            <Helmet> <title>همسریابی | همسریار | ثبت نام </title>
-            </Helmet>
-          </>
-        )}
-
+        </Helmet>
       </HelmetProvider>
       <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <form onSubmit={handleSubmit}>
 
-            {!isDevelopMode() && (
-              <>
-                <div class="banner2">
-                  <p class="banner-text2"> <h1>  همسریار </h1> </p>
-                  <p class="banner-text2">  سامانه همسریابی همسریار </p>
-                  <p class="banner-text2">   سامانه دوست یابی </p>
-                </div>
-                <div class="banner2">
-                  <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
-                  <p class="banner-text2"> ابتدا ثبت نام کنید</p>
-                </div>
-              </>
-            )}
+            <div class="banner2">
+              <p class="banner-text2"> <h1>  همسریار </h1> </p>
+              <p class="banner-text2">  سامانه همسریابی همسریار </p>
+              <p class="banner-text2">   سامانه دوست یابی </p>
+            </div>
+            <div class="banner2">
+              <p class="banner-text2">بمنظور استفاده از امکانات سایت</p>
+              <p class="banner-text2"> ابتدا ثبت نام کنید</p>
+            </div>
+
             <Grid container spacing={2}>
               <TextField fullWidth sx={{ marginBottom: 2, }}
                 label="نام" name="firstName" value={formData.firstName} onChange={handleChange} />
@@ -302,7 +299,7 @@ const RegisterForm = () => {
                     <div>⏳ در حال بارگیری کپچا...</div>
                   ) : (
                     captcha.image ? (
-                      <img src={captcha.image} alt="Captcha" style={{ width: '100%' }} />
+                      <img src={captcha.image} alt="همسریابی | دوستیابی | همسریار" style={{ width: '100%' }} />
                     ) : (
                       <div>⚠️ تصویر کپچا بارگذاری نشد!</div>
                     )

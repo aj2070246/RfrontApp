@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getDefaultAvatarAddress, getMessages, sendMessage, getUserInfo, deleteMessage, getUserProfilePhoto } from '../api';
 import { Card, Box, Alert, Snackbar, Typography, IconButton } from "@mui/material";
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, SendReport } from '../api';
+import { SendReport } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
@@ -16,7 +16,7 @@ const ChatPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [showStatusText, setShowStatusText] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-  const [isSending,setIsSending] = useState(false); // وضعیت برای غیرفعال کردن دکمه
+  const [isSending, setIsSending] = useState(false); // وضعیت برای غیرفعال کردن دکمه
 
   const messagesEndRef = useRef(null);
 
@@ -91,7 +91,7 @@ const ChatPage = () => {
 
     setIsSending(true);  // دکمه غیرفعال می‌شود
 
-    
+
     try {
       await sendMessage(senderUserId, userId, newMessage);
       setNewMessage('');
@@ -145,6 +145,10 @@ const ChatPage = () => {
     <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
       <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
 
+        <meta
+          name="همسریابی"
+          content="دوست یابی | همسریابی | همسریار"
+        />
 
         <HelmetProvider>
           <Helmet>
@@ -170,7 +174,7 @@ const ChatPage = () => {
                 </div>
                 <img
                   src={profilePhoto || getDefaultAvatarAddress(userInfo.genderId || 0)}
-                  alt="Profile"
+                  alt="همسریابی | دوستیابی | همسریار"
                   style={styles.profileImage}
                   onError={(e) => {
                     e.target.onerror = null;
@@ -239,7 +243,7 @@ const ChatPage = () => {
             )}
             <div ref={messagesEndRef} style={{ height: '0' }} />
           </div>
-          {userId != senderUserId && userId!='431C6083-C662-46F6-84B0-348075ABF34FE1BD03DA-FC53-4F74-8CFB-75E4D88C89AE0AADB564-B794-4CFF-A26F-28F695D31850BDEB3154-F9CF-4893-ABBD-DDF5177288434122E12B-4D96-4651-99E4-7E2D444B5287' && (
+          {userId != senderUserId && userId != '431C6083-C662-46F6-84B0-348075ABF34FE1BD03DA-FC53-4F74-8CFB-75E4D88C89AE0AADB564-B794-4CFF-A26F-28F695D31850BDEB3154-F9CF-4893-ABBD-DDF5177288434122E12B-4D96-4651-99E4-7E2D444B5287' && (
 
             <>
               <div style={styles.inputContainer}>
@@ -251,8 +255,8 @@ const ChatPage = () => {
                   style={styles.input}
                 />
                 {!isSending && (
-              <button onClick={handleSendMessage} style={styles.button}>ارسال</button> 
-              )}
+                  <button onClick={handleSendMessage} style={styles.button}>ارسال</button>
+                )}
               </div>
 
               <IconButton

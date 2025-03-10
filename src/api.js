@@ -4,30 +4,6 @@ import axios from 'axios';
 const defaultAvatarMan = process.env.PUBLIC_URL + "/pictures/default-avatar-man.png";
 const defaultAvatarNone = process.env.PUBLIC_URL + "/pictures/default-avatar.png";
 const defaultAvatarWoman = process.env.PUBLIC_URL + "/pictures/default-avatar-woman.png";
-export const isDevelopMode = () => { return false };
-export const hamYar = () => {
-  if (!isDevelopMode())
-    return "همسریار"
-  return "تستیار";
-
-};
-
-export const hamYab = () => {
-  if (!isDevelopMode())
-    return "همسریابی"
-  return "تستیاب";
-};
-export const hamType = () => {
-  if (!isDevelopMode())
-    return "موقت و دائم"
-  return "تستیاب";
-};
-
-export const doostYab = () => {
-  if (!isDevelopMode())
-    return "دوستیابی"
-  return "دوستیاب";
-};
 
 
 // لیست آدرس‌ها برای تست به ترتیب

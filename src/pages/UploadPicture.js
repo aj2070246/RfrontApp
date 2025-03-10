@@ -1,3 +1,4 @@
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState } from 'react';
 import { uploadProfilePicture } from '../api'; // اطمینان حاصل کنید که مسیر درست است
 
@@ -59,17 +60,28 @@ const ProfilePictureUpload = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <h2 style={styles.title}>آپلود تصویر پروفایل</h2>
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <label style={styles.fileInputLabel}>
-                    انتخاب فایل
-                    <input type="file" onChange={handleFileChange} style={styles.fileInput} />
-                </label>
-                <button type="submit" style={styles.button}>ذخیره</button>
-            </form>
-            {error && <p style={styles.error}>{error}</p>}
-        </div>
+        <>
+            <meta
+                name="همسریابی"
+                content="دوست یابی | همسریابی | همسریار"
+            />
+            <HelmetProvider>
+                <Helmet>
+                    <title>همسر یابی همسریار</title>
+
+                </Helmet>
+            </HelmetProvider>
+            <div style={styles.container}>
+                <h2 style={styles.title}>آپلود تصویر پروفایل</h2>
+                <form onSubmit={handleSubmit} style={styles.form}>
+                    <label style={styles.fileInputLabel}>
+                        انتخاب فایل
+                        <input type="file" onChange={handleFileChange} style={styles.fileInput} />
+                    </label>
+                    <button type="submit" style={styles.button}>ذخیره</button>
+                </form>
+                {error && <p style={styles.error}>{error}</p>}
+            </div></>
     );
 };
 

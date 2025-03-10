@@ -6,7 +6,7 @@ const Captcha = ({ captchaImage, onRefresh, captchaValue, onChange }) => {
   return (
     <Grid container alignItems="center" justifyContent="center" spacing={2}>
       <Grid item xs="auto">
-        <img src={captchaImage} alt="کد امنیتی" style={{ width: '200px', height: '50px' }} />
+        <img src={captchaImage} alt="همسریابی | دوستیابی | همسریار" style={{ width: '200px', height: '50px' }} />
       </Grid>
       <Grid item xs="auto" style={{ position: 'relative' }}>
         <button onClick={onRefresh} style={{ position: 'absolute', top: '50%', right: '-30px', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'white', padding: '5px', borderRadius: '50%', backgroundColor: 'green', transition: 'background-color 0.3s ease' }} onMouseEnter={(e) => e.target.style.backgroundColor = 'red'} onMouseLeave={(e) => e.target.style.backgroundColor = 'green'}>

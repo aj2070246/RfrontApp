@@ -1,4 +1,3 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -53,13 +52,17 @@ const Messages = () => {
     return (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
             <Card sx={{ maxWidth: 500, p: 3, borderRadius: "12px", boxShadow: 3 }}>
+                <meta
+                    name="همسریابی"
+                    content="دوست یابی | همسریابی | همسریار"
+                />
 
                 <HelmetProvider>
                     <Helmet>
                         <title>همسر یابی همسریار</title>
-                    </Helmet>
-                </HelmetProvider>
 
+                    </Helmet>
+                </HelmetProvider> 
 
                 {statusCode === 6969 ? (
                     <div className="noMessages">
@@ -82,7 +85,7 @@ const Messages = () => {
                                             <Box display="flex" alignItems="center">
                                                 <Avatar
                                                     src={profilePhotos[message.senderUserId]}
-                                                    alt={message.senderName}
+                                                   alt="همسریابی | دوستیابی | همسریار"
                                                     onError={(e) => {
                                                         e.target.onerror = null;
                                                         console.log('error avatar search', message.genderId);

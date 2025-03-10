@@ -4,7 +4,6 @@ import { FaSignInAlt, FaUserPlus, FaCommentDots, FaSearch, FaFile, FaSignOutAlt,
 import { Navigate } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { GetCountOfUnreadMessages, LastUsersCheckedMeApi, getDefaultAvatarAddress, getUserProfilePhoto } from './api'; // اضافه کردن متد جدید
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from './api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { FaBars, FaBan, FaUserSlash, FaHeart, FaStar, FaEye, FaUserCircle } from "react-icons/fa";
 import ChatPage from './pages/ChatPage';
@@ -180,7 +179,7 @@ function Main() {
 
               <img
                 src={profilePhoto} // استفاده از state به جای تابع مستقیم
-                alt="Profile"
+                alt="همسریابی | دوستیابی | همسریار"
                 style={styles.profileImage}
                 onClick={toggleUserMenu}
                 onError={(e) => {
@@ -262,7 +261,7 @@ function Main() {
 
                 </Link>
               </li>
-             
+
               <li>
                 <Link to="/blocked" className="nav-button">
                   مسدود شده ها

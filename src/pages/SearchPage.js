@@ -1,4 +1,3 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
@@ -9,7 +8,7 @@ import {
   AgeFromDropdown, AgeToDropdown, ProvinceDropdown,
   HealtStatusDropdown, LiveTypeDropdown, MarriageStatusDropdown,
   CarValuesDropdown, HomeValueDropDown, IncomeAmountDropDown,
-  OnlineStatusDropDown, ProfilePhotoStatusDropDown, RelationTypeDropDown,MaxCheildCountDropDown
+  OnlineStatusDropDown, ProfilePhotoStatusDropDown, RelationTypeDropDown, MaxCheildCountDropDown
 } from './registerPage/Dropdowns';
 
 
@@ -34,7 +33,7 @@ const SearchPage = () => {
     profilePhoto: '',
     relationType: '',
     cheildCount: '',
-    
+
   });
   const [isInIframe, setIsInIframe] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(true);
@@ -142,7 +141,8 @@ const SearchPage = () => {
   useEffect(() => {
     if (pageIndex > 1 && searchInitiated) { // فقط وقتی جستجو شروع شده باشه
       handleSearch(false); // false یعنی append کنیم نه reset
-      sendHeight(); }
+      sendHeight();
+    }
   }, [pageIndex]);
 
   // جستجوی اولیه موقع لود صفحه
@@ -221,10 +221,13 @@ const SearchPage = () => {
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
-
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
       <HelmetProvider>
         <Helmet>
-        <title>همسر یابی همسریار</title>
+          <title>همسر یابی همسریار</title>
 
         </Helmet>
       </HelmetProvider>
@@ -290,7 +293,7 @@ const SearchPage = () => {
                 key={user.id}
                 ref={index === results.length - 1 ? lastElementRef : null} // آخرین المنت رو ردیابی کن
               >
-                <Card sx={{ margin: 1, bgcolor:  "var(--ham-backGroung-color)" }}>
+                <Card sx={{ margin: 1, bgcolor: "var(--ham-backGroung-color)" }}>
                   <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                     <CardActionArea>
                       <Box
@@ -305,7 +308,7 @@ const SearchPage = () => {
                         <CardMedia
                           component="img"
                           image={profilePhotos[user.id]} // استفاده از state برای عکس
-                          alt="User Avatar"
+                          alt="همسریابی | دوستیابی | همسریار"
                           onError={(e) => {
                             e.target.onerror = null;
                             console.log('error avatar search', user.genderId);
@@ -326,7 +329,7 @@ const SearchPage = () => {
                   <CardContent>
                     <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                       <Typography variant="h6">
-                        {user.firstName} 
+                        {user.firstName}
                         <br /> {user.age} {" "} ساله از {" "}{user.province}
                       </Typography>
                     </Link>

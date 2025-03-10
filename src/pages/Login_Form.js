@@ -1,9 +1,9 @@
 import { HelmetProvider, Helmet } from "react-helmet-async";
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, Typography, Grid, Link, CircularProgress } from '@mui/material';
-import { getCaptcha, login, getDropdownItems, isDevelopMode, hamYab, hamYar, doostYab, hamType } from '../api';
+import { getCaptcha, login, getDropdownItems } from '../api';
 import { Container, Paper, Snackbar, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 const Login_Form = () => {
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ const Login_Form = () => {
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [hasError, setHasError] = useState(false); // کنترل وضعیت خطا
-  
+
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data.type === "SET_IFRAME_HEIGHT") {
@@ -104,21 +104,24 @@ const Login_Form = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        {!isDevelopMode() && (
-          <>
-            <div className="banner2">
-              <p className="banner-text2"> <h1>  همسریار </h1> </p>
-              <p className="banner-text2">  سامانه همسریابی </p>
-              <p className="banner-text2">  سامانه  دوست یابی</p>
-            </div>
-            <HelmetProvider>
-              <Helmet>
-              <title>همسر یابی همسریار</title>
-                
-              </Helmet>
-            </HelmetProvider>
-          </>
-        )}
+        <meta
+          name="همسریابی"
+          content="دوست یابی | همسریابی | همسریار"
+        />
+
+        <HelmetProvider>
+          <Helmet>
+            <title>همسر یابی همسریار</title>
+
+          </Helmet>
+        </HelmetProvider>
+
+        <div className="banner2">
+          <p className="banner-text2"> <h1>  همسریار </h1> </p>
+          <p className="banner-text2">  سامانه همسریابی </p>
+          <p className="banner-text2">  سامانه  دوست یابی</p>
+        </div>
+
 
         <Grid container spacing={2} className="login-form">
           <Grid item xs={12}>
@@ -146,7 +149,7 @@ const Login_Form = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <img src={captcha.image} alt="Captcha" />
+            <img src={captcha.image} alt="همسریابی | دوستیابی | همسریار"/>
           </Grid>
           <Grid item xs={6}>
             <Button variant="outlined" onClick={refreshCaptcha}>🔄 دریافت مجدد</Button>
@@ -179,7 +182,7 @@ const Login_Form = () => {
         {/* اضافه کردن iframe برای نمایش صفحه Search */}
         <Grid item xs={12} sx={{ mt: 4 }}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            کاربران همسریابی همسریار 
+            کاربران همسریابی همسریار
           </Typography>
           <iframe
             src="/search"

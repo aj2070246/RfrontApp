@@ -1,5 +1,4 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
-import { HelmetProvider,Helmet } from "react-helmet-async";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, TextField, Button, Typography, Snackbar, Alert, Grid, CircularProgress, IconButton } from '@mui/material';
 import { VerifyEmailCodeForAcceptEmail, sendVerifyCodeEmail, getCaptcha } from '../api'; // متد تغییر رمز عبور
@@ -44,11 +43,11 @@ const VerifyEmailCode = ({ open, onClose }) => {
     }
   };
   const sendVerifyCode = async (isLoad) => {
-      if (formData.captchaValue.trim() === '') {
-        setSnackbar({ open: true, message: 'متن تصویر را وارد کنید', severity: 'error' });
-        return;
-      }
-    
+    if (formData.captchaValue.trim() === '') {
+      setSnackbar({ open: true, message: 'متن تصویر را وارد کنید', severity: 'error' });
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await sendVerifyCodeEmail({
@@ -110,7 +109,16 @@ const VerifyEmailCode = ({ open, onClose }) => {
   };
 
   return (
-    <>
+    <>   <meta
+      name="همسریابی"
+      content="دوست یابی | همسریابی | همسریار"
+    />
+      <HelmetProvider>
+        <Helmet>
+          <title>همسر یابی همسریار</title>
+
+        </Helmet>
+      </HelmetProvider>
       <Modal open={open} onClose={onClose} aria-labelledby="verify-email-modal">
         <Box
           sx={{
@@ -147,7 +155,7 @@ const VerifyEmailCode = ({ open, onClose }) => {
           />
           <Grid container alignItems="center" spacing={2}>
             <Grid item>
-              <img src={captcha.image} alt="Captcha" />
+              <img src={captcha.image} alt="همسریابی | دوستیابی | همسریار"/>
             </Grid>
             <Grid item>
               <IconButton onClick={fetchCaptcha} color="primary">

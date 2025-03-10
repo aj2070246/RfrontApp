@@ -1,10 +1,9 @@
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
-import { HelmetProvider,Helmet } from "react-helmet-async";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import React, { useState, useEffect } from 'react';
 import { TextField, MenuItem, Select, InputLabel, FormControl, Button, Grid, Box } from '@mui/material';
 import { Card, CardContent, CardMedia, Typography, Alert, CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { BlockedUsersApi ,getDefaultAvatarAddress,getUserProfilePhoto} from '../api'; // اضافه کردن متد جدید
+import { BlockedUsersApi, getDefaultAvatarAddress, getUserProfilePhoto } from '../api'; // اضافه کردن متد جدید
 
 const BlockedUsers = () => {
   const [results, setResults] = useState([]);
@@ -27,14 +26,18 @@ const BlockedUsers = () => {
 
   return (
     <Box sx={{ padding: 2 }} dir="rtl">
-     
-           <HelmetProvider>
-             <Helmet>
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
+
+      <HelmetProvider>
+        <Helmet>
           <title>همسر یابی همسریار</title>
-              
-             </Helmet>
-           </HelmetProvider>
-     
+
+        </Helmet>
+      </HelmetProvider>
+
       <h2 style={{ textAlign: 'center' }}>شما این کاربران را مسدود کرده اید</h2>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -59,7 +62,7 @@ const BlockedUsers = () => {
                       <CardMedia
                         component="img"
                         image={getUserProfilePhoto(user.id)}
-                        alt="User Avatar"
+                       alt="همسریابی | دوستیابی | همسریار"
                         onError={(e) => {
                           e.target.onerror = null; // جلوگیری از حلقه بی‌پایان
                           e.target.src = getDefaultAvatarAddress(user.genderId); // نمایش عکس پیش‌فرض
@@ -79,7 +82,7 @@ const BlockedUsers = () => {
                 <CardContent>
                   <Link to={`/profile/${user.id}`} style={{ textDecoration: 'none' }} target='_blank'>
                     <Typography variant="h6">
-                      {user.firstName} 
+                      {user.firstName}
                       <br />    {user.age} {" "} ساله از  {" "}{user.province}
                     </Typography>
                   </Link>

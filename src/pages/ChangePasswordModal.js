@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Box, TextField, Button, Typography, Snackbar, Alert } from '@mui/material';
 import { changePasswordApi } from '../api'; // متد تغییر رمز عبور
-import { isDevelopMode, hamYab, hamYar, doostYab, hamType, } from '../api';
 import { HelmetProvider, Helmet } from "react-helmet-async";
 const ChangePasswordModal = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -48,10 +47,14 @@ const ChangePasswordModal = ({ open, onClose }) => {
 
       <HelmetProvider>
         <Helmet>
-        <title>همسر یابی همسریار</title>
-          
+          <title>همسر یابی همسریار</title>
+
         </Helmet>
       </HelmetProvider>
+      <meta
+        name="همسریابی"
+        content="دوست یابی | همسریابی | همسریار"
+      />
 
 
       <Modal open={open} onClose={onClose} aria-labelledby="change-password-modal">
