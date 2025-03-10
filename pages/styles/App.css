@@ -1,0 +1,401 @@
+html, body {
+  direction: rtl;
+  text-align: right;
+  font-family: 'YourFont', sans-serif; /* جایگزین کنید با فونت دلخواه */
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('/fonts/Vazir-Light.woff2') format('woff2'),
+       url('/fonts/Vazir-Light.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+
+.App {
+  text-align: center;
+}
+body {
+  font-family: 'Vazir', sans-serif;
+  padding-top: 60px; /* ارتفاع هدر */
+}
+
+
+:root {
+  --ham-backGroung-color: #d138bd; /* رنگ اصلی */
+  --secondary-color: #2ecc71; /* رنگ ثانویه */
+  --text-color: #333; /* رنگ متن */
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.toggle-button {
+  margin: 10px; /* حاشیه */
+  padding: 5px 10px; /* فضای داخلی */
+  background-color: white; /* رنگ پس‌زمینه دکمه */
+  border: 2px solid pink; /* مرز دکمه */
+  border-radius: 5px; /* گرد کردن گوشه‌ها */
+  cursor: pointer; /* نشانگر ماوس */
+}
+.user-name-left {
+  text-align: left !important;
+}
+.banner {
+  background-color: rgb(255, 0, 251); /* رنگ پس‌زمینه قرمز */
+  border: 2px solid black; /* کادر دور بنر */
+  text-align: center; /* تراز کردن متن در وسط */
+  margin: 20px; /* فاصله از سایر عناصر */
+  border-radius: 10px; /* گوشه‌های گرد */
+}
+
+.banner-text {
+  color: white; /* رنگ متن سفید */
+  font-size: 24px; /* اندازه متن */
+  font-weight: bold; /* ضخامت متن */
+}
+
+
+.banner2 {
+  background-color:var(--ham-backGroung-color);
+  border: 2px solid black; /* کادر دور بنر */
+  text-align: center; /* تراز کردن متن در وسط */
+  margin: 20px; /* فاصله از سایر عناصر */
+  border-radius: 10px; /* گوشه‌های گرد */
+}
+
+.banner-text2 {
+  color: white; /* رنگ متن سفید */
+  font-size: 24px; /* اندازه متن */
+  font-weight: bold; /* ضخامت متن */
+}
+
+
+/* new css */
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* استایل کلی برای منو */
+.app-container {
+  position: relative;
+}
+
+.hamburger-container {
+  display: flex;
+  align-items: center; /* قرار دادن همبرگر و متن در یک خط */
+  cursor: pointer; /* نشانگر ماوس */
+}
+
+.hamburger {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 20px;
+}
+
+.hamburger .bar {
+  width: 30px;
+  height: 4px;
+  background-color: #fff;
+  margin: 6px 0;
+  transition: all 0.3s ease;
+}
+
+.bar.active {
+  background-color: rgb(14, 13, 13);
+}
+
+/* منوی ناوبری */
+.navbar {
+  position: fixed;
+  top: 0;
+  right: -150px; /* کاهش عرض منو */
+  width: 150px; /* عرض منو کاهش داده شده */
+  height: 100%;
+  background-color: rgb(255, 0, 251);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* شروع از بالا */
+  align-items: flex-start; /* شروع از بالا */
+  padding-top: 20px;
+  transition: right 0.3s ease;
+  z-index: 1000; /* قرار دادن منو بالاتر از همه عناصر */
+  overflow-y: auto; /* فعال کردن اسکرول عمودی در منو */
+}
+
+
+/* زیباسازی اسکرول‌بار در مرورگرها */
+.navbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navbar::-webkit-scrollbar-track {
+  background: #444; /* رنگ پس‌زمینه اسکرول */
+}
+
+.navbar::-webkit-scrollbar-thumb {
+  background: #888; /* رنگ اسکرول */
+  border-radius: 3px;
+}
+
+.navbar::-webkit-scrollbar-thumb:hover {
+  background: #bbb; /* تغییر رنگ هنگام هاور */
+}
+.navbar.open {
+  right: 0; /* نمایش منو وقتی که منوی همبرگری باز باشد */
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* تنظیم عرض لینک‌ها به 100% */
+  align-items: flex-start; /* چپ‌چین کردن آیتم‌ها */
+  height: 100%; /* پر کردن ارتفاع منو */
+  
+}
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* پس‌زمینه مشکی با شفافیت */
+  z-index: 999; /* یک مرحله پایین‌تر از منو */
+  display: none; /* در حالت عادی مخفی باشد */
+}
+.menu-overlay.active {
+  display: block; /* هنگام باز شدن منو، نمایش داده شود */
+}
+.nav-links li {
+  margin: 15px 0;
+}
+.nav-links li:last-child {
+  margin-top: auto; /* دکمه خروج را به پایین منو می‌فرستد */
+}
+.nav-links .nav-button {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px; /* فاصله از لبه منو */
+}
+
+.nav-links .nav-button:hover {
+  color: #4009cc;
+}
+
+.nav-links .nav-button svg {
+  margin-left: 8px;
+}
+
+/* آیکن بستن منو */
+.close-icon {
+  font-size: 30px;
+  color: #fff;
+  cursor: pointer;
+  position: absolute;
+  left: 0; /* چسباندن به لبه چپ */
+  top: 20px; /* فاصله از بالا */
+  margin-left: 15px; /* فاصله از لبه چپ */
+  margin-bottom: 40px; /* فاصله از پایین به گزینه‌ها */
+  display: flex; /* استفاده از فلیکس برای کنار هم قرار دادن آیکن و متن */
+  align-items: center; /* عمودی هم‌تراز کردن */
+}
+
+/* استایل متن "بستن" */
+.close-text {
+  margin-left: 8px; /* فاصله بین آیکن و کلمه بستن */
+  font-size: 20px; /* اندازه فونت متن */
+}
+/* استایل دکمه خروج */
+.logout-button {
+  margin-top: auto; /* دکمه را به پایین‌ترین قسمت منو می‌فرستد */
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  color: #06819a;
+
+}
+.messages-link {
+  display: flex;
+  align-items: center;
+  margin-left: 15px; /* فاصله بین تعداد پیام‌ها و اسم کاربر */
+}
+
+.unread-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* اندازه دایره */
+  height: 20px; /* اندازه دایره */
+  background-color: red; /* رنگ دایره */
+  color: white; /* رنگ عدد */
+  border-radius: 50%; /* دایره‌ای کردن */
+  margin-left: 5px; /* فاصله بین عدد و آیکن پیام */
+  font-size: 12px; /* اندازه فونت عدد */
+}
+.header {
+  direction: rtl; /* راست‌چین کردن محتوا */
+  width: 100%;
+  height: 50px; /* ارتفاع 1 سانتی‌متر (تقریبا 10 پیکسل) */
+  justify-content: flex-end; /* برای قرار گرفتن در سمت چپ */
+  background-color: #007bff; /* رنگ آبی یا هر رنگ دلخواه */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9; /* بالاتر از بقیه اجزا باشد */
+  justify-content: space-between; /* فاصله دادن قسمت‌ها */
+  align-items: center; /* عمودی تنظیم کردن آیتم‌ها */
+}
+.user-info {
+  display: flex;
+  align-items: flex-start; /* تراز عمودی به بالا */
+  direction: rtl; /* راست‌چین کردن این بخش */
+  justify-content: flex-end; /* چسباندن به سمت چپ */
+  width: 100%; /* اطمینان از پر شدن فضای عرضی */
+  cursor: pointer; /* برای نشان دادن اینکه این عنصر قابل کلیک است */
+  border: 2px solid transparent; /* مرز اولیه، پنهان */
+  border-radius: 5px; /* برای گرد کردن گوشه‌ها */
+  transition: border 0.3s ease; /* برای تغییر ملایم مرز */
+}
+.user-info:hover {
+  border-color: #007bff; /* رنگ مرز هنگام هاور */
+}
+.user-name {
+  margin-left: 0; /* حذف فضای اضافی */
+  text-align: left; /* چپ‌چین کردن متن */
+  margin-right: 0; /* حذف هر گونه فضای اضافی از سمت راست */
+}
+
+
+.user-menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+.user-menu {
+  display: none;
+  position: absolute;
+  top: 50px; /* فاصله کم‌تر از هدر */
+  left: 20px; /* از چپ باز می‌شود */
+  background-color: #fff;
+  color: #06819a;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(239, 17, 228, 0.1);
+  padding: 10px;
+  font-family: 'Vazir', sans-serif;
+  display: flex;
+  flex-direction: column; /* چینش عمودی */
+  align-items: flex-start; /* چپ‌چین کردن گزینه‌ها */
+  z-index: 1000; /* مطمئن شویم که منو از بقیه عناصر بالاتر است */
+}
+
+.user-menu button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-family: 'Vazir', sans-serif;
+  display: block; /* اطمینان از اینکه هر دکمه یک خط جدید است */
+  width: 100%; /* تمام عرض منو را پر کند */
+}
+
+.user-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* تغییرات جدید برای جلوگیری از افقی شدن منو */
+.user-menu button:hover {
+  background-color: #f0f0f0;
+  flex-direction: column; /* اطمینان از چینش عمودی در زمان هاور */
+}
+
+ 
+/* نمایش منو زمانی که دکمه فشرده شود */
+.user-menu-btn:focus + .user-menu,
+.user-menu:hover {
+  display: block;
+}
+
+.hamburger-text {
+  margin-left: 100px;  /* فاصله بین آیکن همبرگر و متن */
+  font-size: 18px;  /* سایز فونت */
+  font-weight: bold;  /* ضخامت فونت */
+  color: #fff;  /* رنگ متن */
+  margin-left: 10px;  /* فاصله بین همبرگر و متن */
+}
+ 
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+
+.noMessages {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #d70101;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  margin: 10px;
+  font-weight: bold;
+}
+
+
+
